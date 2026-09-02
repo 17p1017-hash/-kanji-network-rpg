@@ -23,6 +23,29 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
   // ==================================================
+  // 保存データ読み込み
+  // ==================================================
+
+  function loadSaveData() {
+    try {
+      const saved = localStorage.getItem("kanjiNetworkRpgSave");
+
+      if (!saved) {
+        return null;
+      }
+
+      return JSON.parse(saved);
+
+    } catch (error) {
+      console.log("セーブデータを読み込めませんでした");
+      return null;
+    }
+  }
+
+  const saveData = loadSaveData();
+
+
+  // ==================================================
   // ゲームデータ
   // ==================================================
 
@@ -37,9 +60,6 @@ document.addEventListener("DOMContentLoaded", () => {
       step: 0
     },
 
-    moveCount: 0,
-
-    // 最後に戦闘が終わってから何歩歩いたか
     stepsSinceBattle: 0,
 
     enemyIndex: 0,
@@ -63,31 +83,50 @@ document.addEventListener("DOMContentLoaded", () => {
 
     currentWord: null,
 
-    // 1つの言葉につき3回成功で「定着」
+    // 3回成功で定着
     masteryGoal: 3,
 
     words: {
-
       "読む": {
-        successes: 0
+        successes: saveData?.words?.["読む"]?.successes || 0
       },
 
       "読書": {
-        successes: 0
+        successes: saveData?.words?.["読書"]?.successes || 0
       },
 
       "音読": {
-        successes: 0
+        successes: saveData?.words?.["音読"]?.successes || 0
       },
 
       "読者": {
-        successes: 0
+        successes: saveData?.words?.["読者"]?.successes || 0
       }
-
     },
+
+    // 獲得済みスキル
+    skills: saveData?.skills || [],
 
     networkClearShown: false
   };
+
+
+  // ==================================================
+  // セーブ
+  // ==================================================
+
+  function saveGame() {
+
+    const data = {
+      words: game.words,
+      skills: game.skills
+    };
+
+    localStorage.setItem(
+      "kanjiNetworkRpgSave",
+      JSON.stringify(data)
+    );
+  }
 
 
   // ==================================================
@@ -208,21 +247,20 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
 
-  function getMasteredCount() {
+  function getDiscoveredCount() {
 
     return Object.values(game.words)
-      .filter(data =>
-        data.successes >= game.masteryGoal
-      )
+      .filter(data => data.successes > 0)
       .length;
   }
 
 
-  function getDiscoveredCount() {
+  function getMasteredCount() {
 
     return Object.values(game.words)
-      .filter(data =>
-        data.successes > 0
+      .filter(
+        data =>
+          data.successes >= game.masteryGoal
       )
       .length;
   }
@@ -232,6 +270,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
     return getMasteredCount() ===
       Object.keys(game.words).length;
+  }
+
+
+  function hasSkill(skillName) {
+
+    return game.skills.includes(skillName);
   }
 
 
@@ -249,7 +293,7 @@ document.addEventListener("DOMContentLoaded", () => {
     updateField();
 
     setFieldMessage(
-      "はじまりの王国だ！ 方向キーで歩いてみよう。"
+      "はじまりの王国だ！ 下の道から外へ出てみよう。"
     );
 
   });
@@ -370,83 +414,85 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 
+    // 左右だけ通常制限
     game.player.x =
       Math.max(
         8,
         Math.min(92, game.player.x)
       );
 
-    game.player.y =
-      Math.max(
-        10,
-        Math.min(88, game.player.y)
-      );
-
 
     game.player.step++;
-
-    game.moveCount++;
-
-    game.stepsSinceBattle++;
 
     updateField();
 
 
-    // --------------------------
-    // 王国
-    // --------------------------
+    // ==================================================
+    // 王国 → 読みの森
+    // 下端まで歩いたら移動
+    // ==================================================
 
     if (
       game.area === "kingdom" &&
-      game.moveCount === 7
-    ) {
-
-      setFieldMessage(
-        "王国の外へ続く道を見つけた！"
-      );
-
-    }
-
-
-    if (
-      game.area === "kingdom" &&
-      game.moveCount >= 10
+      game.player.y >= 90
     ) {
 
       enterForest();
-
       return;
     }
 
 
-    // --------------------------
-    // 森のエンカウント
-    // --------------------------
+    // ==================================================
+    // 読みの森 → 王国
+    // 上端まで歩いたら戻る
+    // ==================================================
 
+    if (
+      game.area === "forest" &&
+      game.player.y <= 8
+    ) {
+
+      returnToKingdom();
+      return;
+    }
+
+
+    // 上下の通常制限
+    game.player.y =
+      Math.max(
+        8,
+        Math.min(90, game.player.y)
+      );
+
+
+    updateField();
+
+
+    // 森だけエンカウント判定
     if (game.area === "forest") {
 
-      checkEncounter();
+      game.stepsSinceBattle++;
 
+      checkEncounter();
     }
 
   }
 
 
   // ==================================================
-  // 読みの森
+  // 王国 → 森
   // ==================================================
 
   function enterForest() {
 
     game.area = "forest";
 
-    game.moveCount = 0;
-
     game.stepsSinceBattle = 0;
 
+    // 森の上側から入る
     game.player.x = 50;
-
-    game.player.y = 78;
+    game.player.y = 16;
+    game.player.direction = "down";
 
     updateField();
 
@@ -458,12 +504,36 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
   // ==================================================
+  // 森 → 王国
+  // ==================================================
+
+  function returnToKingdom() {
+
+    game.area = "kingdom";
+
+    game.stepsSinceBattle = 0;
+
+    // 王国の下側へ戻る
+    game.player.x = 50;
+    game.player.y = 82;
+    game.player.direction = "up";
+
+    updateField();
+
+    setFieldMessage(
+      "はじまりの王国に戻ってきた。"
+    );
+
+  }
+
+
+  // ==================================================
   // エンカウント
   // ==================================================
 
   function checkEncounter() {
 
-    // 戦闘後12歩は敵が出ない
+    // 戦闘終了後、最低12歩は安全
     const safeSteps = 12;
 
     if (
@@ -474,7 +544,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 
-    // 12歩を超えてから1歩ごとに約10％
+    // その後は1歩ごとに10%
     const encounterChance = 0.10;
 
 
@@ -530,8 +600,9 @@ document.addEventListener("DOMContentLoaded", () => {
       "0 0";
 
 
-    enemyHP.style.width =
-      "100%";
+    if (enemyHP) {
+      enemyHP.style.width = "100%";
+    }
 
 
     battleMessage.textContent =
@@ -560,7 +631,6 @@ document.addEventListener("DOMContentLoaded", () => {
       game.selectedWeapon =
         button.dataset.weapon;
 
-
       startChallenge();
 
     });
@@ -569,7 +639,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
   // ==================================================
-  // 次に出す言葉
+  // 次のことばを選ぶ
   // ==================================================
 
   function chooseNextWord() {
@@ -578,7 +648,7 @@ document.addEventListener("DOMContentLoaded", () => {
       Object.entries(game.words);
 
 
-    // まだ定着していない言葉
+    // まだ定着していないことば
     const learningWords =
       entries.filter(
         ([word, data]) =>
@@ -587,11 +657,9 @@ document.addEventListener("DOMContentLoaded", () => {
       );
 
 
-    if (
-      learningWords.length > 0
-    ) {
+    if (learningWords.length > 0) {
 
-      // 一番成功回数が少ないものを優先
+      // 成功回数が少ないものを優先
       const minimum =
         Math.min(
           ...learningWords.map(
@@ -608,21 +676,17 @@ document.addEventListener("DOMContentLoaded", () => {
         );
 
 
-      const random =
-        candidates[
-          Math.floor(
-            Math.random() *
-            candidates.length
-          )
-        ];
-
-
-      return random[0];
+      return candidates[
+        Math.floor(
+          Math.random() *
+          candidates.length
+        )
+      ][0];
 
     }
 
 
-    // 全部定着していても復習は続く
+    // 全部定着しても復習
     const allWords =
       Object.keys(game.words);
 
@@ -663,12 +727,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     if (
-      game.selectedWeapon ===
-      "hammer"
+      game.selectedWeapon === "hammer"
     ) {
 
       startWritingChallenge(word);
-
       return;
     }
 
@@ -710,17 +772,14 @@ document.addEventListener("DOMContentLoaded", () => {
     const shuffled =
       [...question.answers]
         .sort(
-          () =>
-            Math.random() - 0.5
+          () => Math.random() - 0.5
         );
 
 
     shuffled.forEach(answer => {
 
       const button =
-        document.createElement(
-          "button"
-        );
+        document.createElement("button");
 
 
       button.className =
@@ -745,9 +804,7 @@ document.addEventListener("DOMContentLoaded", () => {
       );
 
 
-      answerArea.appendChild(
-        button
-      );
+      answerArea.appendChild(button);
 
     });
 
@@ -758,7 +815,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
   // ==================================================
-  // 選択問題の答え
+  // 選択問題
   // ==================================================
 
   function checkAnswer(
@@ -767,9 +824,7 @@ document.addEventListener("DOMContentLoaded", () => {
     button
   ) {
 
-    if (
-      answer === correct
-    ) {
+    if (answer === correct) {
 
       button.textContent =
         "✨ " + answer;
@@ -779,9 +834,7 @@ document.addEventListener("DOMContentLoaded", () => {
         "#fff3a6";
 
 
-      registerSuccess(
-        correct
-      );
+      registerSuccess(correct);
 
 
       setTimeout(() => {
@@ -805,7 +858,6 @@ document.addEventListener("DOMContentLoaded", () => {
         button.textContent =
           answer;
 
-
         button.style.background =
           "";
 
@@ -823,7 +875,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function startWritingChallenge(word) {
 
     challengeQuestion.textContent =
-      `「${word}」の中にある「読」を指で書いてみよう！`;
+      `「${word}」につながる「読」を書いてみよう！`;
 
 
     answerArea.innerHTML = "";
@@ -836,102 +888,70 @@ document.addEventListener("DOMContentLoaded", () => {
     writingWrap.style.gridColumn =
       "1 / -1";
 
-
     writingWrap.style.width =
       "100%";
-
 
     writingWrap.style.textAlign =
       "center";
 
 
-    // --------------------------
     // お手本
-    // --------------------------
-
     const sample =
       document.createElement("div");
 
-
-    sample.textContent =
-      "読";
-
+    sample.textContent = "読";
 
     sample.style.fontSize =
       "34px";
 
-
     sample.style.fontWeight =
       "900";
 
-
     sample.style.marginBottom =
       "10px";
-
-
-    sample.style.color =
-      "#42505a";
-
 
     sample.style.opacity =
       "0.35";
 
 
-    writingWrap.appendChild(
-      sample
-    );
+    writingWrap.appendChild(sample);
 
 
-    // --------------------------
-    // 書くキャンバス
-    // --------------------------
-
+    // キャンバス
     const canvas =
-      document.createElement(
-        "canvas"
-      );
+      document.createElement("canvas");
 
 
     canvas.width = 300;
-
     canvas.height = 300;
 
 
     canvas.style.width =
       "min(100%, 300px)";
 
-
     canvas.style.aspectRatio =
       "1 / 1";
-
 
     canvas.style.background =
       "#fffdf5";
 
-
     canvas.style.border =
       "4px solid #4a3722";
-
 
     canvas.style.borderRadius =
       "14px";
 
-
     canvas.style.touchAction =
       "none";
 
-
     canvas.style.display =
       "block";
-
 
     canvas.style.margin =
       "0 auto 14px";
 
 
-    writingWrap.appendChild(
-      canvas
-    );
+    writingWrap.appendChild(canvas);
 
 
     const ctx =
@@ -939,16 +959,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     ctx.lineWidth = 12;
-
     ctx.lineCap = "round";
-
     ctx.lineJoin = "round";
-
-    ctx.strokeStyle =
-      "#18242d";
+    ctx.strokeStyle = "#18242d";
 
 
     let drawing = false;
+    let hasDrawn = false;
 
 
     function getPosition(event) {
@@ -958,27 +975,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
       return {
-
         x:
-          (
-            event.clientX -
-            rect.left
-          ) *
-          (
-            canvas.width /
-            rect.width
-          ),
+          (event.clientX - rect.left) *
+          (canvas.width / rect.width),
 
         y:
-          (
-            event.clientY -
-            rect.top
-          ) *
-          (
-            canvas.height /
-            rect.height
-          )
-
+          (event.clientY - rect.top) *
+          (canvas.height / rect.height)
       };
 
     }
@@ -989,11 +992,10 @@ document.addEventListener("DOMContentLoaded", () => {
       event => {
 
         drawing = true;
-
+        hasDrawn = true;
 
         const pos =
           getPosition(event);
-
 
         ctx.beginPath();
 
@@ -1001,7 +1003,6 @@ document.addEventListener("DOMContentLoaded", () => {
           pos.x,
           pos.y
         );
-
 
         canvas.setPointerCapture(
           event.pointerId
@@ -1019,16 +1020,13 @@ document.addEventListener("DOMContentLoaded", () => {
           return;
         }
 
-
         const pos =
           getPosition(event);
-
 
         ctx.lineTo(
           pos.x,
           pos.y
         );
-
 
         ctx.stroke();
 
@@ -1046,23 +1044,13 @@ document.addEventListener("DOMContentLoaded", () => {
       stopDrawing
     );
 
-
     canvas.addEventListener(
       "pointercancel",
       stopDrawing
     );
 
 
-    canvas.addEventListener(
-      "pointerleave",
-      stopDrawing
-    );
-
-
-    // --------------------------
     // ボタン
-    // --------------------------
-
     const controls =
       document.createElement("div");
 
@@ -1070,24 +1058,19 @@ document.addEventListener("DOMContentLoaded", () => {
     controls.style.display =
       "grid";
 
-
     controls.style.gridTemplateColumns =
       "1fr 1fr";
-
 
     controls.style.gap =
       "10px";
 
 
     const clearButton =
-      document.createElement(
-        "button"
-      );
+      document.createElement("button");
 
 
     clearButton.className =
       "answer-button";
-
 
     clearButton.textContent =
       "消す";
@@ -1104,19 +1087,18 @@ document.addEventListener("DOMContentLoaded", () => {
           canvas.height
         );
 
+        hasDrawn = false;
+
       }
     );
 
 
     const doneButton =
-      document.createElement(
-        "button"
-      );
+      document.createElement("button");
 
 
     doneButton.className =
       "answer-button";
-
 
     doneButton.textContent =
       "できた！";
@@ -1126,9 +1108,22 @@ document.addEventListener("DOMContentLoaded", () => {
       "click",
       () => {
 
-        registerSuccess(
-          word
-        );
+        // 何も書かずには進めない
+        if (!hasDrawn) {
+
+          doneButton.textContent =
+            "まず書いてみよう！";
+
+          setTimeout(() => {
+            doneButton.textContent =
+              "できた！";
+          }, 1000);
+
+          return;
+        }
+
+
+        registerSuccess(word);
 
 
         doneButton.textContent =
@@ -1149,16 +1144,13 @@ document.addEventListener("DOMContentLoaded", () => {
       clearButton
     );
 
-
     controls.appendChild(
       doneButton
     );
 
-
     writingWrap.appendChild(
       controls
     );
-
 
     answerArea.appendChild(
       writingWrap
@@ -1180,22 +1172,22 @@ document.addEventListener("DOMContentLoaded", () => {
       getWordData(word);
 
 
-    // 定着後も復習はできるが、
-    // 数字は3で止める
     if (
       data.successes <
       game.masteryGoal
     ) {
 
       data.successes++;
-
     }
+
+
+    saveGame();
 
   }
 
 
   // ==================================================
-  // 武器を変える
+  // 武器変更
   // ==================================================
 
   const changeWeaponButton =
@@ -1209,7 +1201,6 @@ document.addEventListener("DOMContentLoaded", () => {
     () => {
 
       showScreen("battle");
-
 
       battleMessage.textContent =
         "別の方法で挑戦してみよう！";
@@ -1264,60 +1255,45 @@ document.addEventListener("DOMContentLoaded", () => {
           getWordData(word);
 
 
-        // ----------------------
         // 未発見
-        // ----------------------
-
-        if (
-          data.successes === 0
-        ) {
+        if (data.successes === 0) {
 
           node.textContent =
             "❓";
-
 
           node.classList.remove(
             "found"
           );
 
-
           node.style.opacity =
             "0.45";
-
 
           node.style.filter =
             "grayscale(1)";
 
+          node.style.boxShadow =
+            "";
 
           return;
         }
 
 
-        // ----------------------
         // 発見済み
-        // ----------------------
-
         node.textContent =
           word;
-
 
         node.classList.add(
           "found"
         );
 
-
         node.style.opacity =
           "1";
-
 
         node.style.filter =
           "none";
 
 
-        // ----------------------
-        // 定着
-        // ----------------------
-
+        // 定着済み
         if (
           data.successes >=
           game.masteryGoal
@@ -1325,7 +1301,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
           node.textContent =
             "★ " + word;
-
 
           node.style.boxShadow =
             "0 0 28px #ffe36a";
@@ -1351,36 +1326,103 @@ document.addEventListener("DOMContentLoaded", () => {
 
     updateNetworkNodes();
 
-
     showScreen("network");
 
 
+    // 4つすべて3回定着した瞬間
     if (
       isNetworkMastered() &&
+      !hasSkill("ことばリンク") &&
       !game.networkClearShown
     ) {
 
-      game.networkClearShown =
-        true;
-
+      game.networkClearShown = true;
 
       setTimeout(() => {
 
-        completeNetwork();
+        acquireSkill();
 
-      }, 1400);
+      }, 1200);
 
     }
 
   }
 
 
-  // 最初から答えを見せない
+  // ==================================================
+  // スキル獲得
+  // ==================================================
+
+  function acquireSkill() {
+
+    if (!hasSkill("ことばリンク")) {
+
+      game.skills.push(
+        "ことばリンク"
+      );
+
+      saveGame();
+    }
+
+
+    showScreen("clear");
+
+
+    // 既存のクリア画面に
+    // 「獲得済み」を追加表示
+    let skillStatus =
+      document.getElementById(
+        "skill-acquired-status"
+      );
+
+
+    if (!skillStatus) {
+
+      skillStatus =
+        document.createElement("div");
+
+      skillStatus.id =
+        "skill-acquired-status";
+
+      skillStatus.style.marginTop =
+        "14px";
+
+      skillStatus.style.fontSize =
+        "20px";
+
+      skillStatus.style.fontWeight =
+        "900";
+
+      skillStatus.style.padding =
+        "12px 18px";
+
+      skillStatus.style.background =
+        "#fff3a6";
+
+      skillStatus.style.borderRadius =
+        "14px";
+
+      skillStatus.textContent =
+        "✨ スキル「ことばリンク」を獲得！";
+
+
+      screens.clear.appendChild(
+        skillStatus
+      );
+    }
+
+  }
+
+
+  // ==================================================
+  // 最初のネットワーク状態
+  // ==================================================
+
   updateNetworkNodes();
 
 
   // ==================================================
-  // ネットワーク画面から戻る
+  // ネットワークを閉じる
   // ==================================================
 
   const networkCloseButton =
@@ -1395,11 +1437,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
       game.enemyIndex++;
 
-
       game.stepsSinceBattle = 0;
 
-
       showScreen("field");
+
+
+      if (!game.currentWord) {
+
+        setFieldMessage(
+          "冒険を続けよう！"
+        );
+
+        return;
+      }
 
 
       const data =
@@ -1409,19 +1459,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
       if (
-        data &&
         data.successes >=
         game.masteryGoal
       ) {
 
         setFieldMessage(
-          `「${game.currentWord}」のつながりが強くなった！ ★`
+          `「${game.currentWord}」のつながりが定着した！ ★`
         );
 
       } else {
 
         setFieldMessage(
-          `「${game.currentWord}」を発見した！ また出会えるかもしれない。`
+          `「${game.currentWord}」のつながりが強くなった！`
         );
 
       }
@@ -1431,7 +1480,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
   // ==================================================
-  // 漢字マップ
+  // マップボタン
   // ==================================================
 
   const mapButton =
@@ -1451,17 +1500,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
   // ==================================================
-  // ネットワーク定着完成
-  // ==================================================
-
-  function completeNetwork() {
-
-    showScreen("clear");
-
-  }
-
-
-  // ==================================================
   // 冒険を続ける
   // ==================================================
 
@@ -1477,12 +1515,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
       showScreen("field");
 
-
       game.stepsSinceBattle = 0;
 
-
       setFieldMessage(
-        "「読」のつながりが定着した！ でも冒険ではこれからも復習できるぞ！"
+        "スキル「ことばリンク」を手に入れた！ 冒険ではこれからも復習できるぞ！"
       );
 
     }
@@ -1517,7 +1553,6 @@ document.addEventListener("DOMContentLoaded", () => {
       if (keys[event.key]) {
 
         event.preventDefault();
-
 
         movePlayer(
           keys[event.key]
