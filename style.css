@@ -1,1 +1,947 @@
+* {
+  box-sizing: border-box;
+}
 
+html,
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: #101820;
+  color: #ffffff;
+}
+
+body {
+  overflow-x: hidden;
+}
+
+button {
+  font: inherit;
+}
+
+#game {
+  width: 100%;
+  min-height: 100vh;
+}
+
+.screen {
+  display: none;
+  min-height: 100vh;
+}
+
+.screen.active {
+  display: block;
+}
+
+
+/* =========================
+   タイトル画面
+========================= */
+
+#title-screen {
+  position: relative;
+  min-height: 100vh;
+
+  background:
+    linear-gradient(
+      rgba(10, 18, 30, 0.28),
+      rgba(10, 18, 30, 0.76)
+    ),
+    url("images/kingdom.png");
+
+  background-size: cover;
+  background-position: center;
+}
+
+.title-box {
+  min-height: 100vh;
+  padding: 80px 24px 40px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  text-align: center;
+}
+
+.title-small {
+  margin: 0 0 12px;
+  font-weight: 800;
+  font-size: 16px;
+  color: #ffe082;
+  text-shadow:
+    0 2px 0 #000,
+    0 0 8px #000;
+}
+
+.title-box h1 {
+  margin: 0;
+
+  font-size: clamp(38px, 10vw, 64px);
+  line-height: 1.05;
+
+  color: #ffffff;
+
+  text-shadow:
+    0 4px 0 #1c2430,
+    0 6px 0 #000000,
+    0 0 14px rgba(0, 0, 0, 0.9);
+}
+
+.title-box h1 span {
+  display: block;
+  margin-top: 6px;
+
+  color: #ffd54a;
+
+  letter-spacing: 5px;
+}
+
+.title-story {
+  margin: 28px 0;
+
+  max-width: 520px;
+
+  padding: 16px 18px;
+
+  line-height: 1.8;
+  font-weight: 700;
+
+  background: rgba(0, 0, 0, 0.58);
+
+  border: 3px solid rgba(255, 255, 255, 0.8);
+
+  border-radius: 14px;
+
+  box-shadow:
+    0 5px 0 rgba(0, 0, 0, 0.7);
+}
+
+.main-button,
+.sub-button,
+.small-button,
+.weapon-button,
+.answer-button,
+.direction-button {
+  border: none;
+  cursor: pointer;
+
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+.main-button {
+  min-width: 220px;
+
+  padding: 16px 24px;
+
+  border: 3px solid #fff7c2;
+  border-radius: 14px;
+
+  background: #e2a62a;
+  color: #1b1b1b;
+
+  font-size: 20px;
+  font-weight: 900;
+
+  box-shadow:
+    0 5px 0 #835111,
+    0 8px 14px rgba(0, 0, 0, 0.4);
+}
+
+.main-button:active {
+  transform: translateY(4px);
+
+  box-shadow:
+    0 1px 0 #835111;
+}
+
+
+/* =========================
+   共通ヘッダー
+========================= */
+
+.game-header {
+  min-height: 74px;
+
+  padding: 12px 16px;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  background: #18283a;
+
+  border-bottom: 4px solid #0b1119;
+}
+
+.area-label {
+  margin: 0 0 2px;
+
+  font-size: 12px;
+  color: #b4c3d2;
+}
+
+.game-header h2 {
+  margin: 0;
+
+  font-size: 20px;
+}
+
+.small-button {
+  padding: 10px 14px;
+
+  border: 2px solid #f4e7bd;
+  border-radius: 10px;
+
+  background: #3f5f79;
+  color: white;
+
+  font-weight: 800;
+}
+
+
+/* =========================
+   フィールド
+========================= */
+
+#field-screen {
+  background: #0c1822;
+}
+
+#field {
+  position: relative;
+
+  width: min(100%, 820px);
+  height: min(62vh, 600px);
+
+  margin: 0 auto;
+
+  overflow: hidden;
+
+  background-image: url("images/kingdom.png");
+  background-size: cover;
+  background-position: center;
+
+  border-bottom: 4px solid #0b1119;
+}
+
+#player {
+  position: absolute;
+
+  left: 50%;
+  top: 58%;
+
+  width: 32px;
+  height: 32px;
+
+  transform: translate(-50%, -50%) scale(1.6);
+
+  transform-origin: center bottom;
+
+  background-image: url("images/hero_sprite_32x32.png");
+  background-repeat: no-repeat;
+
+  background-position: 0 0;
+
+  image-rendering: pixelated;
+
+  filter: drop-shadow(0 3px 1px rgba(0, 0, 0, 0.45));
+}
+
+#field-message {
+  position: absolute;
+
+  left: 50%;
+  bottom: 14px;
+
+  width: calc(100% - 28px);
+  max-width: 600px;
+
+  transform: translateX(-50%);
+
+  padding: 12px 14px;
+
+  border: 3px solid #ffffff;
+  border-radius: 12px;
+
+  background: rgba(10, 15, 20, 0.84);
+
+  color: #ffffff;
+
+  text-align: center;
+  font-weight: 800;
+
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.6);
+}
+
+
+/* =========================
+   方向キー
+========================= */
+
+#controls {
+  position: relative;
+
+  width: 190px;
+  height: 170px;
+
+  margin: 20px auto 28px;
+}
+
+.direction-button {
+  position: absolute;
+
+  width: 62px;
+  height: 62px;
+
+  border: 3px solid #dde8f3;
+  border-radius: 14px;
+
+  background: #2b4358;
+  color: white;
+
+  font-size: 25px;
+  font-weight: 900;
+
+  box-shadow: 0 5px 0 #101b25;
+}
+
+.direction-button:active {
+  transform: translateY(3px);
+
+  box-shadow: 0 2px 0 #101b25;
+}
+
+.direction-button.up {
+  top: 0;
+  left: 64px;
+}
+
+.direction-button.left {
+  top: 58px;
+  left: 0;
+}
+
+.direction-button.down {
+  top: 58px;
+  left: 64px;
+}
+
+.direction-button.right {
+  top: 58px;
+  right: 0;
+}
+
+
+/* =========================
+   バトル画面
+========================= */
+
+#battle-screen {
+  background:
+    linear-gradient(
+      rgba(16, 24, 34, 0.3),
+      rgba(16, 24, 34, 0.85)
+    ),
+    url("images/reading_forest.png");
+
+  background-size: cover;
+  background-position: center;
+}
+
+#battle-field {
+  min-height: 360px;
+
+  padding: 30px 18px 18px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+#enemy-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#enemy-sprite {
+  width: 64px;
+  height: 64px;
+
+  margin-top: 20px;
+
+  transform: scale(2.6);
+
+  transform-origin: center;
+
+  background-image: url("images/word_slime.png");
+  background-repeat: no-repeat;
+
+  background-position: 0 0;
+
+  image-rendering: pixelated;
+
+  filter: drop-shadow(0 5px 2px rgba(0, 0, 0, 0.55));
+}
+
+.hp-box {
+  width: min(82%, 360px);
+
+  margin-top: 80px;
+
+  padding: 10px 12px;
+
+  border: 3px solid white;
+  border-radius: 12px;
+
+  background: rgba(0, 0, 0, 0.7);
+}
+
+.hp-box span {
+  display: block;
+
+  margin-bottom: 6px;
+
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.hp-bar {
+  width: 100%;
+  height: 16px;
+
+  overflow: hidden;
+
+  border: 2px solid white;
+  border-radius: 8px;
+
+  background: #3a1d1d;
+}
+
+#enemy-hp {
+  width: 100%;
+  height: 100%;
+
+  background: #79cf54;
+}
+
+#battle-message {
+  padding: 13px 14px;
+
+  border: 3px solid white;
+  border-radius: 12px;
+
+  background: rgba(0, 0, 0, 0.76);
+
+  font-weight: 800;
+  text-align: center;
+}
+
+
+/* =========================
+   武器選択
+========================= */
+
+#weapon-panel {
+  padding: 18px;
+
+  background: #132333;
+
+  border-top: 4px solid #0b1119;
+}
+
+.weapon-title {
+  margin: 0 0 14px;
+
+  text-align: center;
+  font-weight: 900;
+}
+
+.weapon-grid {
+  width: min(100%, 600px);
+
+  margin: 0 auto;
+
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+
+  gap: 12px;
+}
+
+.weapon-button {
+  min-height: 110px;
+
+  padding: 12px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  border: 3px solid #dbe9f2;
+  border-radius: 14px;
+
+  background: #29445c;
+  color: white;
+
+  box-shadow: 0 4px 0 #0a1118;
+}
+
+.weapon-button:active {
+  transform: translateY(3px);
+
+  box-shadow: 0 1px 0 #0a1118;
+}
+
+.weapon-icon {
+  font-size: 32px;
+}
+
+.weapon-button strong {
+  margin-top: 4px;
+
+  font-size: 18px;
+}
+
+.weapon-button small {
+  margin-top: 3px;
+
+  color: #d6e4ed;
+}
+
+
+/* =========================
+   チャレンジ
+========================= */
+
+#challenge-screen {
+  padding-bottom: 40px;
+
+  background:
+    radial-gradient(circle at top, #284a67, #0c1722);
+}
+
+.challenge-card {
+  width: min(calc(100% - 28px), 620px);
+
+  margin: 24px auto;
+
+  padding: 20px;
+
+  border: 4px solid #f5e6ad;
+  border-radius: 18px;
+
+  background: #f4e6bd;
+  color: #1d2832;
+
+  box-shadow:
+    0 6px 0 #8c6e32,
+    0 12px 28px rgba(0, 0, 0, 0.4);
+}
+
+#kanji-display {
+  width: 120px;
+  height: 120px;
+
+  margin: 4px auto 20px;
+
+  display: grid;
+  place-items: center;
+
+  border: 5px solid #4a3722;
+  border-radius: 16px;
+
+  background: #fffdf3;
+
+  font-size: 76px;
+  font-weight: 900;
+
+  box-shadow: inset 0 0 0 4px #d8c38c;
+}
+
+#challenge-question {
+  margin: 0 0 18px;
+
+  text-align: center;
+  font-size: 18px;
+  font-weight: 900;
+}
+
+#answer-area {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+
+  gap: 12px;
+}
+
+.answer-button {
+  min-height: 64px;
+
+  border: 3px solid #324659;
+  border-radius: 12px;
+
+  background: #ffffff;
+  color: #172635;
+
+  font-size: 20px;
+  font-weight: 900;
+
+  box-shadow: 0 4px 0 #9d8754;
+}
+
+.answer-button:active {
+  transform: translateY(3px);
+
+  box-shadow: 0 1px 0 #9d8754;
+}
+
+.sub-button {
+  width: 100%;
+
+  margin-top: 18px;
+  padding: 12px;
+
+  border: 3px solid #4d6071;
+  border-radius: 12px;
+
+  background: #445e74;
+  color: white;
+
+  font-weight: 800;
+}
+
+
+/* =========================
+   漢字ネットワーク
+========================= */
+
+#network-screen {
+  background:
+    radial-gradient(circle at center, #264d68, #0c1722);
+}
+
+#network-map {
+  position: relative;
+
+  width: min(calc(100% - 30px), 600px);
+  height: 480px;
+
+  margin: 20px auto;
+
+  border: 4px solid #d9edf7;
+  border-radius: 20px;
+
+  background:
+    radial-gradient(circle at center, #1f4056, #102433);
+
+  overflow: hidden;
+}
+
+.network-node {
+  position: absolute;
+
+  display: grid;
+  place-items: center;
+
+  border: 4px solid #f8e8a8;
+
+  background: #f7f0d3;
+  color: #1d2a34;
+
+  font-weight: 900;
+
+  border-radius: 50%;
+
+  z-index: 2;
+
+  box-shadow:
+    0 5px 0 #77602e,
+    0 0 16px rgba(255, 223, 108, 0.35);
+}
+
+.center-node {
+  left: 50%;
+  top: 50%;
+
+  width: 110px;
+  height: 110px;
+
+  transform: translate(-50%, -50%);
+
+  font-size: 58px;
+}
+
+.word-node {
+  width: 92px;
+  height: 92px;
+
+  font-size: 20px;
+
+  opacity: 0.35;
+  filter: grayscale(1);
+}
+
+.word-node.found {
+  opacity: 1;
+  filter: none;
+
+  background: #fff7c7;
+
+  box-shadow:
+    0 5px 0 #77602e,
+    0 0 22px #ffe36a;
+}
+
+.node-top {
+  left: 50%;
+  top: 25px;
+
+  transform: translateX(-50%);
+}
+
+.node-left {
+  left: 24px;
+  top: 50%;
+
+  transform: translateY(-50%);
+}
+
+.node-right {
+  right: 24px;
+  top: 50%;
+
+  transform: translateY(-50%);
+}
+
+.node-bottom {
+  left: 50%;
+  bottom: 25px;
+
+  transform: translateX(-50%);
+}
+
+.network-line {
+  position: absolute;
+
+  left: 50%;
+  top: 50%;
+
+  width: 6px;
+
+  background: rgba(255, 226, 103, 0.5);
+
+  transform-origin: center top;
+
+  z-index: 1;
+}
+
+.line-top {
+  height: 150px;
+
+  transform:
+    translate(-50%, -100%);
+}
+
+.line-bottom {
+  height: 150px;
+
+  transform:
+    translate(-50%, 0);
+}
+
+.line-left {
+  width: 150px;
+  height: 6px;
+
+  transform:
+    translate(-100%, -50%);
+}
+
+.line-right {
+  width: 150px;
+  height: 6px;
+
+  transform:
+    translate(0, -50%);
+}
+
+.network-status {
+  width: min(calc(100% - 30px), 420px);
+
+  margin: 0 auto 30px;
+
+  padding: 14px;
+
+  text-align: center;
+
+  border: 3px solid #fff;
+  border-radius: 14px;
+
+  background: #172c3e;
+}
+
+.network-status p {
+  margin: 0 0 4px;
+}
+
+.network-status strong {
+  font-size: 26px;
+  color: #ffe36a;
+}
+
+
+/* =========================
+   クリア画面
+========================= */
+
+#clear-screen {
+  min-height: 100vh;
+
+  padding: 35px 18px;
+
+  display: none;
+  align-items: center;
+  justify-content: center;
+
+  background:
+    radial-gradient(circle at center, #5a73a0, #141c2b);
+}
+
+#clear-screen.active {
+  display: flex;
+}
+
+.clear-card {
+  width: min(100%, 520px);
+
+  padding: 28px 20px;
+
+  text-align: center;
+
+  border: 4px solid #fff0a1;
+  border-radius: 20px;
+
+  background: #20364c;
+
+  box-shadow:
+    0 7px 0 #0c1520,
+    0 0 40px rgba(255, 226, 103, 0.32);
+}
+
+.clear-label {
+  margin: 0;
+
+  color: #ffe36a;
+  font-weight: 900;
+  letter-spacing: 2px;
+}
+
+.clear-kanji {
+  width: 130px;
+  height: 130px;
+
+  margin: 18px auto;
+
+  display: grid;
+  place-items: center;
+
+  border: 5px solid #fff0a1;
+  border-radius: 18px;
+
+  background: #fffbed;
+  color: #1b2732;
+
+  font-size: 82px;
+  font-weight: 900;
+}
+
+.clear-card h2 {
+  margin: 12px 0;
+}
+
+.skill-card {
+  width: min(100%, 360px);
+
+  margin: 22px auto;
+
+  padding: 16px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  gap: 14px;
+
+  border: 3px solid #ffe98b;
+  border-radius: 14px;
+
+  background: #344f67;
+}
+
+.skill-card > span {
+  font-size: 36px;
+}
+
+.skill-card small,
+.skill-card strong {
+  display: block;
+}
+
+.skill-card small {
+  color: #ffe36a;
+}
+
+.skill-card strong {
+  margin-top: 3px;
+  font-size: 20px;
+}
+
+
+/* =========================
+   小さい画面調整
+========================= */
+
+@media (max-width: 480px) {
+
+  .title-box {
+    padding-top: 55px;
+  }
+
+  .title-story {
+    font-size: 14px;
+  }
+
+  #field {
+    height: 54vh;
+  }
+
+  .weapon-grid {
+    gap: 9px;
+  }
+
+  .weapon-button {
+    min-height: 98px;
+  }
+
+  #network-map {
+    height: 430px;
+  }
+
+  .word-node {
+    width: 80px;
+    height: 80px;
+
+    font-size: 18px;
+  }
+
+  .center-node {
+    width: 100px;
+    height: 100px;
+
+    font-size: 54px;
+  }
+}
