@@ -87,31 +87,53 @@ document.addEventListener("DOMContentLoaded", () => {
     area: "kingdom",
 
     player: {
-      x: 50,
-      y: 58,
-      direction: "down",
-      step: 0
-    },
+  x: 50,
+  y: 58,
+  direction: "down",
+  step: 0,
+
+  level: saveData.player?.level || 1,
+  hp: saveData.player?.hp ?? 10,
+  maxHp: saveData.player?.maxHp || 10,
+  exp: saveData.player?.exp || 0,
+  gold: saveData.player?.gold || 0
+},
 
     stepsSinceBattle: 0,
 
     enemyIndex: 0,
 
-    enemies: [
-      {
-        name: "ワードスライム",
-        image: "images/word_slime.png"
-      },
-      {
-        name: "コトガラス",
-        image: "images/kotogarasu.png"
-      },
-      {
-        name: "カミキレ",
-        image: "images/kamikire.png"
-      }
-    ],
+  enemies: [
+  {
+    name: "ワードスライム",
+    image: "images/word_slime.png",
+    maxHp: 2,
+    exp: 2,
+    gold: 1,
+    attack: 1
+  },
+  {
+    name: "コトガラス",
+    image: "images/kotogarasu.png",
+    maxHp: 3,
+    exp: 3,
+    gold: 2,
+    attack: 1
+  },
+  {
+    name: "カミキレ",
+    image: "images/kamikire.png",
+    maxHp: 4,
+    exp: 5,
+    gold: 3,
+    attack: 1
+  }
+],
+currentEnemy: null,
 
+combo: 0,
+
+maxComboThisBattle: 0,
     selectedWeapon: null,
 
     currentWord: null,
@@ -138,9 +160,17 @@ document.addEventListener("DOMContentLoaded", () => {
   function saveGame() {
 
     const data = {
-      words: game.words,
-      skills: game.skills
-    };
+  player: {
+    level: game.player.level,
+    hp: game.player.hp,
+    maxHp: game.player.maxHp,
+    exp: game.player.exp,
+    gold: game.player.gold
+  },
+
+  words: game.words,
+  skills: game.skills
+};
 
     localStorage.setItem(
       "kanjiNetworkRpgSave",
