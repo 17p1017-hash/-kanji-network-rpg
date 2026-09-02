@@ -1759,10 +1759,19 @@ if (game.currentEnemy.hp <= 0) {
 function defeatEnemy() {
 
   const enemy = game.currentEnemy;
+ let leveledUp = false; 
 game.player.exp += enemy.exp;
   game.player.gold += enemy.gold;
-  battleMessage.textContent =
-    `${enemy.name}を たおした！`;
+  if (game.player.exp >= game.player.level * 10) {
+  game.player.exp -= game.player.level * 10;
+  game.player.level++;
+  game.player.maxHp += 2;
+  game.player.hp = game.player.maxHp;
+}
+battleMessage.textContent =
+  `${enemy.name}を たおした！
+EXP +${enemy.exp}
+💰 ${enemy.gold}G`;  
 
   game.currentEnemy = null;
 }
