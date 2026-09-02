@@ -1759,7 +1759,8 @@ if (game.currentEnemy.hp <= 0) {
 function defeatEnemy() {
 
   const enemy = game.currentEnemy;
-
+game.player.exp += enemy.exp;
+  game.player.gold += enemy.gold;
   battleMessage.textContent =
     `${enemy.name}を たおした！`;
 
