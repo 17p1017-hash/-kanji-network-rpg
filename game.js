@@ -1756,7 +1756,15 @@ if (game.currentEnemy.hp <= 0) {
 
   }
 
+function defeatEnemy() {
 
+  const enemy = game.currentEnemy;
+
+  battleMessage.textContent =
+    `${enemy.name}を たおした！`;
+
+  game.currentEnemy = null;
+}
   // ==================================================
   // 武器変更
   // ==================================================
