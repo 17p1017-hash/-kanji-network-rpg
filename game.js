@@ -152,6 +152,12 @@ maxComboThisBattle: 0,
     networkClearShown: false
   };
 
+const weaponDamage = {
+  sword: 1,
+  bow: 2,
+  staff: 3,
+  hammer: 4
+};
 
   // ==================================================
   // セーブ
