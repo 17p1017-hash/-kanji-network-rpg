@@ -1,6 +1,18 @@
 document.addEventListener("DOMContentLoaded", () => {
 
   // ==================================================
+  // 教材データ
+  // ==================================================
+
+  if (typeof KANJI_YOMU === "undefined") {
+    alert("問題データを読み込めませんでした。data/yomu.js を確認してください。");
+    return;
+  }
+
+  const kanjiData = KANJI_YOMU;
+
+
+  // ==================================================
   // 画面
   // ==================================================
 
@@ -23,7 +35,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
   // ==================================================
-  // 保存データ読み込み
+  // セーブデータ
   // ==================================================
 
   function loadSaveData() {
@@ -37,12 +49,33 @@ document.addEventListener("DOMContentLoaded", () => {
       return JSON.parse(saved);
 
     } catch (error) {
-      console.log("セーブデータを読み込めませんでした");
+      console.log("セーブデータを読み込めませんでした。");
       return null;
     }
   }
 
   const saveData = loadSaveData();
+
+
+  // ==================================================
+  // ことばデータを作る
+  // ==================================================
+
+  function createWordProgress() {
+
+    const progress = {};
+
+    Object.keys(kanjiData.words).forEach(word => {
+
+      progress[word] = {
+        successes:
+          saveData?.words?.[word]?.successes || 0
+      };
+
+    });
+
+    return progress;
+  }
 
 
   // ==================================================
@@ -83,29 +116,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
     currentWord: null,
 
-    // 3回成功で定着
-    masteryGoal: 3,
+    currentQuestion: null,
 
-    words: {
-      "読む": {
-        successes: saveData?.words?.["読む"]?.successes || 0
-      },
+    masteryGoal:
+      kanjiData.masteryGoal || 3,
 
-      "読書": {
-        successes: saveData?.words?.["読書"]?.successes || 0
-      },
+    words:
+      createWordProgress(),
 
-      "音読": {
-        successes: saveData?.words?.["音読"]?.successes || 0
-      },
-
-      "読者": {
-        successes: saveData?.words?.["読者"]?.successes || 0
-      }
-    },
-
-    // 獲得済みスキル
-    skills: saveData?.skills || [],
+    skills:
+      saveData?.skills || [],
 
     networkClearShown: false
   };
@@ -127,115 +147,6 @@ document.addEventListener("DOMContentLoaded", () => {
       JSON.stringify(data)
     );
   }
-
-
-  // ==================================================
-  // チャレンジデータ
-  // ==================================================
-
-  const wordChallenges = [
-
-    {
-      word: "読む",
-
-      questions: [
-        {
-          question: "「読」を使うことばはどれ？",
-          answers: [
-            "読む",
-            "走る",
-            "見る",
-            "遊ぶ"
-          ]
-        },
-        {
-          question: "本などの文字を見ることを表すのはどれ？",
-          answers: [
-            "読む",
-            "書く",
-            "聞く",
-            "走る"
-          ]
-        }
-      ]
-    },
-
-    {
-      word: "読書",
-
-      questions: [
-        {
-          question: "本を読むことを表すことばはどれ？",
-          answers: [
-            "読書",
-            "音楽",
-            "運動",
-            "学校"
-          ]
-        },
-        {
-          question: "「どくしょ」と読むことばはどれ？",
-          answers: [
-            "読書",
-            "読者",
-            "音読",
-            "作文"
-          ]
-        }
-      ]
-    },
-
-    {
-      word: "音読",
-
-      questions: [
-        {
-          question: "声に出して読むことを表すことばはどれ？",
-          answers: [
-            "音読",
-            "読者",
-            "作文",
-            "計算"
-          ]
-        },
-        {
-          question: "「おんどく」と読むことばはどれ？",
-          answers: [
-            "音読",
-            "音楽",
-            "読書",
-            "読者"
-          ]
-        }
-      ]
-    },
-
-    {
-      word: "読者",
-
-      questions: [
-        {
-          question: "本や文章を読む人を表すことばはどれ？",
-          answers: [
-            "読者",
-            "作者",
-            "先生",
-            "店員"
-          ]
-        },
-        {
-          question: "「どくしゃ」と読むことばはどれ？",
-          answers: [
-            "読者",
-            "読書",
-            "音読",
-            "会社"
-          ]
-        }
-      ]
-    }
-
-  ];
 
 
   // ==================================================
@@ -273,9 +184,17 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
 
-  function hasSkill(skillName) {
+  function hasSkill(skillId) {
 
-    return game.skills.includes(skillName);
+    return game.skills.includes(skillId);
+  }
+
+
+  function shuffle(array) {
+
+    return [...array].sort(
+      () => Math.random() - 0.5
+    );
   }
 
 
@@ -317,7 +236,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
   function setFieldMessage(text) {
-    fieldMessage.textContent = text;
+
+    if (fieldMessage) {
+      fieldMessage.textContent = text;
+    }
   }
 
 
@@ -368,7 +290,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
   // ==================================================
-  // 移動
+  // 移動ボタン
   // ==================================================
 
   const directionButtons =
@@ -389,6 +311,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
   });
 
+
+  // ==================================================
+  // 主人公移動
+  // ==================================================
 
   function movePlayer(direction) {
 
@@ -414,7 +340,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 
-    // 左右だけ通常制限
     game.player.x =
       Math.max(
         8,
@@ -429,7 +354,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // ==================================================
     // 王国 → 読みの森
-    // 下端まで歩いたら移動
     // ==================================================
 
     if (
@@ -444,7 +368,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // ==================================================
     // 読みの森 → 王国
-    // 上端まで歩いたら戻る
     // ==================================================
 
     if (
@@ -457,7 +380,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 
-    // 上下の通常制限
     game.player.y =
       Math.max(
         8,
@@ -468,7 +390,10 @@ document.addEventListener("DOMContentLoaded", () => {
     updateField();
 
 
-    // 森だけエンカウント判定
+    // ==================================================
+    // 森だけエンカウント
+    // ==================================================
+
     if (game.area === "forest") {
 
       game.stepsSinceBattle++;
@@ -489,7 +414,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     game.stepsSinceBattle = 0;
 
-    // 森の上側から入る
     game.player.x = 50;
     game.player.y = 16;
     game.player.direction = "down";
@@ -513,7 +437,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     game.stepsSinceBattle = 0;
 
-    // 王国の下側へ戻る
     game.player.x = 50;
     game.player.y = 82;
     game.player.direction = "up";
@@ -533,7 +456,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function checkEncounter() {
 
-    // 戦闘終了後、最低12歩は安全
+    // 最低12歩は安全
     const safeSteps = 12;
 
     if (
@@ -544,7 +467,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 
-    // その後は1歩ごとに10%
+    // その後は毎歩10％
     const encounterChance = 0.10;
 
 
@@ -639,7 +562,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
   // ==================================================
-  // 次のことばを選ぶ
+  // 次に出すことば
   // ==================================================
 
   function chooseNextWord() {
@@ -648,7 +571,7 @@ document.addEventListener("DOMContentLoaded", () => {
       Object.entries(game.words);
 
 
-    // まだ定着していないことば
+    // まだ定着していないもの
     const learningWords =
       entries.filter(
         ([word, data]) =>
@@ -686,7 +609,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 
-    // 全部定着しても復習
+    // 全部定着していても復習
     const allWords =
       Object.keys(game.words);
 
@@ -726,41 +649,99 @@ document.addEventListener("DOMContentLoaded", () => {
       word;
 
 
-    if (
-      game.selectedWeapon === "hammer"
-    ) {
+    const wordData =
+      kanjiData.words[word];
 
-      startWritingChallenge(word);
+
+    if (!wordData) {
+
+      console.error(
+        "問題データがありません:",
+        word
+      );
+
       return;
     }
 
 
-    startChoiceChallenge(word);
+    const weapon =
+      game.selectedWeapon;
+
+
+    const questions =
+      wordData.questions?.[weapon];
+
+
+    if (
+      !questions ||
+      questions.length === 0
+    ) {
+
+      challengeQuestion.textContent =
+        "この学び方の問題はまだありません。";
+
+      answerArea.innerHTML = "";
+
+      showScreen("challenge");
+
+      return;
+    }
+
+
+    const question =
+      questions[
+        Math.floor(
+          Math.random() *
+          questions.length
+        )
+      ];
+
+
+    game.currentQuestion =
+      question;
+
+
+    // 問題タイプによって分ける
+    if (question.type === "writing") {
+
+      startWritingChallenge(
+        word,
+        question
+      );
+
+      return;
+    }
+
+
+    if (question.type === "build") {
+
+      startBuildChallenge(
+        word,
+        question
+      );
+
+      return;
+    }
+
+
+    // choice / meaning
+    startChoiceChallenge(
+      word,
+      question
+    );
 
   }
 
 
   // ==================================================
-  // 剣・弓・杖
+  // 剣・杖
+  // 選択式問題
   // ==================================================
 
-  function startChoiceChallenge(word) {
-
-    const challenge =
-      wordChallenges.find(
-        item =>
-          item.word === word
-      );
-
-
-    const question =
-      challenge.questions[
-        Math.floor(
-          Math.random() *
-          challenge.questions.length
-        )
-      ];
-
+  function startChoiceChallenge(
+    word,
+    question
+  ) {
 
     challengeQuestion.textContent =
       question.question;
@@ -770,10 +751,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     const shuffled =
-      [...question.answers]
-        .sort(
-          () => Math.random() - 0.5
-        );
+      shuffle(question.answers);
 
 
     shuffled.forEach(answer => {
@@ -794,8 +772,9 @@ document.addEventListener("DOMContentLoaded", () => {
         "click",
         () => {
 
-          checkAnswer(
+          checkChoiceAnswer(
             answer,
+            question.correct,
             word,
             button
           );
@@ -815,12 +794,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
   // ==================================================
-  // 選択問題
+  // 選択式問題の正誤
   // ==================================================
 
-  function checkAnswer(
+  function checkChoiceAnswer(
     answer,
     correct,
+    word,
     button
   ) {
 
@@ -834,14 +814,17 @@ document.addEventListener("DOMContentLoaded", () => {
         "#fff3a6";
 
 
-      registerSuccess(correct);
+      disableAnswerButtons();
+
+
+      registerSuccess(word);
 
 
       setTimeout(() => {
 
         showNetwork();
 
-      }, 600);
+      }, 700);
 
     } else {
 
@@ -868,14 +851,348 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
 
+  function disableAnswerButtons() {
+
+    const buttons =
+      answerArea.querySelectorAll(
+        "button"
+      );
+
+
+    buttons.forEach(button => {
+      button.disabled = true;
+    });
+
+  }
+
+
   // ==================================================
-  // ハンマー：書いてみる
+  // 弓
+  // 組み立て問題
   // ==================================================
 
-  function startWritingChallenge(word) {
+  function startBuildChallenge(
+    word,
+    question
+  ) {
 
     challengeQuestion.textContent =
-      `「${word}」につながる「読」を書いてみよう！`;
+      question.question;
+
+
+    answerArea.innerHTML = "";
+
+
+    const buildWrap =
+      document.createElement("div");
+
+
+    buildWrap.style.gridColumn =
+      "1 / -1";
+
+    buildWrap.style.width =
+      "100%";
+
+
+    // --------------------------
+    // 組み立て結果
+    // --------------------------
+
+    const resultBox =
+      document.createElement("div");
+
+
+    resultBox.textContent =
+      "ここに組み立てよう";
+
+
+    resultBox.style.minHeight =
+      "64px";
+
+    resultBox.style.display =
+      "flex";
+
+    resultBox.style.alignItems =
+      "center";
+
+    resultBox.style.justifyContent =
+      "center";
+
+    resultBox.style.fontSize =
+      "32px";
+
+    resultBox.style.fontWeight =
+      "900";
+
+    resultBox.style.background =
+      "#fffdf5";
+
+    resultBox.style.border =
+      "3px solid #4a3722";
+
+    resultBox.style.borderRadius =
+      "14px";
+
+    resultBox.style.marginBottom =
+      "14px";
+
+
+    buildWrap.appendChild(
+      resultBox
+    );
+
+
+    // --------------------------
+    // 選ぶパーツ
+    // --------------------------
+
+    const partsArea =
+      document.createElement("div");
+
+
+    partsArea.style.display =
+      "grid";
+
+    partsArea.style.gridTemplateColumns =
+      "repeat(2, 1fr)";
+
+    partsArea.style.gap =
+      "10px";
+
+
+    let selectedParts = [];
+
+
+    const extraParts =
+      getExtraBuildParts(
+        question.parts
+      );
+
+
+    const choices =
+      shuffle([
+        ...question.parts,
+        ...extraParts
+      ]);
+
+
+    choices.forEach(part => {
+
+      const button =
+        document.createElement("button");
+
+
+      button.className =
+        "answer-button";
+
+
+      button.textContent =
+        part;
+
+
+      button.addEventListener(
+        "click",
+        () => {
+
+          selectedParts.push(part);
+
+          resultBox.textContent =
+            selectedParts.join("");
+
+
+          button.disabled = true;
+
+        }
+      );
+
+
+      partsArea.appendChild(button);
+
+    });
+
+
+    buildWrap.appendChild(
+      partsArea
+    );
+
+
+    // --------------------------
+    // 決定・やり直し
+    // --------------------------
+
+    const controls =
+      document.createElement("div");
+
+
+    controls.style.display =
+      "grid";
+
+    controls.style.gridTemplateColumns =
+      "1fr 1fr";
+
+    controls.style.gap =
+      "10px";
+
+    controls.style.marginTop =
+      "14px";
+
+
+    const resetButton =
+      document.createElement("button");
+
+
+    resetButton.className =
+      "answer-button";
+
+    resetButton.textContent =
+      "やり直す";
+
+
+    resetButton.addEventListener(
+      "click",
+      () => {
+
+        selectedParts = [];
+
+        resultBox.textContent =
+          "ここに組み立てよう";
+
+
+        partsArea
+          .querySelectorAll("button")
+          .forEach(button => {
+            button.disabled = false;
+          });
+
+      }
+    );
+
+
+    const decideButton =
+      document.createElement("button");
+
+
+    decideButton.className =
+      "answer-button";
+
+    decideButton.textContent =
+      "これで決定！";
+
+
+    decideButton.addEventListener(
+      "click",
+      () => {
+
+        const answer =
+          selectedParts.join("");
+
+
+        if (
+          answer ===
+          question.correct
+        ) {
+
+          resultBox.textContent =
+            "✨ " + answer;
+
+
+          registerSuccess(word);
+
+
+          setTimeout(() => {
+
+            showNetwork();
+
+          }, 700);
+
+        } else {
+
+          resultBox.textContent =
+            "もう一度組み立てよう！";
+
+
+          selectedParts = [];
+
+
+          partsArea
+            .querySelectorAll("button")
+            .forEach(button => {
+              button.disabled = false;
+            });
+
+        }
+
+      }
+    );
+
+
+    controls.appendChild(
+      resetButton
+    );
+
+    controls.appendChild(
+      decideButton
+    );
+
+
+    buildWrap.appendChild(
+      controls
+    );
+
+
+    answerArea.appendChild(
+      buildWrap
+    );
+
+
+    showScreen("challenge");
+
+  }
+
+
+  // ==================================================
+  // 組み立て問題のダミーパーツ
+  // ==================================================
+
+  function getExtraBuildParts(correctParts) {
+
+    const pool = [
+      "音",
+      "書",
+      "者",
+      "読",
+      "見",
+      "聞",
+      "話",
+      "む"
+    ];
+
+
+    const available =
+      pool.filter(
+        part =>
+          !correctParts.includes(part)
+      );
+
+
+    return shuffle(available)
+      .slice(0, 2);
+
+  }
+
+
+  // ==================================================
+  // ハンマー
+  // 書き取り問題
+  // ==================================================
+
+  function startWritingChallenge(
+    word,
+    question
+  ) {
+
+    challengeQuestion.textContent =
+      question.question;
 
 
     answerArea.innerHTML = "";
@@ -895,29 +1212,38 @@ document.addEventListener("DOMContentLoaded", () => {
       "center";
 
 
-    // お手本
-    const sample =
+    // --------------------------
+    // 読みだけ表示
+    // 答えの漢字は最初は隠す
+    // --------------------------
+
+    const hint =
       document.createElement("div");
 
-    sample.textContent = "読";
 
-    sample.style.fontSize =
-      "34px";
+    hint.textContent =
+      "思い出して書いてみよう";
 
-    sample.style.fontWeight =
-      "900";
 
-    sample.style.marginBottom =
+    hint.style.fontSize =
+      "18px";
+
+    hint.style.fontWeight =
+      "700";
+
+    hint.style.marginBottom =
       "10px";
 
-    sample.style.opacity =
-      "0.35";
+
+    writingWrap.appendChild(
+      hint
+    );
 
 
-    writingWrap.appendChild(sample);
-
-
+    // --------------------------
     // キャンバス
+    // --------------------------
+
     const canvas =
       document.createElement("canvas");
 
@@ -951,7 +1277,9 @@ document.addEventListener("DOMContentLoaded", () => {
       "0 auto 14px";
 
 
-    writingWrap.appendChild(canvas);
+    writingWrap.appendChild(
+      canvas
+    );
 
 
     const ctx =
@@ -975,6 +1303,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
       return {
+
         x:
           (event.clientX - rect.left) *
           (canvas.width / rect.width),
@@ -982,6 +1311,7 @@ document.addEventListener("DOMContentLoaded", () => {
         y:
           (event.clientY - rect.top) *
           (canvas.height / rect.height)
+
       };
 
     }
@@ -997,6 +1327,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const pos =
           getPosition(event);
 
+
         ctx.beginPath();
 
         ctx.moveTo(
@@ -1004,9 +1335,14 @@ document.addEventListener("DOMContentLoaded", () => {
           pos.y
         );
 
-        canvas.setPointerCapture(
-          event.pointerId
-        );
+
+        try {
+          canvas.setPointerCapture(
+            event.pointerId
+          );
+        } catch (error) {
+          // 一部ブラウザ対策
+        }
 
       }
     );
@@ -1020,8 +1356,10 @@ document.addEventListener("DOMContentLoaded", () => {
           return;
         }
 
+
         const pos =
           getPosition(event);
+
 
         ctx.lineTo(
           pos.x,
@@ -1049,8 +1387,16 @@ document.addEventListener("DOMContentLoaded", () => {
       stopDrawing
     );
 
+    canvas.addEventListener(
+      "pointerleave",
+      stopDrawing
+    );
 
+
+    // --------------------------
     // ボタン
+    // --------------------------
+
     const controls =
       document.createElement("div");
 
@@ -1093,48 +1439,36 @@ document.addEventListener("DOMContentLoaded", () => {
     );
 
 
-    const doneButton =
+    const checkButton =
       document.createElement("button");
 
 
-    doneButton.className =
+    checkButton.className =
       "answer-button";
 
-    doneButton.textContent =
-      "できた！";
+    checkButton.textContent =
+      "答えを見る";
 
 
-    doneButton.addEventListener(
+    checkButton.addEventListener(
       "click",
       () => {
 
-        // 何も書かずには進めない
         if (!hasDrawn) {
 
-          doneButton.textContent =
-            "まず書いてみよう！";
-
-          setTimeout(() => {
-            doneButton.textContent =
-              "できた！";
-          }, 1000);
+          hint.textContent =
+            "まず自分で書いてみよう！";
 
           return;
         }
 
 
-        registerSuccess(word);
-
-
-        doneButton.textContent =
-          "✨ できた！";
-
-
-        setTimeout(() => {
-
-          showNetwork();
-
-        }, 600);
+        showWritingSelfCheck(
+          word,
+          question,
+          writingWrap,
+          controls
+        );
 
       }
     );
@@ -1145,12 +1479,14 @@ document.addEventListener("DOMContentLoaded", () => {
     );
 
     controls.appendChild(
-      doneButton
+      checkButton
     );
+
 
     writingWrap.appendChild(
       controls
     );
+
 
     answerArea.appendChild(
       writingWrap
@@ -1163,6 +1499,145 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
   // ==================================================
+  // 書き取り自己確認
+  // ==================================================
+
+  function showWritingSelfCheck(
+    word,
+    question,
+    writingWrap,
+    oldControls
+  ) {
+
+    oldControls.remove();
+
+
+    const answerDisplay =
+      document.createElement("div");
+
+
+    answerDisplay.innerHTML =
+      `
+        <div style="
+          font-size:16px;
+          margin-top:12px;
+        ">
+          お手本
+        </div>
+
+        <div style="
+          font-size:42px;
+          font-weight:900;
+          margin:6px 0 14px;
+        ">
+          ${question.target}
+        </div>
+
+        <div style="
+          font-size:17px;
+          font-weight:700;
+          margin-bottom:10px;
+        ">
+          自分で見比べてみよう
+        </div>
+      `;
+
+
+    writingWrap.appendChild(
+      answerDisplay
+    );
+
+
+    const selfCheck =
+      document.createElement("div");
+
+
+    selfCheck.style.display =
+      "grid";
+
+    selfCheck.style.gridTemplateColumns =
+      "1fr 1fr";
+
+    selfCheck.style.gap =
+      "10px";
+
+
+    const retryButton =
+      document.createElement("button");
+
+
+    retryButton.className =
+      "answer-button";
+
+    retryButton.textContent =
+      "もう一度書く";
+
+
+    retryButton.addEventListener(
+      "click",
+      () => {
+
+        startWritingChallenge(
+          word,
+          question
+        );
+
+      }
+    );
+
+
+    const successButton =
+      document.createElement("button");
+
+
+    successButton.className =
+      "answer-button";
+
+    successButton.textContent =
+      "書けた！";
+
+
+    successButton.addEventListener(
+      "click",
+      () => {
+
+        successButton.disabled =
+          true;
+
+        successButton.textContent =
+          "✨ 書けた！";
+
+
+        registerSuccess(word);
+
+
+        setTimeout(() => {
+
+          showNetwork();
+
+        }, 700);
+
+      }
+    );
+
+
+    selfCheck.appendChild(
+      retryButton
+    );
+
+    selfCheck.appendChild(
+      successButton
+    );
+
+
+    writingWrap.appendChild(
+      selfCheck
+    );
+
+  }
+
+
+  // ==================================================
   // 成功を記録
   // ==================================================
 
@@ -1170,6 +1645,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const data =
       getWordData(word);
+
+
+    if (!data) {
+      return;
+    }
 
 
     if (
@@ -1210,7 +1690,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
   // ==================================================
-  // 漢字ネットワーク
+  // ことばのつながり
   // ==================================================
 
   const networkCount =
@@ -1251,49 +1731,76 @@ document.addEventListener("DOMContentLoaded", () => {
     ).forEach(
       ([word, node]) => {
 
+        if (!node) {
+          return;
+        }
+
+
         const data =
           getWordData(word);
 
 
+        if (!data) {
+          return;
+        }
+
+
+        // ----------------------
         // 未発見
+        // ----------------------
+
         if (data.successes === 0) {
 
           node.textContent =
             "❓";
 
+
           node.classList.remove(
             "found"
           );
 
+
           node.style.opacity =
             "0.45";
+
 
           node.style.filter =
             "grayscale(1)";
 
+
           node.style.boxShadow =
             "";
+
 
           return;
         }
 
 
-        // 発見済み
+        // ----------------------
+        // 発見
+        // ----------------------
+
         node.textContent =
           word;
+
 
         node.classList.add(
           "found"
         );
 
+
         node.style.opacity =
           "1";
+
 
         node.style.filter =
           "none";
 
 
-        // 定着済み
+        // ----------------------
+        // 練習回数による表示
+        // ----------------------
+
         if (
           data.successes >=
           game.masteryGoal
@@ -1301,6 +1808,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
           node.textContent =
             "★ " + word;
+
 
           node.style.boxShadow =
             "0 0 28px #ffe36a";
@@ -1316,11 +1824,19 @@ document.addEventListener("DOMContentLoaded", () => {
     );
 
 
-    networkCount.textContent =
-      `${getDiscoveredCount()} / 4`;
+    if (networkCount) {
+
+      networkCount.textContent =
+        `${getDiscoveredCount()} / ${Object.keys(game.words).length}`;
+
+    }
 
   }
 
+
+  // ==================================================
+  // ネットワーク表示
+  // ==================================================
 
   function showNetwork() {
 
@@ -1329,20 +1845,11 @@ document.addEventListener("DOMContentLoaded", () => {
     showScreen("network");
 
 
-    // 4つすべて3回定着した瞬間
-    if (
-      isNetworkMastered() &&
-      !hasSkill("ことばリンク") &&
-      !game.networkClearShown
-    ) {
+    // ここではまだスキルを与えない
+    // 全部定着すると「習得テスト」が解放された扱い
+    if (isNetworkMastered()) {
 
-      game.networkClearShown = true;
-
-      setTimeout(() => {
-
-        acquireSkill();
-
-      }, 1200);
+      showMasteryReadyMessage();
 
     }
 
@@ -1350,26 +1857,616 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
   // ==================================================
-  // スキル獲得
+  // 習得テスト解放メッセージ
   // ==================================================
 
-  function acquireSkill() {
+  function showMasteryReadyMessage() {
 
-    if (!hasSkill("ことばリンク")) {
+    let message =
+      document.getElementById(
+        "mastery-ready-message"
+      );
+
+
+    if (!message) {
+
+      message =
+        document.createElement("div");
+
+
+      message.id =
+        "mastery-ready-message";
+
+
+      message.style.margin =
+        "16px auto";
+
+
+      message.style.padding =
+        "12px";
+
+
+      message.style.maxWidth =
+        "320px";
+
+
+      message.style.background =
+        "#fff3a6";
+
+
+      message.style.borderRadius =
+        "14px";
+
+
+      message.style.fontWeight =
+        "900";
+
+
+      message.style.textAlign =
+        "center";
+
+
+      screens.network.appendChild(
+        message
+      );
+
+    }
+
+
+    const skillId =
+      kanjiData.skill.id;
+
+
+    if (hasSkill(skillId)) {
+
+      message.innerHTML =
+        `
+          ✨ 漢字スキル「${kanjiData.kanji}」習得済み<br>
+          ${kanjiData.skill.icon}
+          ${kanjiData.skill.name}
+        `;
+
+      return;
+    }
+
+
+    message.innerHTML =
+      `
+        ✨ 「${kanjiData.kanji}」のつながりが育った！<br>
+        習得テストに挑戦できます
+      `;
+
+
+    let testButton =
+      document.getElementById(
+        "mastery-test-button"
+      );
+
+
+    if (!testButton) {
+
+      testButton =
+        document.createElement("button");
+
+
+      testButton.id =
+        "mastery-test-button";
+
+
+      testButton.className =
+        "answer-button";
+
+
+      testButton.style.display =
+        "block";
+
+
+      testButton.style.margin =
+        "10px auto";
+
+
+      testButton.textContent =
+        "習得テストに挑戦";
+
+
+      testButton.addEventListener(
+        "click",
+        () => {
+
+          startMasteryTest();
+
+        }
+      );
+
+
+      message.appendChild(
+        testButton
+      );
+
+    }
+
+  }
+
+
+  // ==================================================
+  // 習得テスト
+  // ==================================================
+
+  let masteryTestIndex = 0;
+  let masteryTestScore = 0;
+
+
+  function startMasteryTest() {
+
+    masteryTestIndex = 0;
+    masteryTestScore = 0;
+
+    showMasteryTestQuestion();
+
+  }
+
+
+  function showMasteryTestQuestion() {
+
+    const test =
+      kanjiData.masteryTest;
+
+
+    if (
+      masteryTestIndex >=
+      test.questions.length
+    ) {
+
+      finishMasteryTest();
+      return;
+    }
+
+
+    const question =
+      test.questions[
+        masteryTestIndex
+      ];
+
+
+    challengeQuestion.textContent =
+      `${test.title} ${masteryTestIndex + 1}/${test.questions.length}
+      
+${question.question}`;
+
+
+    answerArea.innerHTML = "";
+
+
+    const writingWrap =
+      document.createElement("div");
+
+
+    writingWrap.style.gridColumn =
+      "1 / -1";
+
+    writingWrap.style.width =
+      "100%";
+
+    writingWrap.style.textAlign =
+      "center";
+
+
+    const canvas =
+      document.createElement("canvas");
+
+
+    canvas.width = 300;
+    canvas.height = 300;
+
+
+    canvas.style.width =
+      "min(100%, 300px)";
+
+    canvas.style.aspectRatio =
+      "1 / 1";
+
+    canvas.style.background =
+      "#fffdf5";
+
+    canvas.style.border =
+      "4px solid #4a3722";
+
+    canvas.style.borderRadius =
+      "14px";
+
+    canvas.style.touchAction =
+      "none";
+
+    canvas.style.display =
+      "block";
+
+    canvas.style.margin =
+      "0 auto 14px";
+
+
+    writingWrap.appendChild(
+      canvas
+    );
+
+
+    const ctx =
+      canvas.getContext("2d");
+
+
+    ctx.lineWidth = 12;
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+    ctx.strokeStyle = "#18242d";
+
+
+    let drawing = false;
+    let hasDrawn = false;
+
+
+    function getPosition(event) {
+
+      const rect =
+        canvas.getBoundingClientRect();
+
+
+      return {
+
+        x:
+          (event.clientX - rect.left) *
+          (canvas.width / rect.width),
+
+        y:
+          (event.clientY - rect.top) *
+          (canvas.height / rect.height)
+
+      };
+
+    }
+
+
+    canvas.addEventListener(
+      "pointerdown",
+      event => {
+
+        drawing = true;
+        hasDrawn = true;
+
+        const pos =
+          getPosition(event);
+
+
+        ctx.beginPath();
+
+        ctx.moveTo(
+          pos.x,
+          pos.y
+        );
+
+      }
+    );
+
+
+    canvas.addEventListener(
+      "pointermove",
+      event => {
+
+        if (!drawing) {
+          return;
+        }
+
+
+        const pos =
+          getPosition(event);
+
+
+        ctx.lineTo(
+          pos.x,
+          pos.y
+        );
+
+        ctx.stroke();
+
+      }
+    );
+
+
+    canvas.addEventListener(
+      "pointerup",
+      () => {
+        drawing = false;
+      }
+    );
+
+
+    canvas.addEventListener(
+      "pointercancel",
+      () => {
+        drawing = false;
+      }
+    );
+
+
+    const checkButton =
+      document.createElement("button");
+
+
+    checkButton.className =
+      "answer-button";
+
+
+    checkButton.textContent =
+      "答えを確認";
+
+
+    checkButton.addEventListener(
+      "click",
+      () => {
+
+        if (!hasDrawn) {
+
+          checkButton.textContent =
+            "まず書いてみよう！";
+
+          return;
+        }
+
+
+        showMasterySelfCheck(
+          question,
+          writingWrap,
+          checkButton
+        );
+
+      }
+    );
+
+
+    writingWrap.appendChild(
+      checkButton
+    );
+
+
+    answerArea.appendChild(
+      writingWrap
+    );
+
+
+    showScreen("challenge");
+
+  }
+
+
+  // ==================================================
+  // 習得テスト自己採点
+  // ==================================================
+
+  function showMasterySelfCheck(
+    question,
+    writingWrap,
+    checkButton
+  ) {
+
+    checkButton.remove();
+
+
+    const answer =
+      document.createElement("div");
+
+
+    answer.innerHTML =
+      `
+        <div style="
+          margin-top:14px;
+          font-size:16px;
+        ">
+          正しい漢字
+        </div>
+
+        <div style="
+          font-size:44px;
+          font-weight:900;
+          margin:8px;
+        ">
+          ${question.target}
+        </div>
+
+        <div style="
+          font-weight:700;
+          margin-bottom:12px;
+        ">
+          自分の字と見比べよう
+        </div>
+      `;
+
+
+    writingWrap.appendChild(
+      answer
+    );
+
+
+    const controls =
+      document.createElement("div");
+
+
+    controls.style.display =
+      "grid";
+
+    controls.style.gridTemplateColumns =
+      "1fr 1fr";
+
+    controls.style.gap =
+      "10px";
+
+
+    const wrongButton =
+      document.createElement("button");
+
+
+    wrongButton.className =
+      "answer-button";
+
+    wrongButton.textContent =
+      "ちがった";
+
+
+    wrongButton.addEventListener(
+      "click",
+      () => {
+
+        masteryTestIndex++;
+
+        showMasteryTestQuestion();
+
+      }
+    );
+
+
+    const correctButton =
+      document.createElement("button");
+
+
+    correctButton.className =
+      "answer-button";
+
+    correctButton.textContent =
+      "書けた！";
+
+
+    correctButton.addEventListener(
+      "click",
+      () => {
+
+        masteryTestScore++;
+
+        masteryTestIndex++;
+
+        showMasteryTestQuestion();
+
+      }
+    );
+
+
+    controls.appendChild(
+      wrongButton
+    );
+
+    controls.appendChild(
+      correctButton
+    );
+
+
+    writingWrap.appendChild(
+      controls
+    );
+
+  }
+
+
+  // ==================================================
+  // 習得テスト結果
+  // ==================================================
+
+  function finishMasteryTest() {
+
+    const test =
+      kanjiData.masteryTest;
+
+
+    if (
+      masteryTestScore >=
+      test.passingScore
+    ) {
+
+      acquireKanjiSkill();
+
+      return;
+    }
+
+
+    challengeQuestion.textContent =
+      "もう少し練習しよう！";
+
+
+    answerArea.innerHTML =
+      `
+        <div style="
+          grid-column:1 / -1;
+          text-align:center;
+          padding:20px;
+        ">
+
+          <div style="
+            font-size:22px;
+            font-weight:900;
+            margin-bottom:10px;
+          ">
+            ${masteryTestScore} / ${test.questions.length} 問
+          </div>
+
+          <p>
+            「${kanjiData.kanji}」のことばをもう一度練習してから挑戦しよう。
+          </p>
+
+          <button
+            id="return-field-after-test"
+            class="answer-button"
+          >
+            冒険に戻る
+          </button>
+
+        </div>
+      `;
+
+
+    const returnButton =
+      document.getElementById(
+        "return-field-after-test"
+      );
+
+
+    returnButton.addEventListener(
+      "click",
+      () => {
+
+        showScreen("field");
+
+        setFieldMessage(
+          "また「読」のことばを練習しよう！"
+        );
+
+      }
+    );
+
+
+    showScreen("challenge");
+
+  }
+
+
+  // ==================================================
+  // 漢字スキル獲得
+  // ==================================================
+
+  function acquireKanjiSkill() {
+
+    const skillId =
+      kanjiData.skill.id;
+
+
+    if (!hasSkill(skillId)) {
 
       game.skills.push(
-        "ことばリンク"
+        skillId
       );
 
       saveGame();
+
     }
 
 
     showScreen("clear");
 
 
-    // 既存のクリア画面に
-    // 「獲得済み」を追加表示
     let skillStatus =
       document.getElementById(
         "skill-acquired-status"
@@ -1381,44 +2478,59 @@ document.addEventListener("DOMContentLoaded", () => {
       skillStatus =
         document.createElement("div");
 
+
       skillStatus.id =
         "skill-acquired-status";
+
 
       skillStatus.style.marginTop =
         "14px";
 
-      skillStatus.style.fontSize =
-        "20px";
-
-      skillStatus.style.fontWeight =
-        "900";
 
       skillStatus.style.padding =
-        "12px 18px";
+        "14px 18px";
+
 
       skillStatus.style.background =
         "#fff3a6";
 
+
       skillStatus.style.borderRadius =
         "14px";
 
-      skillStatus.textContent =
-        "✨ スキル「ことばリンク」を獲得！";
+
+      skillStatus.style.fontSize =
+        "20px";
+
+
+      skillStatus.style.fontWeight =
+        "900";
+
+
+      skillStatus.style.textAlign =
+        "center";
 
 
       screens.clear.appendChild(
         skillStatus
       );
+
     }
 
+
+    skillStatus.innerHTML =
+      `
+        ✨ 漢字スキル獲得！ ✨
+        <br><br>
+
+        【${kanjiData.kanji}】
+        <br>
+
+        ${kanjiData.skill.icon}
+        ${kanjiData.skill.name}
+      `;
+
   }
-
-
-  // ==================================================
-  // 最初のネットワーク状態
-  // ==================================================
-
-  updateNetworkNodes();
 
 
   // ==================================================
@@ -1459,18 +2571,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
       if (
+        data &&
         data.successes >=
         game.masteryGoal
       ) {
 
         setFieldMessage(
-          `「${game.currentWord}」のつながりが定着した！ ★`
+          `「${game.currentWord}」のつながりが強くなった！ ★`
         );
 
       } else {
 
         setFieldMessage(
-          `「${game.currentWord}」のつながりが強くなった！`
+          `「${game.currentWord}」のつながりが育った！`
         );
 
       }
@@ -1480,7 +2593,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
   // ==================================================
-  // マップボタン
+  // 漢字マップボタン
   // ==================================================
 
   const mapButton =
@@ -1500,7 +2613,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
   // ==================================================
-  // 冒険を続ける
+  // スキル獲得後
   // ==================================================
 
   const continueButton =
@@ -1518,7 +2631,7 @@ document.addEventListener("DOMContentLoaded", () => {
       game.stepsSinceBattle = 0;
 
       setFieldMessage(
-        "スキル「ことばリンク」を手に入れた！ 冒険ではこれからも復習できるぞ！"
+        `漢字スキル「${kanjiData.kanji}」を習得した！`
       );
 
     }
@@ -1526,7 +2639,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
   // ==================================================
-  // PCキーボード
+  // キーボード操作
   // ==================================================
 
   document.addEventListener(
@@ -1567,6 +2680,8 @@ document.addEventListener("DOMContentLoaded", () => {
   // ==================================================
   // 初期状態
   // ==================================================
+
+  updateNetworkNodes();
 
   showScreen("title");
 
