@@ -38,8 +38,9 @@ document.addEventListener("DOMContentLoaded", () => {
     );
 
     alert(
-      "ゲームの読み込みに失敗しました。JSファイルを確認してください。"
-    );
+  "見つからないJS：\n" +
+  missingModules.join("\n")
+);
 
     return;
   }
