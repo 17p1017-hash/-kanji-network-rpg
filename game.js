@@ -882,11 +882,27 @@ function updateEnemyHp() {
       registerSuccess(word);
 
 
-      setTimeout(() => {
+      game.combo++;
 
-        showNetwork();
+if (game.combo > game.maxComboThisBattle) {
+  game.maxComboThisBattle = game.combo;
+}
 
-      }, 700);
+const damage =
+  weaponDamage[game.selectedWeapon];
+
+game.currentEnemy.hp -= damage;
+
+if (game.currentEnemy.hp < 0) {
+  game.currentEnemy.hp = 0;
+}
+
+updateEnemyHp();
+
+showScreen("battle");
+
+battleMessage.textContent =
+  `${damage}ダメージ！`;
 
     } else {
 
