@@ -581,7 +581,23 @@ game.maxComboThisBattle = 0;
     showScreen("battle");
 
   }
+function updateEnemyHp() {
 
+  if (!game.currentEnemy) {
+    return;
+  }
+
+  const percent =
+    (game.currentEnemy.hp / game.currentEnemy.maxHp) * 100;
+
+  if (enemyHP) {
+    enemyHP.style.width =
+      Math.max(0, percent) + "%";
+  }
+
+  enemyName.textContent =
+    `${game.currentEnemy.name} HP ${game.currentEnemy.hp}/${game.currentEnemy.maxHp}`;
+}
 
   // ==================================================
   // 武器
