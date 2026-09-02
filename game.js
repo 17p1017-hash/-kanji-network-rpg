@@ -1763,7 +1763,8 @@ function defeatEnemy() {
 game.player.exp += enemy.exp;
   game.player.gold += enemy.gold;
   if (game.player.exp >= game.player.level * 10) {
-  game.player.exp -= game.player.level * 10;
+leveledUp = true;
+    game.player.exp -= game.player.level * 10;
   game.player.level++;
   game.player.maxHp += 2;
   game.player.hp = game.player.maxHp;
@@ -1771,7 +1772,14 @@ game.player.exp += enemy.exp;
 battleMessage.textContent =
   `${enemy.name}を たおした！
 EXP +${enemy.exp}
-💰 ${enemy.gold}G`;  
+💰 ${enemy.gold}G` +
+  (leveledUp
+    ? `
+
+✨ LEVEL UP! ✨
+Lv.${game.player.level}
+最大HP ${game.player.maxHp}`
+    : "");
 
   game.currentEnemy = null;
 }
