@@ -540,15 +540,25 @@ const weaponDamage = {
 
   function startBattle() {
 
-    const enemy =
-      game.enemies[
-        game.enemyIndex %
-        game.enemies.length
-      ];
+   const enemyTemplate =
+  game.enemies[
+    game.enemyIndex %
+    game.enemies.length
+  ];
+
+game.currentEnemy = {
+  ...enemyTemplate,
+  hp: enemyTemplate.maxHp
+};
+
+const enemy = game.currentEnemy;
+
+game.combo = 0;
+game.maxComboThisBattle = 0;
 
 
     enemyName.textContent =
-      enemy.name;
+  `${enemy.name} HP ${enemy.hp}/${enemy.maxHp}`;
 
 
     enemySprite.style.backgroundImage =
