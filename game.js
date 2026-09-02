@@ -903,7 +903,20 @@ showScreen("battle");
 
 battleMessage.textContent =
   `${damage}ダメージ！`;
+if (game.currentEnemy.hp <= 0) {
 
+  setTimeout(() => {
+    defeatEnemy();
+  }, 700);
+
+} else {
+
+  setTimeout(() => {
+    battleMessage.textContent =
+      "次の武器を選ぼう！";
+  }, 700);
+
+}
     } else {
 
       button.textContent =
