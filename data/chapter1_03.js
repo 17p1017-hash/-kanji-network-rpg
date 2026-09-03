@@ -29,27 +29,71 @@ const CHAPTER1_03 = {
 
       readings: [
         "じょう",
-        "うえ",
-        "あ"
+        "うえ"
       ],
 
-      meaning: "高いほう・うえのほう",
+      meaning: "高いほう・うえ",
 
       masteryGoal: 1,
 
       words: [
         "上",
-        "上る",
-        "上手"
+        "上手",
+        "川上"
       ],
 
       questions: {
 
+        // ⚔️ 見て選ぶ
         sword: [
 
           {
             type: "choice",
             question: "「うえ」と読む漢字はどれ？",
+            answers: [
+              "上",
+              "下",
+              "左",
+              "中"
+            ],
+            correct: "上"
+          },
+
+          {
+            type: "choice",
+            question: "高いほうを表す漢字はどれ？",
+            answers: [
+              "上",
+              "下",
+              "右",
+              "中"
+            ],
+            correct: "上"
+          }
+
+        ],
+
+        // 🏹 組み立てる
+        bow: [
+
+          {
+            type: "build",
+            question: "「かわかみ」と読むことばを、パーツを順番にえらんで作ろう。",
+            parts: [
+              "川",
+              "上"
+            ],
+            correct: "川上"
+          }
+
+        ],
+
+        // 🪄 意味・場面から考える
+        staff: [
+
+          {
+            type: "meaning",
+            question: "本をつくえの高いほうに置きました。どの漢字とつながりが深い？",
             answers: [
               "上",
               "下",
@@ -60,8 +104,8 @@ const CHAPTER1_03 = {
           },
 
           {
-            type: "choice",
-            question: "高いほうを表す漢字はどれ？",
+            type: "meaning",
+            question: "エレベーターで、今いる階より高い階へ行きます。どの漢字？",
             answers: [
               "上",
               "下",
@@ -73,48 +117,7 @@ const CHAPTER1_03 = {
 
         ],
 
-        bow: [
-
-          {
-            type: "build",
-            question: "「上る」を作ろう。",
-            parts: [
-              "上",
-              "る"
-            ],
-            correct: "上る"
-          }
-
-        ],
-
-        staff: [
-
-          {
-            type: "meaning",
-            question: "本がつくえのうえにあります。どの漢字が合う？",
-            answers: [
-              "上",
-              "下",
-              "中",
-              "右"
-            ],
-            correct: "上"
-          },
-
-          {
-            type: "meaning",
-            question: "階段をのぼって、二階へ行きました。どちらの方向へ進んだ？",
-            answers: [
-              "上",
-              "下",
-              "左",
-              "右"
-            ],
-            correct: "上"
-          }
-
-        ],
-
+        // 🔨 書く
         hammer: [
 
           {
@@ -143,18 +146,17 @@ const CHAPTER1_03 = {
       readings: [
         "か",
         "げ",
-        "した",
-        "さ"
+        "した"
       ],
 
-      meaning: "低いほう・したのほう",
+      meaning: "低いほう・した",
 
       masteryGoal: 1,
 
       words: [
         "下",
-        "下る",
-        "上下"
+        "上下",
+        "川下"
       ],
 
       questions: {
@@ -167,8 +169,8 @@ const CHAPTER1_03 = {
             answers: [
               "下",
               "上",
-              "中",
-              "右"
+              "右",
+              "中"
             ],
             correct: "下"
           },
@@ -191,7 +193,7 @@ const CHAPTER1_03 = {
 
           {
             type: "build",
-            question: "「上下」を作ろう。",
+            question: "「じょうげ」と読むことばを、パーツを順番にえらんで作ろう。",
             parts: [
               "上",
               "下"
@@ -205,24 +207,24 @@ const CHAPTER1_03 = {
 
           {
             type: "meaning",
-            question: "ねこがつくえのしたにかくれました。どの漢字が合う？",
+            question: "いすの低いほうにかばんを置きました。どの漢字とつながりが深い？",
             answers: [
               "下",
               "上",
-              "中",
-              "左"
+              "左",
+              "右"
             ],
             correct: "下"
           },
 
           {
             type: "meaning",
-            question: "階段をおりて、一階へ行きました。どちらの方向へ進んだ？",
+            question: "かいだんをおりて、今いる場所より低いところへ行きます。どの漢字？",
             answers: [
               "下",
               "上",
-              "右",
-              "左"
+              "中",
+              "右"
             ],
             correct: "下"
           }
@@ -259,14 +261,14 @@ const CHAPTER1_03 = {
         "ひだり"
       ],
 
-      meaning: "ひだりの方向",
+      meaning: "ひだりがわ",
 
       masteryGoal: 1,
 
       words: [
         "左",
-        "左右",
-        "左手"
+        "左手",
+        "左右"
       ],
 
       questions: {
@@ -287,12 +289,12 @@ const CHAPTER1_03 = {
 
           {
             type: "choice",
-            question: "「左手」のはじめの漢字はどれ？",
+            question: "右の反対を表す漢字はどれ？",
             answers: [
               "左",
-              "右",
               "中",
-              "上"
+              "上",
+              "下"
             ],
             correct: "左"
           }
@@ -303,7 +305,7 @@ const CHAPTER1_03 = {
 
           {
             type: "build",
-            question: "「左手」を作ろう。",
+            question: "「ひだりて」と読むことばを、パーツを順番にえらんで作ろう。",
             parts: [
               "左",
               "手"
@@ -317,23 +319,23 @@ const CHAPTER1_03 = {
 
           {
             type: "meaning",
-            question: "右とは反対の方向を表す漢字はどれ？",
+            question: "道を歩いていて、「ひだりへまがって」と言われました。どの漢字？",
             answers: [
               "左",
               "右",
               "上",
-              "下"
+              "中"
             ],
             correct: "左"
           },
 
           {
             type: "meaning",
-            question: "道の分かれ道で「ひだりへ曲がって」と言われました。どの漢字の方向？",
+            question: "右手ではないほうの手とつながる漢字は？",
             answers: [
               "左",
               "右",
-              "上",
+              "下",
               "中"
             ],
             correct: "左"
@@ -372,14 +374,14 @@ const CHAPTER1_03 = {
         "みぎ"
       ],
 
-      meaning: "みぎの方向",
+      meaning: "みぎがわ",
 
       masteryGoal: 1,
 
       words: [
         "右",
-        "左右",
-        "右手"
+        "右手",
+        "左右"
       ],
 
       questions: {
@@ -393,18 +395,18 @@ const CHAPTER1_03 = {
               "右",
               "左",
               "上",
-              "下"
+              "中"
             ],
             correct: "右"
           },
 
           {
             type: "choice",
-            question: "「右手」のはじめの漢字はどれ？",
+            question: "左の反対を表す漢字はどれ？",
             answers: [
               "右",
-              "左",
               "中",
+              "上",
               "下"
             ],
             correct: "右"
@@ -416,7 +418,7 @@ const CHAPTER1_03 = {
 
           {
             type: "build",
-            question: "「右手」を作ろう。",
+            question: "「みぎて」と読むことばを、パーツを順番にえらんで作ろう。",
             parts: [
               "右",
               "手"
@@ -430,24 +432,24 @@ const CHAPTER1_03 = {
 
           {
             type: "meaning",
-            question: "左とは反対の方向を表す漢字はどれ？",
+            question: "道を歩いていて、「みぎへまがって」と言われました。どの漢字？",
             answers: [
               "右",
               "左",
-              "上",
-              "下"
+              "下",
+              "中"
             ],
             correct: "右"
           },
 
           {
             type: "meaning",
-            question: "道の分かれ道で「みぎへ曲がって」と言われました。どの漢字の方向？",
+            question: "左手ではないほうの手とつながる漢字は？",
             answers: [
               "右",
               "左",
-              "中",
-              "上"
+              "上",
+              "中"
             ],
             correct: "右"
           }
@@ -484,7 +486,7 @@ const CHAPTER1_03 = {
         "なか"
       ],
 
-      meaning: "ものの内側・まんなか",
+      meaning: "まんなか・内側",
 
       masteryGoal: 1,
 
@@ -512,12 +514,12 @@ const CHAPTER1_03 = {
 
           {
             type: "choice",
-            question: "「水中」の「ちゅう」に使う漢字はどれ？",
+            question: "まんなかを表す漢字はどれ？",
             answers: [
               "中",
-              "上",
               "左",
-              "右"
+              "右",
+              "上"
             ],
             correct: "中"
           }
@@ -528,7 +530,7 @@ const CHAPTER1_03 = {
 
           {
             type: "build",
-            question: "「水中」を作ろう。",
+            question: "「すいちゅう」と読むことばを、パーツを順番にえらんで作ろう。",
             parts: [
               "水",
               "中"
@@ -542,7 +544,7 @@ const CHAPTER1_03 = {
 
           {
             type: "meaning",
-            question: "箱を開けると、そのなかに宝物が入っていました。どの漢字が合う？",
+            question: "箱の外ではなく、内側にボールを入れました。どの漢字とつながりが深い？",
             answers: [
               "中",
               "上",
@@ -554,12 +556,12 @@ const CHAPTER1_03 = {
 
           {
             type: "meaning",
-            question: "三人でならんだとき、左右にはさまれた場所はどこ？",
+            question: "三人ならんだ人の、まんなかにいる人とつながる漢字は？",
             answers: [
               "中",
+              "右",
               "上",
-              "下",
-              "右"
+              "下"
             ],
             correct: "中"
           }
