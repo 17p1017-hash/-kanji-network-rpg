@@ -1,17 +1,60 @@
 document.addEventListener("DOMContentLoaded", () => {
 
   // ==================================================
-  // 教材データ
+  // 第1章データ確認
   // ==================================================
 
-  if (typeof KANJI_YOMU === "undefined") {
-    alert(
-      "問題データを読み込めませんでした。data/yomu.js を確認してください。"
+  const chapterFiles = [
+    typeof CHAPTER1_01 !== "undefined" ? CHAPTER1_01 : null,
+    typeof CHAPTER1_02 !== "undefined" ? CHAPTER1_02 : null,
+    typeof CHAPTER1_03 !== "undefined" ? CHAPTER1_03 : null,
+    typeof CHAPTER1_04 !== "undefined" ? CHAPTER1_04 : null,
+    typeof CHAPTER1_05 !== "undefined" ? CHAPTER1_05 : null,
+    typeof CHAPTER1_06 !== "undefined" ? CHAPTER1_06 : null,
+    typeof CHAPTER1_07 !== "undefined" ? CHAPTER1_07 : null,
+    typeof CHAPTER1_08 !== "undefined" ? CHAPTER1_08 : null
+  ];
+
+
+  const missingChapterFiles =
+    chapterFiles
+      .map((data, index) => {
+        if (data) {
+          return null;
+        }
+
+        return `chapter1_0${index + 1}.js`;
+      })
+      .filter(Boolean);
+
+
+  if (missingChapterFiles.length > 0) {
+
+    console.error(
+      "第1章データがありません:",
+      missingChapterFiles
     );
+
+    alert(
+      "第1章の問題データを読み込めませんでした。\n\n" +
+      missingChapterFiles.join("\n")
+    );
+
     return;
   }
 
-  const kanjiData = KANJI_YOMU;
+
+  // ==================================================
+  // 以前の「読」データ確認
+  // ==================================================
+
+  if (typeof KANJI_YOMU === "undefined") {
+
+    console.warn(
+      "KANJI_YOMU がありません。"
+    );
+
+  }
 
 
   // ==================================================
@@ -26,12 +69,15 @@ document.addEventListener("DOMContentLoaded", () => {
     "MasteryModule"
   ];
 
+
   const missingModules =
     requiredModules.filter(
       name => !window[name]
     );
 
+
   if (missingModules.length > 0) {
+
     console.error(
       "必要なモジュールがありません:",
       missingModules
@@ -47,45 +93,221 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
   // ==================================================
+  // 第1章 40字を1つにまとめる
+  // ==================================================
+
+  const chapterKanji = {};
+
+
+  chapterFiles.forEach(chapter => {
+
+    Object.entries(
+      chapter.kanji
+    ).forEach(([kanji, data]) => {
+
+      chapterKanji[kanji] = data;
+
+    });
+
+  });
+
+
+  // ==================================================
+  // 漢字の順番
+  // 01 → 08
+  // ==================================================
+
+  const kanjiOrder = [
+
+    // 01
+    "日",
+    "月",
+    "火",
+    "水",
+    "木",
+
+    // 02
+    "山",
+    "川",
+    "田",
+    "土",
+    "石",
+
+    // 03
+    "上",
+    "下",
+    "左",
+    "右",
+    "中",
+
+    // 04
+    "一",
+    "二",
+    "三",
+    "四",
+    "五",
+
+    // 05
+    "人",
+    "子",
+    "女",
+    "男",
+    "友",
+
+    // 06
+    "目",
+    "口",
+    "耳",
+    "手",
+    "足",
+
+    // 07
+    "大",
+    "小",
+    "白",
+    "赤",
+    "青",
+
+    // 08
+    "学",
+    "校",
+    "本",
+    "文",
+    "字"
+
+  ];
+
+
+  // ==================================================
+  // ChallengeModule用データ
+  //
+  // 今までの「words」と同じように扱えるよう
+  // 40字を変換して渡す
+  // ==================================================
+
+  let activeKanji =
+    "日";
+
+
+  const challengeWords = {};
+
+
+  kanjiOrder.forEach(kanji => {
+
+    const source =
+      chapterKanji[kanji];
+
+
+    if (!source) {
+
+      console.error(
+        `漢字データがありません: ${kanji}`
+      );
+
+      return;
+    }
+
+
+    challengeWords[kanji] = {
+
+      ...source,
+
+      word:
+        kanji,
+
+      questions:
+        source.questions || {}
+
+    };
+
+  });
+
+
+  const kanjiData = {
+
+    get kanji() {
+      return activeKanji;
+    },
+
+    masteryGoal:
+      1,
+
+    words:
+      challengeWords
+
+  };
+
+
+  // ==================================================
   // 画面
   // ==================================================
 
   const screens = {
-  title:
-    document.getElementById("title-screen"),
 
-  field:
-    document.getElementById("field-screen"),
+    title:
+      document.getElementById(
+        "title-screen"
+      ),
 
-  battle:
-    document.getElementById("battle-screen"),
+    field:
+      document.getElementById(
+        "field-screen"
+      ),
 
-  skill:
-    document.getElementById("skill-screen"),
+    battle:
+      document.getElementById(
+        "battle-screen"
+      ),
 
-  challenge:
-    document.getElementById("challenge-screen"),
+    skill:
+      document.getElementById(
+        "skill-screen"
+      ),
 
-  network:
-    document.getElementById("network-screen"),
+    challenge:
+      document.getElementById(
+        "challenge-screen"
+      ),
 
-  clear:
-    document.getElementById("clear-screen")
-};
+    network:
+      document.getElementById(
+        "network-screen"
+      ),
+
+    kanjiSkill:
+      document.getElementById(
+        "kanji-skill-screen"
+      ),
+
+    clear:
+      document.getElementById(
+        "clear-screen"
+      )
+
+  };
+
+
   function showScreen(name) {
 
     Object.values(screens)
       .forEach(screen => {
 
         if (screen) {
-          screen.classList.remove("active");
+          screen.classList.remove(
+            "active"
+          );
         }
 
       });
 
 
     if (screens[name]) {
-      screens[name].classList.add("active");
+
+      screens[name]
+        .classList.add(
+          "active"
+        );
+
     }
 
   }
@@ -100,27 +322,196 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
   // ==================================================
-  // ことば進行データ
+  // 第1章専用セーブ
+  //
+  // 間違えた漢字の復習状態も保存する
   // ==================================================
 
-  function createWordProgress() {
+  const CHAPTER_SAVE_KEY =
+    "kanjiNetworkRpgChapter1";
+
+
+  function loadChapterProgress() {
+
+    try {
+
+      const raw =
+        localStorage.getItem(
+          CHAPTER_SAVE_KEY
+        );
+
+
+      if (!raw) {
+        return {};
+      }
+
+
+      return JSON.parse(raw);
+
+    } catch (error) {
+
+      console.warn(
+        "第1章進行データを読み込めませんでした。",
+        error
+      );
+
+      return {};
+
+    }
+
+  }
+
+
+  const savedChapterProgress =
+    loadChapterProgress();
+
+
+  // ==================================================
+  // 第1章の漢字進行
+  // ==================================================
+
+  function createKanjiProgress() {
 
     const progress = {};
 
 
-    Object.keys(
-      kanjiData.words
-    ).forEach(word => {
+    kanjiOrder.forEach(kanji => {
 
-      progress[word] = {
+      const saved =
+        savedChapterProgress?.kanji?.[kanji] ||
+        {};
+
+
+      progress[kanji] = {
+
         successes:
-          saveData?.words?.[word]?.successes || 0
+          saved.successes || 0,
+
+        mistakes:
+          saved.mistakes || 0,
+
+        mastered:
+          saved.mastered || false,
+
+        reviewAfter:
+          saved.reviewAfter || 0,
+
+        lastBattle:
+          saved.lastBattle || 0
+
       };
 
     });
 
 
     return progress;
+
+  }
+
+
+  const kanjiProgress =
+    createKanjiProgress();
+
+
+  let chapterBattleCount =
+    savedChapterProgress?.battleCount ||
+    0;
+
+
+  function saveChapterProgress() {
+
+    try {
+
+      localStorage.setItem(
+        CHAPTER_SAVE_KEY,
+        JSON.stringify({
+
+          battleCount:
+            chapterBattleCount,
+
+          kanji:
+            kanjiProgress
+
+        })
+      );
+
+    } catch (error) {
+
+      console.warn(
+        "第1章進行データを保存できませんでした。",
+        error
+      );
+
+    }
+
+  }
+
+
+  // ==================================================
+  // 以前の「読」進行
+  // ==================================================
+
+  function createOldWordProgress() {
+
+    const progress = {};
+
+
+    if (
+      typeof KANJI_YOMU === "undefined" ||
+      !KANJI_YOMU.words
+    ) {
+
+      return progress;
+
+    }
+
+
+    Object.keys(
+      KANJI_YOMU.words
+    ).forEach(word => {
+
+      progress[word] = {
+
+        successes:
+          saveData?.words?.[word]?.successes ||
+          0
+
+      };
+
+    });
+
+
+    return progress;
+
+  }
+
+
+  // ==================================================
+  // game.words
+  //
+  // 既存モジュールとの互換性のため
+  // 「読」のデータと第1章データを両方保持
+  // ==================================================
+
+  function createGameWords() {
+
+    const words =
+      createOldWordProgress();
+
+
+    kanjiOrder.forEach(kanji => {
+
+      words[kanji] = {
+
+        successes:
+          kanjiProgress[kanji].successes
+
+      };
+
+    });
+
+
+    return words;
 
   }
 
@@ -137,14 +528,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
     player: {
 
-      x: 50,
+      x:
+        50,
 
-      y: 58,
+      y:
+        58,
 
       direction:
         "down",
 
-      step: 0,
+      step:
+        0,
 
 
       // --------------------------
@@ -275,6 +669,10 @@ document.addEventListener("DOMContentLoaded", () => {
       null,
 
 
+    currentKanji:
+      "日",
+
+
     currentQuestion:
       null,
 
@@ -291,21 +689,37 @@ document.addEventListener("DOMContentLoaded", () => {
       0,
 
 
+    // 「読」の古いシステムとの互換性
     masteryGoal:
-      kanjiData.masteryGoal || 3,
+      typeof KANJI_YOMU !== "undefined"
+        ? KANJI_YOMU.masteryGoal || 3
+        : 3,
 
 
     words:
-      createWordProgress(),
+      createGameWords(),
 
 
     skills:
-      saveData?.skills || []
+      saveData?.skills || [],
+
+
+    // 第1章用
+    chapter1: {
+
+      order:
+        kanjiOrder,
+
+      progress:
+        kanjiProgress
+
+    }
 
   };
 
 
-  window.game = game;
+  window.game =
+    game;
 
 
   // ==================================================
@@ -384,6 +798,12 @@ document.addEventListener("DOMContentLoaded", () => {
     );
 
 
+  const kanjiBadge =
+    document.querySelector(
+      ".kanji-badge"
+    );
+
+
   // ==================================================
   // ネットワークのノード
   // ==================================================
@@ -414,10 +834,363 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
   // ==================================================
+  // 習熟判定
+  //
+  // 1度も間違えていない
+  // → 1回正解で習熟
+  //
+  // 1度でも間違えた
+  // → 2回正解で習熟
+  // ==================================================
+
+  function isKanjiMastered(
+    kanji
+  ) {
+
+    const progress =
+      kanjiProgress[kanji];
+
+
+    if (!progress) {
+      return false;
+    }
+
+
+    if (progress.mistakes > 0) {
+
+      return (
+        progress.successes >= 2
+      );
+
+    }
+
+
+    return (
+      progress.successes >= 1
+    );
+
+  }
+
+
+  function updateMasteryState(
+    kanji
+  ) {
+
+    const progress =
+      kanjiProgress[kanji];
+
+
+    if (!progress) {
+      return;
+    }
+
+
+    progress.mastered =
+      isKanjiMastered(
+        kanji
+      );
+
+
+    if (game.words[kanji]) {
+
+      game.words[kanji].successes =
+        progress.successes;
+
+    }
+
+
+    saveChapterProgress();
+
+    saveGame();
+
+  }
+
+
+  // ==================================================
+  // 習熟済み漢字数
+  // ==================================================
+
+  function getMasteredCount() {
+
+    return kanjiOrder.filter(
+      kanji =>
+        isKanjiMastered(kanji)
+    ).length;
+
+  }
+
+
+  // ==================================================
+  // 次に戦う漢字を選ぶ
+  // ==================================================
+
+  function chooseKanjiForBattle() {
+
+    const masteredCount =
+      getMasteredCount();
+
+
+    // ----------------------------------------------
+    // まず「復習する時期になった漢字」
+    // ----------------------------------------------
+
+    const dueReview =
+      kanjiOrder.find(kanji => {
+
+        const progress =
+          kanjiProgress[kanji];
+
+
+        if (!progress) {
+          return false;
+        }
+
+
+        if (
+          isKanjiMastered(
+            kanji
+          )
+        ) {
+
+          return false;
+
+        }
+
+
+        if (
+          progress.mistakes <= 0
+        ) {
+
+          return false;
+
+        }
+
+
+        return (
+          chapterBattleCount >=
+          progress.reviewAfter
+        );
+
+      });
+
+
+    if (dueReview) {
+
+      return dueReview;
+
+    }
+
+
+    // ----------------------------------------------
+    // 次の新しい漢字
+    // 日 → 月 → 火 → ...
+    // ----------------------------------------------
+
+    const newKanji =
+      kanjiOrder.find(kanji => {
+
+        const progress =
+          kanjiProgress[kanji];
+
+
+        return (
+          !isKanjiMastered(kanji) &&
+          progress.successes === 0 &&
+          progress.mistakes === 0
+        );
+
+      });
+
+
+    // ----------------------------------------------
+    // 習熟済み漢字をたまに復習
+    //
+    // 5字以上習熟後、
+    // 約10%の確率
+    // ----------------------------------------------
+
+    if (
+      masteredCount >= 5 &&
+      Math.random() < 0.10
+    ) {
+
+      const masteredKanji =
+        kanjiOrder.filter(
+          kanji =>
+            isKanjiMastered(
+              kanji
+            )
+        );
+
+
+      if (
+        masteredKanji.length > 0
+      ) {
+
+        return masteredKanji[
+          Math.floor(
+            Math.random() *
+            masteredKanji.length
+          )
+        ];
+
+      }
+
+    }
+
+
+    if (newKanji) {
+
+      return newKanji;
+
+    }
+
+
+    // ----------------------------------------------
+    // 正解確認待ちの漢字
+    // ----------------------------------------------
+
+    const waitingKanji =
+      kanjiOrder.find(
+        kanji =>
+          !isKanjiMastered(
+            kanji
+          )
+      );
+
+
+    if (waitingKanji) {
+
+      return waitingKanji;
+
+    }
+
+
+    // ----------------------------------------------
+    // 40字全部習熟後はランダム復習
+    // ----------------------------------------------
+
+    return kanjiOrder[
+      Math.floor(
+        Math.random() *
+        kanjiOrder.length
+      )
+    ];
+
+  }
+
+
+  // ==================================================
+  // 戦闘開始前に漢字を決定
+  //
+  // ここで決めた漢字は
+  // 敵を倒すまで固定
+  // ==================================================
+
+  function prepareKanjiForBattle() {
+
+    chapterBattleCount++;
+
+
+    const selectedKanji =
+      chooseKanjiForBattle();
+
+
+    activeKanji =
+      selectedKanji;
+
+
+    game.currentKanji =
+      selectedKanji;
+
+
+    game.currentWord =
+      selectedKanji;
+
+
+    const progress =
+      kanjiProgress[
+        selectedKanji
+      ];
+
+
+    if (progress) {
+
+      progress.lastBattle =
+        chapterBattleCount;
+
+    }
+
+
+    saveChapterProgress();
+
+  }
+
+
+  // ==================================================
   // 学習成功を記録
   // ==================================================
 
   function registerSuccess(word) {
+
+    // ----------------------------------------------
+    // 第1章漢字
+    // ----------------------------------------------
+
+    if (
+      kanjiProgress[word]
+    ) {
+
+      const progress =
+        kanjiProgress[word];
+
+
+      // すでに習熟済みなら
+      // 復習として扱い、成功数を増やし続けない
+      if (
+        isKanjiMastered(word)
+      ) {
+
+        saveChapterProgress();
+        saveGame();
+
+        return;
+
+      }
+
+
+      progress.successes++;
+
+
+      // 一度間違えた漢字で
+      // 最初の正解だった場合、
+      // すぐには習熟にしない
+      //
+      // 2戦ほどあとで確認
+      if (
+        progress.mistakes > 0 &&
+        progress.successes === 1
+      ) {
+
+        progress.reviewAfter =
+          chapterBattleCount + 2;
+
+      }
+
+
+      updateMasteryState(
+        word
+      );
+
+
+      return;
+
+    }
+
+
+    // ----------------------------------------------
+    // 以前の「読」システム
+    // ----------------------------------------------
 
     const data =
       game.words[word];
@@ -444,6 +1217,53 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
   // ==================================================
+  // 間違いを記録
+  // ==================================================
+
+  function registerMistake(
+    kanji
+  ) {
+
+    const progress =
+      kanjiProgress[kanji];
+
+
+    if (!progress) {
+      return;
+    }
+
+
+    // 習熟済みの復習問題で間違えても
+    // 習熟そのものは取り消さない
+    if (
+      isKanjiMastered(
+        kanji
+      )
+    ) {
+
+      saveChapterProgress();
+
+      return;
+    }
+
+
+    progress.mistakes++;
+
+
+    // すぐ同じ問題だけを繰り返さず、
+    // 次の戦闘以降で戻す
+    progress.reviewAfter =
+      chapterBattleCount + 1;
+
+
+    updateMasteryState(
+      kanji
+    );
+
+  }
+
+
+  // ==================================================
   // FieldModule
   // ==================================================
 
@@ -461,8 +1281,33 @@ document.addEventListener("DOMContentLoaded", () => {
 
     screens,
 
+
     startBattle: () => {
+
+      prepareKanjiForBattle();
+
+
       BattleModule.startBattle();
+
+
+      // BattleModule側で
+      // currentWordを変更していた場合でも
+      // 今回の漢字に戻す
+      game.currentWord =
+        activeKanji;
+
+
+      game.currentKanji =
+        activeKanji;
+
+
+      if (kanjiBadge) {
+
+        kanjiBadge.textContent =
+          activeKanji;
+
+      }
+
     }
 
   });
@@ -470,31 +1315,44 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // ==================================================
   // MasteryModule
+  //
+  // 以前の「読」画面を壊さないため残す
   // ==================================================
 
-  MasteryModule.init({
+  if (
+    typeof KANJI_YOMU !== "undefined"
+  ) {
 
-    game,
+    MasteryModule.init({
 
-    kanjiData,
+      game,
 
-    screens,
+      kanjiData:
+        KANJI_YOMU,
 
-    challengeQuestion,
+      screens,
 
-    answerArea,
+      challengeQuestion,
 
-    networkNodes,
+      answerArea,
 
-    networkCount,
+      networkNodes,
 
-    showScreen,
+      networkCount,
 
-    setFieldMessage: text => {
-      FieldModule.setFieldMessage(text);
-    }
+      showScreen,
 
-  });
+      setFieldMessage: text => {
+
+        FieldModule.setFieldMessage(
+          text
+        );
+
+      }
+
+    });
+
+  }
 
 
   // ==================================================
@@ -515,19 +1373,116 @@ document.addEventListener("DOMContentLoaded", () => {
 
     showScreen,
 
+
+    // ----------------------------------------------
+    // 今は「読」のネットワークへ飛ばさず
+    // 第1章を続ける
+    // ----------------------------------------------
+
     showNetwork: () => {
-      MasteryModule.showNetwork();
+
+      showScreen(
+        "field"
+      );
+
+
+      game.stepsSinceBattle =
+        0;
+
+
+      FieldModule.updateField();
+
+
+      const count =
+        getMasteredCount();
+
+
+      const progress =
+        kanjiProgress[
+          game.currentKanji
+        ];
+
+
+      if (
+        progress &&
+        isKanjiMastered(
+          game.currentKanji
+        )
+      ) {
+
+        FieldModule.setFieldMessage(
+          `「${game.currentKanji}」を習熟！　1年生漢字 ${count} / 40`
+        );
+
+      } else {
+
+        FieldModule.setFieldMessage(
+          `「${game.currentKanji}」を練習した！　1年生漢字 ${count} / 40`
+        );
+
+      }
+
     },
+
 
     updateField: () => {
+
       FieldModule.updateField();
+
     },
 
+
     setFieldMessage: text => {
-      FieldModule.setFieldMessage(text);
+
+      FieldModule.setFieldMessage(
+        text
+      );
+
     }
 
   });
+
+
+  // ==================================================
+  // BattleModule.enemyAttack を包む
+  //
+  // 問題を間違えた時に
+  // 漢字の復習状態を記録
+  // ==================================================
+
+  const originalEnemyAttack =
+    BattleModule.enemyAttack;
+
+
+  if (
+    typeof originalEnemyAttack ===
+    "function"
+  ) {
+
+    BattleModule.enemyAttack =
+      function(...args) {
+
+        if (
+          game.currentKanji &&
+          game.currentEnemy
+        ) {
+
+          registerMistake(
+            game.currentKanji
+          );
+
+        }
+
+
+        return originalEnemyAttack
+          .apply(
+            BattleModule,
+            args
+          );
+
+      };
+
+  }
 
 
   // ==================================================
@@ -545,6 +1500,7 @@ document.addEventListener("DOMContentLoaded", () => {
     showScreen,
 
     registerSuccess,
+
 
     onWritingSuccess: () => {
 
@@ -594,9 +1550,37 @@ document.addEventListener("DOMContentLoaded", () => {
         FieldModule.updateField();
 
 
-        FieldModule.setFieldMessage(
-          "はじまりの王国だ！ 下の道から外へ出てみよう。"
-        );
+        const masteredCount =
+          getMasteredCount();
+
+
+        if (
+          masteredCount === 0
+        ) {
+
+          FieldModule.setFieldMessage(
+            "最初の漢字は「日」！ 下の道から冒険に出よう。"
+          );
+
+        } else if (
+          masteredCount < 40
+        ) {
+
+          const nextKanji =
+            chooseKanjiForBattle();
+
+
+          FieldModule.setFieldMessage(
+            `1年生漢字 ${masteredCount} / 40　次は「${nextKanji}」！`
+          );
+
+        } else {
+
+          FieldModule.setFieldMessage(
+            "1年生漢字40字を習熟した！ 冒険を続けよう！"
+          );
+
+        }
 
       }
     );
@@ -658,6 +1642,27 @@ document.addEventListener("DOMContentLoaded", () => {
             button.dataset.weapon;
 
 
+          // ------------------------------------------
+          // 同じ敵との戦闘中は
+          // 同じ漢字を固定
+          // ------------------------------------------
+
+          game.currentWord =
+            activeKanji;
+
+
+          game.currentKanji =
+            activeKanji;
+
+
+          if (kanjiBadge) {
+
+            kanjiBadge.textContent =
+              activeKanji;
+
+          }
+
+
           ChallengeModule
             .startChallenge();
 
@@ -696,64 +1701,70 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
           battleMessage.textContent =
-            "別の方法で挑戦してみよう！";
+            `「${activeKanji}」に別の方法で挑戦してみよう！`;
 
         }
       );
 
   }
-// ==================================================
-// スキル画面を開く
-// ==================================================
 
-const skillMenuButton =
-  document.getElementById(
-    "skill-menu-button"
-  );
 
-if (skillMenuButton) {
+  // ==================================================
+  // バトル用スキル画面を開く
+  // ==================================================
 
-  skillMenuButton.addEventListener(
-    "click",
-    () => {
+  const skillMenuButton =
+    document.getElementById(
+      "skill-menu-button"
+    );
 
-      if (!game.currentEnemy) {
-        return;
+
+  if (skillMenuButton) {
+
+    skillMenuButton.addEventListener(
+      "click",
+      () => {
+
+        if (!game.currentEnemy) {
+          return;
+        }
+
+
+        showScreen(
+          "skill"
+        );
+
       }
+    );
 
-      showScreen(
-        "skill"
-      );
-
-    }
-  );
-
-}
+  }
 
 
-// ==================================================
-// スキル画面から戻る
-// ==================================================
+  // ==================================================
+  // バトル用スキル画面から戻る
+  // ==================================================
 
-const skillBackButton =
-  document.getElementById(
-    "skill-back-button"
-  );
+  const skillBackButton =
+    document.getElementById(
+      "skill-back-button"
+    );
 
-if (skillBackButton) {
 
-  skillBackButton.addEventListener(
-    "click",
-    () => {
+  if (skillBackButton) {
 
-      showScreen(
-        "battle"
-      );
+    skillBackButton.addEventListener(
+      "click",
+      () => {
 
-    }
-  );
+        showScreen(
+          "battle"
+        );
 
-}
+      }
+    );
+
+  }
+
 
   // ==================================================
   // ネットワークを閉じる
@@ -767,63 +1778,33 @@ if (skillBackButton) {
 
   if (networkCloseButton) {
 
-    networkCloseButton
-      .addEventListener(
-        "click",
-        () => {
+    networkCloseButton.addEventListener(
+      "click",
+      () => {
 
-          game.stepsSinceBattle =
-            0;
-
-
-          showScreen(
-            "field"
-          );
+        game.stepsSinceBattle =
+          0;
 
 
-          if (!game.currentWord) {
-
-            FieldModule.setFieldMessage(
-              "冒険を続けよう！"
-            );
-
-            return;
-
-          }
+        showScreen(
+          "field"
+        );
 
 
-          const data =
-            game.words[
-              game.currentWord
-            ];
+        FieldModule.setFieldMessage(
+          `1年生漢字 ${getMasteredCount()} / 40`
+        );
 
-
-          if (
-            data &&
-            data.successes >=
-            game.masteryGoal
-          ) {
-
-            FieldModule.setFieldMessage(
-              `「${game.currentWord}」のつながりが強くなった！ ★`
-            );
-
-          } else {
-
-            FieldModule.setFieldMessage(
-              `「${game.currentWord}」のつながりが育った！`
-            );
-
-          }
-
-        }
-      );
+      }
+    );
 
   }
 
 
   // ==================================================
-  // 漢字マップ
+  // 漢字スキルボタン
+  //
+  // 現在は旧「読」の画面を残す
   // ==================================================
 
   const mapButton =
@@ -838,7 +1819,88 @@ if (skillBackButton) {
       "click",
       () => {
 
-        MasteryModule.showNetwork();
+        if (
+          screens.kanjiSkill
+        ) {
+
+          showScreen(
+            "kanjiSkill"
+          );
+
+          return;
+        }
+
+
+        if (
+          typeof KANJI_YOMU !==
+          "undefined"
+        ) {
+
+          MasteryModule.showNetwork();
+
+        }
+
+      }
+    );
+
+  }
+
+
+  // ==================================================
+  // 漢字スキル画面を閉じる
+  // ==================================================
+
+  const skillCloseButton =
+    document.getElementById(
+      "skill-close-button"
+    );
+
+
+  if (skillCloseButton) {
+
+    skillCloseButton.addEventListener(
+      "click",
+      () => {
+
+        showScreen(
+          "field"
+        );
+
+
+        FieldModule.setFieldMessage(
+          `1年生漢字 ${getMasteredCount()} / 40`
+        );
+
+      }
+    );
+
+  }
+
+
+  // ==================================================
+  // 旧ネットワークを見る
+  // ==================================================
+
+  const yomuNetworkButton =
+    document.getElementById(
+      "skill-yomu-network-button"
+    );
+
+
+  if (yomuNetworkButton) {
+
+    yomuNetworkButton.addEventListener(
+      "click",
+      () => {
+
+        if (
+          typeof KANJI_YOMU !==
+          "undefined"
+        ) {
+
+          MasteryModule.showNetwork();
+
+        }
 
       }
     );
@@ -872,7 +1934,7 @@ if (skillBackButton) {
 
 
         FieldModule.setFieldMessage(
-          `漢字スキル「${kanjiData.kanji}」を習得した！`
+          `1年生漢字 ${getMasteredCount()} / 40　冒険を続けよう！`
         );
 
       }
@@ -901,8 +1963,26 @@ if (skillBackButton) {
   // 初期状態
   // ==================================================
 
-  MasteryModule
-    .updateNetworkNodes();
+  if (
+    typeof KANJI_YOMU !==
+    "undefined"
+  ) {
+
+    try {
+
+      MasteryModule
+        .updateNetworkNodes();
+
+    } catch (error) {
+
+      console.warn(
+        "旧ネットワーク画面の更新をスキップしました。",
+        error
+      );
+
+    }
+
+  }
 
 
   showScreen(
