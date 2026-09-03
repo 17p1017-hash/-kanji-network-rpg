@@ -15,13 +15,21 @@ function loadSaveData() {
   try {
 
     const saved =
-      localStorage.getItem(SAVE_KEY);
+      localStorage.getItem(
+        SAVE_KEY
+      );
+
 
     if (!saved) {
+
       return null;
+
     }
 
-    return JSON.parse(saved);
+
+    return JSON.parse(
+      saved
+    );
 
   } catch (error) {
 
@@ -30,7 +38,9 @@ function loadSaveData() {
       error
     );
 
+
     return null;
+
   }
 
 }
@@ -43,19 +53,26 @@ function loadSaveData() {
 function saveGame() {
 
   if (
-    typeof game === "undefined" ||
-    !game
+    typeof window.game ===
+      "undefined" ||
+    !window.game
   ) {
 
     console.warn(
       "gameデータがないため保存できません。"
     );
 
+
     return;
+
   }
 
 
   try {
+
+    const game =
+      window.game;
+
 
     const data = {
 
@@ -69,6 +86,18 @@ function saveGame() {
 
         maxHp:
           game.player.maxHp,
+
+
+        // --------------------------
+        // RP
+        // --------------------------
+
+        rp:
+          game.player.rp,
+
+        maxRp:
+          game.player.maxRp,
+
 
         exp:
           game.player.exp,
@@ -94,7 +123,6 @@ function saveGame() {
       JSON.stringify(data)
     );
 
-
   } catch (error) {
 
     console.error(
@@ -119,6 +147,7 @@ function deleteSaveData() {
     localStorage.removeItem(
       SAVE_KEY
     );
+
 
     console.log(
       "セーブデータを削除しました。"
