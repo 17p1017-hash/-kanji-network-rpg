@@ -33,18 +33,19 @@ const CHAPTER1_05 = {
         "ひと"
       ],
 
-      meaning: "ひと・人間",
+      meaning: "人間・ひと",
 
       masteryGoal: 1,
 
       words: [
         "人",
-        "一人",
-        "二人"
+        "二人",
+        "友人"
       ],
 
       questions: {
 
+        // ⚔️ 見て選ぶ
         sword: [
 
           {
@@ -61,11 +62,11 @@ const CHAPTER1_05 = {
 
           {
             type: "choice",
-            question: "「一人」「二人」に使われている漢字はどれ？",
+            question: "「ふたり」の「り」に使われる漢字はどれ？",
             answers: [
               "人",
-              "友",
               "子",
+              "友",
               "女"
             ],
             correct: "人"
@@ -73,37 +74,27 @@ const CHAPTER1_05 = {
 
         ],
 
+        // 🏹 組み立てる
         bow: [
 
           {
             type: "build",
-            question: "「一人」を作ろう。",
+            question: "「ふたり」と読むことばを、パーツを順番にえらんで作ろう。",
             parts: [
-              "一",
+              "二",
               "人"
             ],
-            correct: "一人"
+            correct: "二人"
           }
 
         ],
 
+        // 🪄 意味・場面から考える
         staff: [
 
           {
             type: "meaning",
-            question: "教室に先生や子どもたちがいます。みんなまとめて何？",
-            answers: [
-              "人",
-              "山",
-              "木",
-              "石"
-            ],
-            correct: "人"
-          },
-
-          {
-            type: "meaning",
-            question: "公園に一人の子が立っています。「一人」の最後の漢字は？",
+            question: "学校や町にいる、わたしたちと同じ仲間を表す漢字は？",
             answers: [
               "人",
               "子",
@@ -111,10 +102,23 @@ const CHAPTER1_05 = {
               "男"
             ],
             correct: "人"
+          },
+
+          {
+            type: "meaning",
+            question: "一人、二人、三人と人数を数えるときにつながる漢字は？",
+            answers: [
+              "人",
+              "女",
+              "子",
+              "友"
+            ],
+            correct: "人"
           }
 
         ],
 
+        // 🔨 書く
         hammer: [
 
           {
@@ -145,7 +149,7 @@ const CHAPTER1_05 = {
         "こ"
       ],
 
-      meaning: "こども",
+      meaning: "こども・子ども",
 
       masteryGoal: 1,
 
@@ -164,21 +168,21 @@ const CHAPTER1_05 = {
             question: "「こ」と読む漢字はどれ？",
             answers: [
               "子",
+              "人",
               "女",
-              "男",
-              "人"
+              "友"
             ],
             correct: "子"
           },
 
           {
             type: "choice",
-            question: "「子ども」のはじめの漢字はどれ？",
+            question: "こどもを表す漢字はどれ？",
             answers: [
               "子",
-              "友",
               "人",
-              "女"
+              "男",
+              "友"
             ],
             correct: "子"
           }
@@ -189,12 +193,12 @@ const CHAPTER1_05 = {
 
           {
             type: "build",
-            question: "「子ども」を作ろう。",
+            question: "「じょし」と読むことばを、パーツを順番にえらんで作ろう。",
             parts: [
-              "子",
-              "ども"
+              "女",
+              "子"
             ],
-            correct: "子ども"
+            correct: "女子"
           }
 
         ],
@@ -203,24 +207,24 @@ const CHAPTER1_05 = {
 
           {
             type: "meaning",
-            question: "学校で勉強している小さなこどもを表す漢字は？",
+            question: "大人ではなく、まだ小さいこどもを表す漢字は？",
             answers: [
               "子",
               "人",
-              "友",
-              "男"
+              "女",
+              "友"
             ],
             correct: "子"
           },
 
           {
             type: "meaning",
-            question: "お父さんやお母さんから見た「こども」を表す漢字は？",
+            question: "「男の子」「女の子」の最後につながる漢字は？",
             answers: [
               "子",
-              "女",
-              "友",
-              "人"
+              "人",
+              "男",
+              "友"
             ],
             correct: "子"
           }
@@ -257,7 +261,7 @@ const CHAPTER1_05 = {
         "おんな"
       ],
 
-      meaning: "女性・おんなの人",
+      meaning: "おんなの人",
 
       masteryGoal: 1,
 
@@ -277,20 +281,20 @@ const CHAPTER1_05 = {
             answers: [
               "女",
               "男",
-              "子",
-              "人"
+              "人",
+              "子"
             ],
             correct: "女"
           },
 
           {
             type: "choice",
-            question: "「女子」のはじめの漢字はどれ？",
+            question: "「じょ」と読むことがある漢字はどれ？",
             answers: [
               "女",
-              "子",
               "男",
-              "友"
+              "友",
+              "子"
             ],
             correct: "女"
           }
@@ -301,7 +305,7 @@ const CHAPTER1_05 = {
 
           {
             type: "build",
-            question: "「女子」を作ろう。",
+            question: "「じょし」と読むことばを、パーツを順番にえらんで作ろう。",
             parts: [
               "女",
               "子"
@@ -315,11 +319,11 @@ const CHAPTER1_05 = {
 
           {
             type: "meaning",
-            question: "「おんなの人」を表す漢字はどれ？",
+            question: "男ではないほうを表す漢字は？",
             answers: [
               "女",
               "男",
-              "友",
+              "人",
               "子"
             ],
             correct: "女"
@@ -327,12 +331,12 @@ const CHAPTER1_05 = {
 
           {
             type: "meaning",
-            question: "「女の子」のはじめに使う漢字は？",
+            question: "「女の子」ということばの最初につながる漢字は？",
             answers: [
               "女",
-              "子",
-              "人",
-              "友"
+              "男",
+              "友",
+              "人"
             ],
             correct: "女"
           }
@@ -370,7 +374,7 @@ const CHAPTER1_05 = {
         "おとこ"
       ],
 
-      meaning: "男性・おとこの人",
+      meaning: "おとこの人",
 
       masteryGoal: 1,
 
@@ -398,12 +402,12 @@ const CHAPTER1_05 = {
 
           {
             type: "choice",
-            question: "「男子」のはじめの漢字はどれ？",
+            question: "「だん」と読むことがある漢字はどれ？",
             answers: [
               "男",
               "女",
-              "子",
-              "友"
+              "友",
+              "人"
             ],
             correct: "男"
           }
@@ -414,7 +418,7 @@ const CHAPTER1_05 = {
 
           {
             type: "build",
-            question: "「男子」を作ろう。",
+            question: "「だんし」と読むことばを、パーツを順番にえらんで作ろう。",
             parts: [
               "男",
               "子"
@@ -428,11 +432,11 @@ const CHAPTER1_05 = {
 
           {
             type: "meaning",
-            question: "「おとこの人」を表す漢字はどれ？",
+            question: "女ではないほうを表す漢字は？",
             answers: [
               "男",
               "女",
-              "友",
+              "人",
               "子"
             ],
             correct: "男"
@@ -440,12 +444,12 @@ const CHAPTER1_05 = {
 
           {
             type: "meaning",
-            question: "「男の子」のはじめに使う漢字は？",
+            question: "「男の子」ということばの最初につながる漢字は？",
             answers: [
               "男",
-              "子",
-              "人",
-              "友"
+              "女",
+              "友",
+              "人"
             ],
             correct: "男"
           }
@@ -488,8 +492,8 @@ const CHAPTER1_05 = {
 
       words: [
         "友",
-        "友だち",
-        "親友"
+        "友人",
+        "友だち"
       ],
 
       questions: {
@@ -510,12 +514,12 @@ const CHAPTER1_05 = {
 
           {
             type: "choice",
-            question: "「友だち」のはじめの漢字はどれ？",
+            question: "なかのよい人とつながる漢字はどれ？",
             answers: [
               "友",
-              "人",
               "女",
-              "子"
+              "子",
+              "男"
             ],
             correct: "友"
           }
@@ -526,12 +530,12 @@ const CHAPTER1_05 = {
 
           {
             type: "build",
-            question: "「友だち」を作ろう。",
+            question: "「ゆうじん」と読むことばを、パーツを順番にえらんで作ろう。",
             parts: [
               "友",
-              "だち"
+              "人"
             ],
-            correct: "友だち"
+            correct: "友人"
           }
 
         ],
@@ -540,24 +544,24 @@ const CHAPTER1_05 = {
 
           {
             type: "meaning",
-            question: "学校でいっしょに遊んだり話したりする、なかのよい人は？",
+            question: "休み時間にいっしょに遊ぶ、なかのよい人とつながる漢字は？",
             answers: [
               "友",
-              "山",
-              "木",
-              "石"
+              "人",
+              "男",
+              "子"
             ],
             correct: "友"
           },
 
           {
             type: "meaning",
-            question: "「ともだち」の「とも」を漢字で表すとどれ？",
+            question: "いっしょに話したり、遊んだりする大切な仲間を表す漢字は？",
             answers: [
               "友",
-              "人",
-              "子",
-              "女"
+              "女",
+              "男",
+              "子"
             ],
             correct: "友"
           }
