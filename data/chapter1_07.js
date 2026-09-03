@@ -8,7 +8,7 @@ const CHAPTER1_07 = {
 
   id: "chapter1_07",
 
-  title: "第1章 ようすのことば",
+  title: "第1章 おおきさといろ",
 
   grade: 1,
 
@@ -45,6 +45,7 @@ const CHAPTER1_07 = {
 
       questions: {
 
+        // ⚔️ 見て選ぶ
         sword: [
 
           {
@@ -61,60 +62,63 @@ const CHAPTER1_07 = {
 
           {
             type: "choice",
-            question: "「大木」のはじめの漢字はどれ？",
+            question: "大きいことを表す漢字はどれ？",
             answers: [
               "大",
-              "木",
               "小",
-              "青"
+              "青",
+              "白"
             ],
             correct: "大"
           }
 
         ],
 
+        // 🏹 組み立てる
         bow: [
 
           {
             type: "build",
-            question: "「大きい」を作ろう。",
+            question: "「たいぼく」と読むことばを、パーツを順番にえらんで作ろう。",
             parts: [
               "大",
-              "きい"
+              "木"
             ],
-            correct: "大きい"
+            correct: "大木"
           }
 
         ],
 
+        // 🪄 意味・場面から考える
         staff: [
 
           {
             type: "meaning",
-            question: "小さな犬より、ぞうはとてもどう見える？",
+            question: "小さな箱ではなく、とても大きな箱があります。どの漢字とつながりが深い？",
             answers: [
-              "大きい",
-              "小さい",
-              "白い",
-              "赤い"
+              "大",
+              "小",
+              "白",
+              "青"
             ],
-            correct: "大きい"
+            correct: "大"
           },
 
           {
             type: "meaning",
-            question: "森にとても太くて高い木がありました。どの漢字とつながりが深い？",
+            question: "ぞうは、ねずみよりずっと大きいです。どの漢字？",
             answers: [
               "大",
               "小",
               "赤",
-              "青"
+              "白"
             ],
             correct: "大"
           }
 
         ],
 
+        // 🔨 書く
         hammer: [
 
           {
@@ -174,12 +178,12 @@ const CHAPTER1_07 = {
 
           {
             type: "choice",
-            question: "「小川」のはじめの漢字はどれ？",
+            question: "小さいことを表す漢字はどれ？",
             answers: [
               "小",
-              "川",
               "大",
-              "赤"
+              "赤",
+              "白"
             ],
             correct: "小"
           }
@@ -190,12 +194,12 @@ const CHAPTER1_07 = {
 
           {
             type: "build",
-            question: "「小さい」を作ろう。",
+            question: "「こいし」と読むことばを、パーツを順番にえらんで作ろう。",
             parts: [
               "小",
-              "さい"
+              "石"
             ],
-            correct: "小さい"
+            correct: "小石"
           }
 
         ],
@@ -204,7 +208,7 @@ const CHAPTER1_07 = {
 
           {
             type: "meaning",
-            question: "大きな箱のとなりに、とても小さな箱があります。どちらを表す漢字？",
+            question: "大きな石ではなく、手のひらにのるくらいの石です。どの漢字とつながりが深い？",
             answers: [
               "小",
               "大",
@@ -216,14 +220,14 @@ const CHAPTER1_07 = {
 
           {
             type: "meaning",
-            question: "手のひらにのるくらいの石を拾いました。どんな石？",
+            question: "ぞうより、ねずみのほうがずっと小さいです。どの漢字？",
             answers: [
-              "小さい",
-              "大きい",
-              "青い",
-              "白い"
+              "小",
+              "大",
+              "青",
+              "白"
             ],
-            correct: "小さい"
+            correct: "小"
           }
 
         ],
@@ -255,11 +259,11 @@ const CHAPTER1_07 = {
 
       readings: [
         "はく",
-        "びゃく",
-        "しろ"
+        "しろ",
+        "しろい"
       ],
 
-      meaning: "しろい色",
+      meaning: "白い色",
 
       masteryGoal: 1,
 
@@ -287,7 +291,7 @@ const CHAPTER1_07 = {
 
           {
             type: "choice",
-            question: "雪の色を表す漢字はどれ？",
+            question: "雪のような色を表す漢字はどれ？",
             answers: [
               "白",
               "赤",
@@ -303,7 +307,7 @@ const CHAPTER1_07 = {
 
           {
             type: "build",
-            question: "「白い」を作ろう。",
+            question: "「しろい」と読むことばを、パーツを順番にえらんで作ろう。",
             parts: [
               "白",
               "い"
@@ -317,7 +321,7 @@ const CHAPTER1_07 = {
 
           {
             type: "meaning",
-            question: "雪がつもって、あたり一面が何色になった？",
+            question: "雪の色とつながりが深い漢字は？",
             answers: [
               "白",
               "赤",
@@ -329,7 +333,7 @@ const CHAPTER1_07 = {
 
           {
             type: "meaning",
-            question: "何も書いていない紙があります。どんな色の紙を思い浮かべる？",
+            question: "何も書いていない紙のような色は？",
             answers: [
               "白",
               "赤",
@@ -368,11 +372,11 @@ const CHAPTER1_07 = {
 
       readings: [
         "せき",
-        "しゃく",
-        "あか"
+        "あか",
+        "あかい"
       ],
 
-      meaning: "あかい色",
+      meaning: "赤い色",
 
       masteryGoal: 1,
 
@@ -400,11 +404,11 @@ const CHAPTER1_07 = {
 
           {
             type: "choice",
-            question: "「赤い」のはじめの漢字はどれ？",
+            question: "りんごやいちごに多い色を表す漢字はどれ？",
             answers: [
               "赤",
-              "青",
               "白",
+              "青",
               "小"
             ],
             correct: "赤"
@@ -416,12 +420,12 @@ const CHAPTER1_07 = {
 
           {
             type: "build",
-            question: "「赤い」を作ろう。",
+            question: "「あかつち」と読むことばを、パーツを順番にえらんで作ろう。",
             parts: [
               "赤",
-              "い"
+              "土"
             ],
-            correct: "赤い"
+            correct: "赤土"
           }
 
         ],
@@ -430,24 +434,24 @@ const CHAPTER1_07 = {
 
           {
             type: "meaning",
-            question: "りんごがあざやかな色をしています。どの色を思い浮かべる？",
+            question: "消防車によく使われている色とつながりが深い漢字は？",
             answers: [
               "赤",
               "白",
               "青",
-              "小"
+              "大"
             ],
             correct: "赤"
           },
 
           {
             type: "meaning",
-            question: "信号で「止まれ」を知らせる色は？",
+            question: "熟したトマトのような色は？",
             answers: [
               "赤",
-              "青",
               "白",
-              "大"
+              "青",
+              "小"
             ],
             correct: "赤"
           }
@@ -482,10 +486,11 @@ const CHAPTER1_07 = {
       readings: [
         "せい",
         "しょう",
-        "あお"
+        "あお",
+        "あおい"
       ],
 
-      meaning: "あおい色",
+      meaning: "青い色",
 
       masteryGoal: 1,
 
@@ -506,19 +511,19 @@ const CHAPTER1_07 = {
               "青",
               "赤",
               "白",
-              "小"
+              "大"
             ],
             correct: "青"
           },
 
           {
             type: "choice",
-            question: "「青空」のはじめの漢字はどれ？",
+            question: "晴れた空によく見える色を表す漢字はどれ？",
             answers: [
               "青",
-              "白",
               "赤",
-              "大"
+              "白",
+              "小"
             ],
             correct: "青"
           }
@@ -529,7 +534,7 @@ const CHAPTER1_07 = {
 
           {
             type: "build",
-            question: "「青い」を作ろう。",
+            question: "「あおい」と読むことばを、パーツを順番にえらんで作ろう。",
             parts: [
               "青",
               "い"
@@ -543,24 +548,24 @@ const CHAPTER1_07 = {
 
           {
             type: "meaning",
-            question: "よく晴れた日の空は、どんな色に見える？",
+            question: "よく晴れた日の空とつながりが深い色は？",
             answers: [
               "青",
               "赤",
               "白",
-              "小"
+              "大"
             ],
             correct: "青"
           },
 
           {
             type: "meaning",
-            question: "信号で「進んでもよい」を知らせる色として使われる漢字は？",
+            question: "海を遠くから見たときに見えることが多い色は？",
             answers: [
               "青",
               "赤",
               "白",
-              "大"
+              "小"
             ],
             correct: "青"
           }
