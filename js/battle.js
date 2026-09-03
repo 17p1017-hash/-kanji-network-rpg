@@ -17,22 +17,33 @@ window.BattleModule = (() => {
   let updateField = null;
   let setFieldMessage = null;
 
+  let readingSkillButton = null;
+
 
   // ==================================================
   // 武器ダメージ
   // ==================================================
 
   const weaponDamage = {
-
     sword: 1,
-
     bow: 2,
-
     staff: 3,
-
     hammer: 4
-
   };
+
+
+  // ==================================================
+  // ことばリーディング
+  // ==================================================
+
+  const READING_SKILL_ID =
+    "read_skill";
+
+  const READING_SKILL_COST =
+    5;
+
+  let readingBoostActive =
+    false;
 
 
   // ==================================================
@@ -69,7 +80,173 @@ window.BattleModule = (() => {
       settings.setFieldMessage;
 
 
+    readingSkillButton =
+      document.getElementById(
+        "reading-skill-button"
+      );
+
+
+    if (readingSkillButton) {
+
+      readingSkillButton
+        .addEventListener(
+          "click",
+          useReadingSkill
+        );
+
+    }
+
+
     updatePlayerStatus();
+
+    updateReadingSkillButton();
+
+  }
+
+
+  // ==================================================
+  // スキルを持っているか
+  // ==================================================
+
+  function hasReadingSkill() {
+
+    return (
+      Array.isArray(game.skills) &&
+      game.skills.includes(
+        READING_SKILL_ID
+      )
+    );
+
+  }
+
+
+  // ==================================================
+  // スキルボタン更新
+  // ==================================================
+
+  function updateReadingSkillButton() {
+
+    if (!readingSkillButton) {
+      return;
+    }
+
+
+    // 未習得なら非表示
+    if (!hasReadingSkill()) {
+
+      readingSkillButton.style.display =
+        "none";
+
+      return;
+
+    }
+
+
+    // 習得済みなら表示
+    readingSkillButton.style.display =
+      "block";
+
+
+    // 発動中
+    if (readingBoostActive) {
+
+      readingSkillButton.disabled =
+        true;
+
+      readingSkillButton.innerHTML =
+        `📖 発動中！ <span class="skill-cost">次の攻撃×2</span>`;
+
+      return;
+
+    }
+
+
+    // RP不足
+    if (
+      game.player.rp <
+      READING_SKILL_COST
+    ) {
+
+      readingSkillButton.disabled =
+        true;
+
+      readingSkillButton.innerHTML =
+        `📖 ことばリーディング <span class="skill-cost">RP不足</span>`;
+
+      return;
+
+    }
+
+
+    // 使用可能
+    readingSkillButton.disabled =
+      false;
+
+    readingSkillButton.innerHTML =
+      `📖 ことばリーディング <span class="skill-cost">5 RP</span>`;
+
+  }
+
+
+  // ==================================================
+  // ことばリーディング発動
+  // ==================================================
+
+  function useReadingSkill() {
+
+    if (!game.currentEnemy) {
+      return;
+    }
+
+
+    if (!hasReadingSkill()) {
+      return;
+    }
+
+
+    if (readingBoostActive) {
+      return;
+    }
+
+
+    if (
+      game.player.rp <
+      READING_SKILL_COST
+    ) {
+
+      if (battleMessage) {
+
+        battleMessage.textContent =
+          "RPが足りない！";
+
+      }
+
+      return;
+
+    }
+
+
+    game.player.rp -=
+      READING_SKILL_COST;
+
+
+    readingBoostActive =
+      true;
+
+
+    updatePlayerStatus();
+
+    updateReadingSkillButton();
+
+    saveGame();
+
+
+    if (battleMessage) {
+
+      battleMessage.textContent =
+        "📖 ことばリーディング発動！ 次の正解攻撃が2倍！";
+
+    }
 
   }
 
@@ -106,10 +283,6 @@ window.BattleModule = (() => {
       );
 
 
-    // --------------------------
-    // HP
-    // --------------------------
-
     const hpPercent =
       Math.max(
         0,
@@ -139,10 +312,6 @@ window.BattleModule = (() => {
     }
 
 
-    // --------------------------
-    // RP
-    // --------------------------
-
     const rpPercent =
       Math.max(
         0,
@@ -171,6 +340,9 @@ window.BattleModule = (() => {
 
     }
 
+
+    updateReadingSkillButton();
+
   }
 
 
@@ -184,9 +356,7 @@ window.BattleModule = (() => {
       !game.currentEnemy ||
       !enemyHP
     ) {
-
       return;
-
     }
 
 
@@ -220,22 +390,18 @@ window.BattleModule = (() => {
 
 
     game.currentEnemy = {
-
       ...enemyBase,
-
-      hp:
-        enemyBase.maxHp
-
+      hp: enemyBase.maxHp
     };
 
 
     game.combo = 0;
-
     game.maxComboThisBattle = 0;
-
     game.battleBonusExp = 0;
-
     game.selectedWeapon = null;
+
+    readingBoostActive =
+      false;
 
 
     if (enemyName) {
@@ -267,6 +433,8 @@ window.BattleModule = (() => {
 
     updatePlayerStatus();
 
+    updateReadingSkillButton();
+
 
     if (battleMessage) {
 
@@ -293,16 +461,32 @@ window.BattleModule = (() => {
       !game.currentEnemy ||
       !game.selectedWeapon
     ) {
-
       return;
-
     }
 
 
-    const damage =
+    let damage =
       weaponDamage[
         game.selectedWeapon
       ] || 1;
+
+
+    // --------------------------
+    // ことばリーディング
+    // --------------------------
+
+    const usedReadingBoost =
+      readingBoostActive;
+
+
+    if (usedReadingBoost) {
+
+      damage *= 2;
+
+      readingBoostActive =
+        false;
+
+    }
 
 
     // --------------------------
@@ -323,7 +507,6 @@ window.BattleModule = (() => {
     }
 
 
-    // 3コンボごとにボーナスEXP
     if (
       game.combo > 0 &&
       game.combo % 3 === 0
@@ -353,6 +536,7 @@ window.BattleModule = (() => {
 
     updateEnemyHP();
 
+    updateReadingSkillButton();
 
     playEnemyHitEffect();
 
@@ -365,7 +549,18 @@ window.BattleModule = (() => {
     // メッセージ
     // --------------------------
 
-    let message =
+    let message = "";
+
+
+    if (usedReadingBoost) {
+
+      message +=
+        "📖 ことばリーディング！ ";
+
+    }
+
+
+    message +=
       `${damage} ダメージ！`;
 
 
@@ -396,20 +591,12 @@ window.BattleModule = (() => {
     }
 
 
-    // --------------------------
-    // 敵を倒した
-    // --------------------------
-
     if (
       game.currentEnemy.hp <= 0
     ) {
 
       setTimeout(
-        () => {
-
-          defeatEnemy();
-
-        },
+        defeatEnemy,
         500
       );
 
@@ -429,7 +616,8 @@ window.BattleModule = (() => {
     }
 
 
-    // 間違えるとコンボ終了
+    // 間違えても
+    // readingBoostActive は消さない
     game.combo = 0;
 
 
@@ -463,10 +651,6 @@ window.BattleModule = (() => {
     }
 
 
-    // --------------------------
-    // プレイヤーHP0
-    // --------------------------
-
     if (
       game.player.hp <= 0
     ) {
@@ -493,9 +677,7 @@ window.BattleModule = (() => {
       "enemy-hit"
     );
 
-
     void enemySprite.offsetWidth;
-
 
     enemySprite.classList.add(
       "enemy-hit"
@@ -520,9 +702,7 @@ window.BattleModule = (() => {
   // ダメージ数字
   // ==================================================
 
-  function showDamageNumber(
-    damage
-  ) {
+  function showDamageNumber(damage) {
 
     if (!enemySprite) {
       return;
@@ -547,7 +727,6 @@ window.BattleModule = (() => {
     damageElement.className =
       "damage-number";
 
-
     damageElement.textContent =
       `-${damage}`;
 
@@ -570,7 +749,7 @@ window.BattleModule = (() => {
 
 
   // ==================================================
-  // 敵の消滅アニメーション
+  // 敵消滅アニメーション
   // ==================================================
 
   function playEnemyDefeatAnimation(
@@ -586,19 +765,11 @@ window.BattleModule = (() => {
     }
 
 
-    // 通常敵の元画像は
-    // 64px × 64px が4コマ。
-    //
-    // CSSで2倍表示しているので
-    // 画面上では1コマ128px。
-
     const frameWidth =
       128;
 
-
     const totalFrames =
       4;
-
 
     let frame =
       0;
@@ -617,8 +788,7 @@ window.BattleModule = (() => {
 
 
           if (
-            frame >=
-            totalFrames
+            frame >= totalFrames
           ) {
 
             clearInterval(
@@ -631,7 +801,6 @@ window.BattleModule = (() => {
 
                 enemySprite.style.opacity =
                   "0";
-
 
                 callback();
 
@@ -663,6 +832,10 @@ window.BattleModule = (() => {
       game.currentEnemy;
 
 
+    readingBoostActive =
+      false;
+
+
     playEnemyDefeatAnimation(
       () => {
 
@@ -677,7 +850,6 @@ window.BattleModule = (() => {
 
         game.player.exp +=
           gainedExp;
-
 
         game.player.gold +=
           gainedGold;
@@ -713,24 +885,15 @@ window.BattleModule = (() => {
 
         game.enemyIndex++;
 
-        game.stepsSinceBattle =
-          0;
+        game.stepsSinceBattle = 0;
 
+        game.currentEnemy = null;
 
-        game.currentEnemy =
-          null;
+        game.selectedWeapon = null;
 
+        game.combo = 0;
 
-        game.selectedWeapon =
-          null;
-
-
-        game.combo =
-          0;
-
-
-        game.battleBonusExp =
-          0;
+        game.battleBonusExp = 0;
 
 
         saveGame();
@@ -777,20 +940,15 @@ window.BattleModule = (() => {
       game.player.level++;
 
 
-      // HP最大値 +2
       game.player.maxHp +=
         2;
 
-
-      // RP最大値 +1
       game.player.maxRp +=
         1;
 
 
-      // レベルアップ時は全回復
       game.player.hp =
         game.player.maxHp;
-
 
       game.player.rp =
         game.player.maxRp;
@@ -812,6 +970,10 @@ window.BattleModule = (() => {
 
   function defeatPlayer() {
 
+    readingBoostActive =
+      false;
+
+
     if (battleMessage) {
 
       battleMessage.textContent =
@@ -827,45 +989,28 @@ window.BattleModule = (() => {
           "kingdom";
 
 
-        game.player.x =
-          50;
-
-
-        game.player.y =
-          58;
-
-
+        game.player.x = 50;
+        game.player.y = 58;
         game.player.direction =
           "down";
 
 
-        // 王国で全回復
         game.player.hp =
           game.player.maxHp;
-
 
         game.player.rp =
           game.player.maxRp;
 
 
-        game.stepsSinceBattle =
-          0;
+        game.stepsSinceBattle = 0;
 
+        game.currentEnemy = null;
 
-        game.currentEnemy =
-          null;
+        game.selectedWeapon = null;
 
+        game.combo = 0;
 
-        game.selectedWeapon =
-          null;
-
-
-        game.combo =
-          0;
-
-
-        game.battleBonusExp =
-          0;
+        game.battleBonusExp = 0;
 
 
         updatePlayerStatus();
@@ -876,7 +1021,6 @@ window.BattleModule = (() => {
         showScreen(
           "field"
         );
-
 
         updateField();
 
@@ -906,7 +1050,9 @@ window.BattleModule = (() => {
 
     enemyAttack,
 
-    updatePlayerStatus
+    updatePlayerStatus,
+
+    updateReadingSkillButton
 
   };
 
