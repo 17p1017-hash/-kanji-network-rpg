@@ -32,7 +32,7 @@ const CHAPTER1_08 = {
         "まな"
       ],
 
-      meaning: "勉強すること・学ぶこと",
+      meaning: "知ること・勉強すること",
 
       masteryGoal: 1,
 
@@ -44,23 +44,12 @@ const CHAPTER1_08 = {
 
       questions: {
 
+        // ⚔️ 見て選ぶ
         sword: [
 
           {
             type: "choice",
-            question: "「がく」と読む漢字はどれ？",
-            answers: [
-              "学",
-              "校",
-              "文",
-              "字"
-            ],
-            correct: "学"
-          },
-
-          {
-            type: "choice",
-            question: "「学校」のはじめの漢字はどれ？",
+            question: "「がく」と読むことがある漢字はどれ？",
             answers: [
               "学",
               "校",
@@ -68,15 +57,28 @@ const CHAPTER1_08 = {
               "文"
             ],
             correct: "学"
+          },
+
+          {
+            type: "choice",
+            question: "勉強したり、ものを知ったりすることとつながる漢字は？",
+            answers: [
+              "学",
+              "校",
+              "字",
+              "本"
+            ],
+            correct: "学"
           }
 
         ],
 
+        // 🏹 組み立てる
         bow: [
 
           {
             type: "build",
-            question: "「学校」を作ろう。",
+            question: "「がっこう」と読むことばを、パーツを順番にえらんで作ろう。",
             parts: [
               "学",
               "校"
@@ -86,34 +88,36 @@ const CHAPTER1_08 = {
 
         ],
 
+        // 🪄 意味・場面から考える
         staff: [
 
           {
             type: "meaning",
-            question: "先生から新しいことを教えてもらい、勉強しています。どの漢字とつながりが深い？",
+            question: "新しいことを知ったり、勉強したりすることとつながる漢字は？",
             answers: [
               "学",
+              "校",
               "本",
-              "字",
-              "文"
+              "字"
             ],
             correct: "学"
           },
 
           {
             type: "meaning",
-            question: "新しいことを知ったり、できるようになったりすることを何という？",
+            question: "先生の話を聞いたり、本を読んだりして知識をふやします。どの漢字とつながりが深い？",
             answers: [
-              "学ぶ",
-              "読む",
-              "見る",
-              "歩く"
+              "学",
+              "文",
+              "校",
+              "字"
             ],
-            correct: "学ぶ"
+            correct: "学"
           }
 
         ],
 
+        // 🔨 書く
         hammer: [
 
           {
@@ -143,7 +147,7 @@ const CHAPTER1_08 = {
         "こう"
       ],
 
-      meaning: "学校などに使う漢字",
+      meaning: "学校につかわれる漢字",
 
       masteryGoal: 1,
 
@@ -171,7 +175,7 @@ const CHAPTER1_08 = {
 
           {
             type: "choice",
-            question: "「学校」の最後の漢字はどれ？",
+            question: "学校ということばの後ろに使う漢字はどれ？",
             answers: [
               "校",
               "学",
@@ -187,7 +191,7 @@ const CHAPTER1_08 = {
 
           {
             type: "build",
-            question: "「学校」を作ろう。",
+            question: "「がっこう」と読むことばを、パーツを順番にえらんで作ろう。",
             parts: [
               "学",
               "校"
@@ -201,23 +205,23 @@ const CHAPTER1_08 = {
 
           {
             type: "meaning",
-            question: "毎日、勉強するために通う場所は？",
+            question: "子どもたちが勉強する場所の名前とつながりが深い漢字は？",
             answers: [
-              "学校",
-              "山",
-              "川",
-              "田"
+              "校",
+              "本",
+              "文",
+              "字"
             ],
-            correct: "学校"
+            correct: "校"
           },
 
           {
             type: "meaning",
-            question: "「がっこう」の「こう」に使う漢字はどれ？",
+            question: "「学校」ということばで、「学」の次にくる漢字は？",
             answers: [
               "校",
-              "学",
               "本",
+              "字",
               "文"
             ],
             correct: "校"
@@ -229,7 +233,7 @@ const CHAPTER1_08 = {
 
           {
             type: "writing",
-            question: "「がっこう」の「こう」を漢字で書いてみよう。",
+            question: "「こう」を漢字で書いてみよう。",
             target: "校"
           }
 
@@ -255,14 +259,14 @@ const CHAPTER1_08 = {
         "もと"
       ],
 
-      meaning: "文字や絵が書かれたもの",
+      meaning: "読むもの・冊子",
 
       masteryGoal: 1,
 
       words: [
         "本",
-        "本を読む",
-        "一本"
+        "一本",
+        "本を読む"
       ],
 
       questions: {
@@ -283,12 +287,12 @@ const CHAPTER1_08 = {
 
           {
             type: "choice",
-            question: "物語や図鑑などを表す漢字はどれ？",
+            question: "お話や絵が書かれていて、ページをめくって読むものを表す漢字は？",
             answers: [
               "本",
-              "文",
               "字",
-              "校"
+              "校",
+              "文"
             ],
             correct: "本"
           }
@@ -299,7 +303,7 @@ const CHAPTER1_08 = {
 
           {
             type: "build",
-            question: "「一本」を作ろう。",
+            question: "「いっぽん」と読むことばを、パーツを順番にえらんで作ろう。",
             parts: [
               "一",
               "本"
@@ -313,7 +317,7 @@ const CHAPTER1_08 = {
 
           {
             type: "meaning",
-            question: "図書室で借りて、家で読みました。何を借りた？",
+            question: "図書室で借りて、ページをめくって読むものは？",
             answers: [
               "本",
               "文",
@@ -325,12 +329,12 @@ const CHAPTER1_08 = {
 
           {
             type: "meaning",
-            question: "ページをめくりながら物語を読みます。手に持っているものは？",
+            question: "物語や図鑑を読むとき、手に持っているものとつながる漢字は？",
             answers: [
               "本",
-              "石",
-              "木",
-              "紙"
+              "学",
+              "文",
+              "字"
             ],
             correct: "本"
           }
@@ -367,7 +371,7 @@ const CHAPTER1_08 = {
         "もん"
       ],
 
-      meaning: "ことばをつなげて作った文章",
+      meaning: "ことばをつないで書いたもの",
 
       masteryGoal: 1,
 
@@ -395,7 +399,7 @@ const CHAPTER1_08 = {
 
           {
             type: "choice",
-            question: "「作文」の最後の漢字はどれ？",
+            question: "いくつかのことばをつないで書いたものを表す漢字は？",
             answers: [
               "文",
               "字",
@@ -411,12 +415,12 @@ const CHAPTER1_08 = {
 
           {
             type: "build",
-            question: "「作文」を作ろう。",
+            question: "「もじ」と読むことばを、パーツを順番にえらんで作ろう。",
             parts: [
-              "作",
-              "文"
+              "文",
+              "字"
             ],
-            correct: "作文"
+            correct: "文字"
           }
 
         ],
@@ -425,24 +429,24 @@ const CHAPTER1_08 = {
 
           {
             type: "meaning",
-            question: "「きょう、公園で遊びました。」これは一つの何？",
+            question: "「きょうは いい てんきです。」のように、ことばをつないだものは？",
             answers: [
               "文",
               "字",
               "本",
-              "学校"
+              "学"
             ],
             correct: "文"
           },
 
           {
             type: "meaning",
-            question: "いくつかのことばをつなげて、意味のあるまとまりを作りました。何ができた？",
+            question: "一つの字ではなく、ことばをつないで気もちや出来事を伝えるものは？",
             answers: [
               "文",
               "字",
-              "本",
-              "校"
+              "校",
+              "本"
             ],
             correct: "文"
           }
@@ -475,18 +479,17 @@ const CHAPTER1_08 = {
       kanji: "字",
 
       readings: [
-        "じ",
-        "あざ"
+        "じ"
       ],
 
-      meaning: "書いたり読んだりする文字",
+      meaning: "書かれた文字",
 
       masteryGoal: 1,
 
       words: [
         "字",
         "文字",
-        "漢字"
+        "大字"
       ],
 
       questions: {
@@ -500,19 +503,19 @@ const CHAPTER1_08 = {
               "字",
               "文",
               "本",
-              "学"
+              "校"
             ],
             correct: "字"
           },
 
           {
             type: "choice",
-            question: "「漢字」の最後の漢字はどれ？",
+            question: "紙に書く、一つ一つの文字とつながる漢字は？",
             answers: [
               "字",
               "文",
-              "本",
-              "校"
+              "学",
+              "本"
             ],
             correct: "字"
           }
@@ -523,7 +526,7 @@ const CHAPTER1_08 = {
 
           {
             type: "build",
-            question: "「文字」を作ろう。",
+            question: "「もじ」と読むことばを、パーツを順番にえらんで作ろう。",
             parts: [
               "文",
               "字"
@@ -537,24 +540,24 @@ const CHAPTER1_08 = {
 
           {
             type: "meaning",
-            question: "ノートに「あ」「山」「川」と書きました。書いた一つ一つを何という？",
+            question: "ノートに「あ」「日」「山」のような形を書きました。一つ一つを何という？",
             answers: [
               "字",
               "文",
               "本",
-              "学校"
+              "校"
             ],
             correct: "字"
           },
 
           {
             type: "meaning",
-            question: "「山」という一つの漢字も、一つの何？",
+            question: "名前を書くとき、一つ一つ書いていくものとつながる漢字は？",
             answers: [
               "字",
+              "学",
               "文",
-              "本",
-              "校"
+              "本"
             ],
             correct: "字"
           }
