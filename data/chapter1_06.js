@@ -44,6 +44,7 @@ const CHAPTER1_06 = {
 
       questions: {
 
+        // ⚔️ 見て選ぶ
         sword: [
 
           {
@@ -60,7 +61,7 @@ const CHAPTER1_06 = {
 
           {
             type: "choice",
-            question: "ものを見るときに使う体の部分はどれ？",
+            question: "ものを見るところを表す漢字はどれ？",
             answers: [
               "目",
               "耳",
@@ -72,13 +73,15 @@ const CHAPTER1_06 = {
 
         ],
 
+        // 🏹 組み立てる
         bow: [
 
           {
             type: "build",
-            question: "「一日目」を作ろう。",
+            question: "「いちにちめ」と読むことばを、パーツを順番にえらんで作ろう。",
             parts: [
-              "一日",
+              "一",
+              "日",
               "目"
             ],
             correct: "一日目"
@@ -86,15 +89,16 @@ const CHAPTER1_06 = {
 
         ],
 
+        // 🪄 意味・場面から考える
         staff: [
 
           {
             type: "meaning",
-            question: "本の文字を見るときに使う体の部分は？",
+            question: "本を読むときに使う、顔にあるところは？",
             answers: [
               "目",
-              "耳",
               "口",
+              "耳",
               "手"
             ],
             correct: "目"
@@ -102,18 +106,19 @@ const CHAPTER1_06 = {
 
           {
             type: "meaning",
-            question: "遠くの山を見ました。どこを使って見た？",
+            question: "遠くのものを見るときに使うところは？",
             answers: [
               "目",
+              "耳",
               "口",
-              "足",
-              "耳"
+              "足"
             ],
             correct: "目"
           }
 
         ],
 
+        // 🔨 書く
         hammer: [
 
           {
@@ -173,12 +178,12 @@ const CHAPTER1_06 = {
 
           {
             type: "choice",
-            question: "「入口」「出口」に使われている漢字はどれ？",
+            question: "食べたり話したりするときに使うところを表す漢字はどれ？",
             answers: [
               "口",
               "目",
-              "足",
-              "耳"
+              "耳",
+              "足"
             ],
             correct: "口"
           }
@@ -189,7 +194,7 @@ const CHAPTER1_06 = {
 
           {
             type: "build",
-            question: "「入口」を作ろう。",
+            question: "「いりぐち」と読むことばを、パーツを順番にえらんで作ろう。",
             parts: [
               "入",
               "口"
@@ -203,12 +208,12 @@ const CHAPTER1_06 = {
 
           {
             type: "meaning",
-            question: "ごはんを食べるときに使う体の部分は？",
+            question: "ごはんを食べるときに使う、顔にあるところは？",
             answers: [
               "口",
-              "耳",
               "目",
-              "足"
+              "耳",
+              "手"
             ],
             correct: "口"
           },
@@ -218,7 +223,7 @@ const CHAPTER1_06 = {
             question: "声を出して話すときに使うところは？",
             answers: [
               "口",
-              "手",
+              "耳",
               "目",
               "足"
             ],
@@ -278,19 +283,19 @@ const CHAPTER1_06 = {
               "耳",
               "目",
               "口",
-              "足"
+              "手"
             ],
             correct: "耳"
           },
 
           {
             type: "choice",
-            question: "音を聞くときに使う体の部分はどれ？",
+            question: "音を聞くところを表す漢字はどれ？",
             answers: [
               "耳",
               "目",
-              "手",
-              "口"
+              "口",
+              "足"
             ],
             correct: "耳"
           }
@@ -301,7 +306,7 @@ const CHAPTER1_06 = {
 
           {
             type: "build",
-            question: "「耳もと」を作ろう。",
+            question: "「みみもと」と読むことばを、パーツを順番にえらんで作ろう。",
             parts: [
               "耳",
               "もと"
@@ -315,7 +320,7 @@ const CHAPTER1_06 = {
 
           {
             type: "meaning",
-            question: "先生の話を聞くときに使う体の部分は？",
+            question: "音楽を聞くときに使う、顔の横にあるところは？",
             answers: [
               "耳",
               "目",
@@ -327,12 +332,12 @@ const CHAPTER1_06 = {
 
           {
             type: "meaning",
-            question: "鳥の鳴き声が聞こえました。どこで音を感じる？",
+            question: "だれかの声を聞くときに使うところは？",
             answers: [
               "耳",
-              "足",
               "目",
-              "口"
+              "口",
+              "足"
             ],
             correct: "耳"
           }
@@ -369,7 +374,7 @@ const CHAPTER1_06 = {
         "て"
       ],
 
-      meaning: "ものを持ったり使ったりする体の部分",
+      meaning: "ものを持ったり使ったりするところ",
 
       masteryGoal: 1,
 
@@ -389,20 +394,20 @@ const CHAPTER1_06 = {
             answers: [
               "手",
               "足",
-              "口",
-              "目"
+              "目",
+              "耳"
             ],
             correct: "手"
           },
 
           {
             type: "choice",
-            question: "「右手」「左手」の最後の漢字はどれ？",
+            question: "ものを持つときに使うところを表す漢字はどれ？",
             answers: [
               "手",
               "足",
-              "耳",
-              "口"
+              "口",
+              "耳"
             ],
             correct: "手"
           }
@@ -413,7 +418,7 @@ const CHAPTER1_06 = {
 
           {
             type: "build",
-            question: "「右手」を作ろう。",
+            question: "「みぎて」と読むことばを、パーツを順番にえらんで作ろう。",
             parts: [
               "右",
               "手"
@@ -427,12 +432,12 @@ const CHAPTER1_06 = {
 
           {
             type: "meaning",
-            question: "えんぴつを持って字を書くときに使う体の部分は？",
+            question: "えんぴつを持つときに使うところは？",
             answers: [
               "手",
               "足",
-              "耳",
-              "口"
+              "口",
+              "耳"
             ],
             correct: "手"
           },
@@ -442,9 +447,9 @@ const CHAPTER1_06 = {
             question: "ボールをつかむときに使うところは？",
             answers: [
               "手",
+              "足",
               "目",
-              "耳",
-              "足"
+              "口"
             ],
             correct: "手"
           }
@@ -478,11 +483,10 @@ const CHAPTER1_06 = {
 
       readings: [
         "そく",
-        "あし",
-        "た"
+        "あし"
       ],
 
-      meaning: "立ったり歩いたりするときに使う体の部分",
+      meaning: "立ったり歩いたりするところ",
 
       masteryGoal: 1,
 
@@ -502,7 +506,7 @@ const CHAPTER1_06 = {
             answers: [
               "足",
               "手",
-              "耳",
+              "目",
               "口"
             ],
             correct: "足"
@@ -510,12 +514,12 @@ const CHAPTER1_06 = {
 
           {
             type: "choice",
-            question: "歩くときに使う体の部分はどれ？",
+            question: "歩くときに使うところを表す漢字はどれ？",
             answers: [
               "足",
               "手",
-              "目",
-              "耳"
+              "耳",
+              "口"
             ],
             correct: "足"
           }
@@ -526,12 +530,12 @@ const CHAPTER1_06 = {
 
           {
             type: "build",
-            question: "「足音」を作ろう。",
+            question: "「あしもと」と読むことばを、パーツを順番にえらんで作ろう。",
             parts: [
               "足",
-              "音"
+              "下"
             ],
-            correct: "足音"
+            correct: "足下"
           }
 
         ],
@@ -540,24 +544,24 @@ const CHAPTER1_06 = {
 
           {
             type: "meaning",
-            question: "学校まで歩いて行きました。歩くときに使う体の部分は？",
+            question: "走るときに使う、体の下のほうにあるところは？",
             answers: [
               "足",
               "手",
               "耳",
-              "目"
+              "口"
             ],
             correct: "足"
           },
 
           {
             type: "meaning",
-            question: "走ったりジャンプしたりするときによく使うところは？",
+            question: "くつをはくところは？",
             answers: [
               "足",
-              "口",
-              "耳",
-              "手"
+              "手",
+              "目",
+              "耳"
             ],
             correct: "足"
           }
