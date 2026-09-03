@@ -88,24 +88,22 @@ window.BattleModule = (() => {
 
     if (readingSkillButton) {
 
-      readingSkillButton
-        .addEventListener(
-          "click",
-          useReadingSkill
-        );
+      readingSkillButton.addEventListener(
+        "click",
+        useReadingSkill
+      );
 
     }
 
 
     updatePlayerStatus();
-
     updateReadingSkillButton();
 
   }
 
 
   // ==================================================
-  // スキルを持っているか
+  // ことばリーディング習得判定
   // ==================================================
 
   function hasReadingSkill() {
@@ -131,7 +129,7 @@ window.BattleModule = (() => {
     }
 
 
-    // 未習得なら非表示
+    // 未習得
     if (!hasReadingSkill()) {
 
       readingSkillButton.style.display =
@@ -142,7 +140,7 @@ window.BattleModule = (() => {
     }
 
 
-    // 習得済みなら表示
+    // 習得済み
     readingSkillButton.style.display =
       "block";
 
@@ -236,8 +234,6 @@ window.BattleModule = (() => {
 
     updatePlayerStatus();
 
-    updateReadingSkillButton();
-
     saveGame();
 
 
@@ -283,6 +279,10 @@ window.BattleModule = (() => {
       );
 
 
+    // --------------------------
+    // HP
+    // --------------------------
+
     const hpPercent =
       Math.max(
         0,
@@ -311,6 +311,10 @@ window.BattleModule = (() => {
 
     }
 
+
+    // --------------------------
+    // RP
+    // --------------------------
 
     const rpPercent =
       Math.max(
@@ -363,15 +367,32 @@ window.BattleModule = (() => {
     const percent =
       Math.max(
         0,
-        (
-          game.currentEnemy.hp /
-          game.currentEnemy.maxHp
-        ) * 100
+        Math.min(
+          100,
+          (
+            game.currentEnemy.hp /
+            game.currentEnemy.maxHp
+          ) * 100
+        )
       );
 
 
     enemyHP.style.width =
       `${percent}%`;
+
+
+    const enemyHPText =
+      document.getElementById(
+        "enemy-hp-text"
+      );
+
+
+    if (enemyHPText) {
+
+      enemyHPText.textContent =
+        `${game.currentEnemy.hp} / ${game.currentEnemy.maxHp}`;
+
+    }
 
   }
 
@@ -390,14 +411,21 @@ window.BattleModule = (() => {
 
 
     game.currentEnemy = {
+
       ...enemyBase,
-      hp: enemyBase.maxHp
+
+      hp:
+        enemyBase.maxHp
+
     };
 
 
     game.combo = 0;
+
     game.maxComboThisBattle = 0;
+
     game.battleBonusExp = 0;
+
     game.selectedWeapon = null;
 
     readingBoostActive =
@@ -433,8 +461,6 @@ window.BattleModule = (() => {
 
     updatePlayerStatus();
 
-    updateReadingSkillButton();
-
 
     if (battleMessage) {
 
@@ -463,6 +489,12 @@ window.BattleModule = (() => {
     ) {
       return;
     }
+
+
+    // 問題画面から戦闘画面へ戻る
+    showScreen(
+      "battle"
+    );
 
 
     let damage =
@@ -591,6 +623,10 @@ window.BattleModule = (() => {
     }
 
 
+    // --------------------------
+    // 敵撃破
+    // --------------------------
+
     if (
       game.currentEnemy.hp <= 0
     ) {
@@ -616,9 +652,18 @@ window.BattleModule = (() => {
     }
 
 
-    // 間違えても
-    // readingBoostActive は消さない
+    // 問題画面から戦闘画面へ戻る
+    showScreen(
+      "battle"
+    );
+
+
+    // 間違えるとコンボ終了
     game.combo = 0;
+
+
+    // ことばリーディングは
+    // 間違えても消えない
 
 
     const damage =
@@ -677,7 +722,9 @@ window.BattleModule = (() => {
       "enemy-hit"
     );
 
+
     void enemySprite.offsetWidth;
+
 
     enemySprite.classList.add(
       "enemy-hit"
@@ -702,7 +749,9 @@ window.BattleModule = (() => {
   // ダメージ数字
   // ==================================================
 
-  function showDamageNumber(damage) {
+  function showDamageNumber(
+    damage
+  ) {
 
     if (!enemySprite) {
       return;
@@ -726,6 +775,7 @@ window.BattleModule = (() => {
 
     damageElement.className =
       "damage-number";
+
 
     damageElement.textContent =
       `-${damage}`;
@@ -802,6 +852,7 @@ window.BattleModule = (() => {
                 enemySprite.style.opacity =
                   "0";
 
+
                 callback();
 
               },
@@ -851,6 +902,7 @@ window.BattleModule = (() => {
         game.player.exp +=
           gainedExp;
 
+
         game.player.gold +=
           gainedGold;
 
@@ -885,15 +937,20 @@ window.BattleModule = (() => {
 
         game.enemyIndex++;
 
-        game.stepsSinceBattle = 0;
+        game.stepsSinceBattle =
+          0;
 
-        game.currentEnemy = null;
+        game.currentEnemy =
+          null;
 
-        game.selectedWeapon = null;
+        game.selectedWeapon =
+          null;
 
-        game.combo = 0;
+        game.combo =
+          0;
 
-        game.battleBonusExp = 0;
+        game.battleBonusExp =
+          0;
 
 
         saveGame();
@@ -943,12 +1000,15 @@ window.BattleModule = (() => {
       game.player.maxHp +=
         2;
 
+
       game.player.maxRp +=
         1;
 
 
+      // レベルアップ時に全回復
       game.player.hp =
         game.player.maxHp;
+
 
       game.player.rp =
         game.player.maxRp;
@@ -989,28 +1049,39 @@ window.BattleModule = (() => {
           "kingdom";
 
 
-        game.player.x = 50;
-        game.player.y = 58;
+        game.player.x =
+          50;
+
+        game.player.y =
+          58;
+
         game.player.direction =
           "down";
 
 
+        // 王国で全回復
         game.player.hp =
           game.player.maxHp;
+
 
         game.player.rp =
           game.player.maxRp;
 
 
-        game.stepsSinceBattle = 0;
+        game.stepsSinceBattle =
+          0;
 
-        game.currentEnemy = null;
+        game.currentEnemy =
+          null;
 
-        game.selectedWeapon = null;
+        game.selectedWeapon =
+          null;
 
-        game.combo = 0;
+        game.combo =
+          0;
 
-        game.battleBonusExp = 0;
+        game.battleBonusExp =
+          0;
 
 
         updatePlayerStatus();
@@ -1021,6 +1092,7 @@ window.BattleModule = (() => {
         showScreen(
           "field"
         );
+
 
         updateField();
 
