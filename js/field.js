@@ -1,6 +1,7 @@
 // ==================================================
 // field.js
-// フィールド移動・エリア移動・エンカウント・障害物判定
+// 共通フィールドシステム
+// マップ移動・当たり判定・出口・エンカウント
 // ==================================================
 
 window.FieldModule = (() => {
@@ -9,214 +10,10 @@ window.FieldModule = (() => {
 
 
   // ==================================================
-  // 障害物データ
-  //
-  // x1 = 左
-  // x2 = 右
-  // y1 = 上
-  // y2 = 下
-  //
-  // すべてフィールドに対する % 座標
+  // マップ一覧
   // ==================================================
 
-  const COLLISION_MAPS = {
-
-    // ==================================================
-    // はじまりの王国
-    // ==================================================
-
-    kingdom: [
-
-      // ------------------------------
-      // 上側の城
-      // ------------------------------
-      {
-        name: "城",
-        x1: 25,
-        x2: 75,
-        y1: 5,
-        y2: 31
-      },
-
-
-      // ------------------------------
-      // 左上の建物
-      // ------------------------------
-      {
-        name: "左上の建物",
-        x1: 7,
-        x2: 27,
-        y1: 23,
-        y2: 45
-      },
-
-
-      // ------------------------------
-      // 右上の建物
-      // ------------------------------
-      {
-        name: "右上の建物",
-        x1: 73,
-        x2: 93,
-        y1: 23,
-        y2: 45
-      },
-
-
-      // ------------------------------
-      // 左側の木
-      // ------------------------------
-      {
-        name: "左の木",
-        x1: 5,
-        x2: 18,
-        y1: 48,
-        y2: 66
-      },
-
-
-      // ------------------------------
-      // 右側の木
-      // ------------------------------
-      {
-        name: "右の木",
-        x1: 82,
-        x2: 95,
-        y1: 48,
-        y2: 66
-      },
-
-
-      // ------------------------------
-      // 左下の障害物
-      // ------------------------------
-      {
-        name: "左下の木",
-        x1: 7,
-        x2: 22,
-        y1: 67,
-        y2: 84
-      },
-
-
-      // ------------------------------
-      // 右下の障害物
-      // ------------------------------
-      {
-        name: "右下の木",
-        x1: 78,
-        x2: 93,
-        y1: 67,
-        y2: 84
-      }
-
-    ],
-
-
-    // ==================================================
-    // 読みの森
-    // ==================================================
-
-    forest: [
-
-      // ------------------------------
-      // 左上の木々
-      // ------------------------------
-      {
-        name: "左上の木",
-        x1: 4,
-        x2: 30,
-        y1: 5,
-        y2: 25
-      },
-
-
-      // ------------------------------
-      // 右上の木々
-      // ------------------------------
-      {
-        name: "右上の木",
-        x1: 70,
-        x2: 96,
-        y1: 5,
-        y2: 25
-      },
-
-
-      // ------------------------------
-      // 左中央の木々
-      // ------------------------------
-      {
-        name: "左中央の木",
-        x1: 3,
-        x2: 24,
-        y1: 27,
-        y2: 55
-      },
-
-
-      // ------------------------------
-      // 右中央の木々
-      // ------------------------------
-      {
-        name: "右中央の木",
-        x1: 76,
-        x2: 97,
-        y1: 27,
-        y2: 55
-      },
-
-
-      // ------------------------------
-      // 左下の木々
-      // ------------------------------
-      {
-        name: "左下の木",
-        x1: 3,
-        x2: 28,
-        y1: 57,
-        y2: 88
-      },
-
-
-      // ------------------------------
-      // 右下の木々
-      // ------------------------------
-      {
-        name: "右下の木",
-        x1: 72,
-        x2: 97,
-        y1: 57,
-        y2: 88
-      },
-
-
-      // ------------------------------
-      // 池
-      // ------------------------------
-      {
-        name: "池",
-        x1: 34,
-        x2: 58,
-        y1: 48,
-        y2: 66
-      },
-
-
-      // ------------------------------
-      // 岩
-      // ------------------------------
-      {
-        name: "岩",
-        x1: 60,
-        x2: 70,
-        y1: 61,
-        y2: 72
-      }
-
-    ]
-
-  };
+  const MAPS = {};
 
 
   // ==================================================
@@ -226,6 +23,46 @@ window.FieldModule = (() => {
   function init(options) {
 
     settings = options;
+
+
+    // ----------------------------------------------
+    // マップ登録
+    // ----------------------------------------------
+
+    if (window.MAP_KINGDOM) {
+
+      MAPS[
+        window.MAP_KINGDOM.id
+      ] = window.MAP_KINGDOM;
+
+    }
+
+
+    if (window.MAP_READING_FOREST) {
+
+      MAPS[
+        window.MAP_READING_FOREST.id
+      ] = window.MAP_READING_FOREST;
+
+    }
+
+  }
+
+
+  // ==================================================
+  // 現在のマップを取得
+  // ==================================================
+
+  function getCurrentMap() {
+
+    const {
+      game
+    } = settings;
+
+
+    return MAPS[
+      game.area
+    ] || null;
 
   }
 
@@ -265,6 +102,26 @@ window.FieldModule = (() => {
     } = settings;
 
 
+    const map =
+      getCurrentMap();
+
+
+    if (!map) {
+
+      console.error(
+        "マップが見つかりません:",
+        game.area
+      );
+
+      return;
+
+    }
+
+
+    // ----------------------------------------------
+    // 主人公位置
+    // ----------------------------------------------
+
     playerElement.style.left =
       game.player.x + "%";
 
@@ -272,6 +129,10 @@ window.FieldModule = (() => {
     playerElement.style.top =
       game.player.y + "%";
 
+
+    // ----------------------------------------------
+    // 主人公向き
+    // ----------------------------------------------
 
     const rowMap = {
 
@@ -300,28 +161,434 @@ window.FieldModule = (() => {
       `${-column * 32}px ${-row * 32}px`;
 
 
-    if (
-      game.area ===
-      "kingdom"
+    // ----------------------------------------------
+    // マップ名
+    // ----------------------------------------------
+
+    areaName.textContent =
+      map.name;
+
+
+    // ----------------------------------------------
+    // 背景画像
+    // ----------------------------------------------
+
+    field.style.backgroundImage =
+      `url("${map.image}")`;
+
+  }
+
+
+  // ==================================================
+  // 点が多角形の中にあるか
+  // ==================================================
+
+  function pointInPolygon(
+    x,
+    y,
+    points
+  ) {
+
+    let inside =
+      false;
+
+
+    for (
+      let i = 0,
+          j = points.length - 1;
+      i < points.length;
+      j = i++
     ) {
 
-      areaName.textContent =
-        "はじまりの王国";
+      const xi =
+        points[i][0];
+
+      const yi =
+        points[i][1];
+
+      const xj =
+        points[j][0];
+
+      const yj =
+        points[j][1];
 
 
-      field.style.backgroundImage =
-        'url("images/kingdom.png")';
+      const intersects =
+        (
+          (yi > y) !==
+          (yj > y)
+        ) &&
+        (
+          x <
+          (
+            (xj - xi) *
+            (y - yi) /
+            (yj - yi) +
+            xi
+          )
+        );
 
-    } else {
 
-      areaName.textContent =
-        "読みの森";
+      if (intersects) {
 
+        inside =
+          !inside;
 
-      field.style.backgroundImage =
-        'url("images/reading_forest.png")';
+      }
 
     }
+
+
+    return inside;
+
+  }
+
+
+  // ==================================================
+  // 点が障害物に入っているか
+  // ==================================================
+
+  function pointBlocked(
+    map,
+    x,
+    y
+  ) {
+
+    if (
+      !map ||
+      !Array.isArray(
+        map.collisions
+      )
+    ) {
+
+      return false;
+
+    }
+
+
+    for (
+      const item
+      of map.collisions
+    ) {
+
+
+      // ----------------------------------------------
+      // 四角
+      // ----------------------------------------------
+
+      if (
+        item.type ===
+        "rect"
+      ) {
+
+        if (
+          x >= item.x1 &&
+          x <= item.x2 &&
+          y >= item.y1 &&
+          y <= item.y2
+        ) {
+
+          return true;
+
+        }
+
+      }
+
+
+      // ----------------------------------------------
+      // 円
+      // ----------------------------------------------
+
+      if (
+        item.type ===
+        "circle"
+      ) {
+
+        const dx =
+          x - item.x;
+
+        const dy =
+          y - item.y;
+
+
+        if (
+          dx * dx +
+          dy * dy <=
+          item.r * item.r
+        ) {
+
+          return true;
+
+        }
+
+      }
+
+
+      // ----------------------------------------------
+      // 多角形
+      // ----------------------------------------------
+
+      if (
+        item.type ===
+        "polygon"
+      ) {
+
+        if (
+          pointInPolygon(
+            x,
+            y,
+            item.points
+          )
+        ) {
+
+          return true;
+
+        }
+
+      }
+
+    }
+
+
+    return false;
+
+  }
+
+
+  // ==================================================
+  // 主人公の足元判定
+  // ==================================================
+
+  function getPlayerFootBox(
+    x,
+    y
+  ) {
+
+    const {
+      field,
+      playerElement
+    } = settings;
+
+
+    let playerWidthPercent =
+      5;
+
+
+    let playerHeightPercent =
+      7;
+
+
+    if (
+      field &&
+      playerElement &&
+      field.clientWidth > 0 &&
+      field.clientHeight > 0
+    ) {
+
+      playerWidthPercent =
+        (
+          playerElement.offsetWidth /
+          field.clientWidth
+        ) * 100;
+
+
+      playerHeightPercent =
+        (
+          playerElement.offsetHeight /
+          field.clientHeight
+        ) * 100;
+
+    }
+
+
+    // ----------------------------------------------
+    // 主人公画像の下側だけを
+    // 足元として判定
+    // ----------------------------------------------
+
+    const left =
+      x +
+      playerWidthPercent *
+      0.28;
+
+
+    const right =
+      x +
+      playerWidthPercent *
+      0.72;
+
+
+    const top =
+      y +
+      playerHeightPercent *
+      0.70;
+
+
+    const bottom =
+      y +
+      playerHeightPercent *
+      0.92;
+
+
+    const centerX =
+      (
+        left +
+        right
+      ) / 2;
+
+
+    const centerY =
+      (
+        top +
+        bottom
+      ) / 2;
+
+
+    return {
+
+      left,
+
+      right,
+
+      top,
+
+      bottom,
+
+      centerX,
+
+      centerY
+
+    };
+
+  }
+
+
+  // ==================================================
+  // 出口内にいるか
+  // ==================================================
+
+  function isInsideExit(
+    foot,
+    exit
+  ) {
+
+    return (
+      foot.centerX >= exit.x1 &&
+      foot.centerX <= exit.x2 &&
+      foot.centerY >= exit.y1 &&
+      foot.centerY <= exit.y2
+    );
+
+  }
+
+
+  // ==================================================
+  // 出口を探す
+  // ==================================================
+
+  function findExit(
+    direction,
+    x,
+    y
+  ) {
+
+    const map =
+      getCurrentMap();
+
+
+    if (
+      !map ||
+      !Array.isArray(
+        map.exits
+      )
+    ) {
+
+      return null;
+
+    }
+
+
+    const foot =
+      getPlayerFootBox(
+        x,
+        y
+      );
+
+
+    for (
+      const exit
+      of map.exits
+    ) {
+
+      if (
+        exit.direction &&
+        exit.direction !== direction
+      ) {
+
+        continue;
+
+      }
+
+
+      if (
+        isInsideExit(
+          foot,
+          exit
+        )
+      ) {
+
+        return exit;
+
+      }
+
+    }
+
+
+    return null;
+
+  }
+
+
+  // ==================================================
+  // マップ外周判定
+  // ==================================================
+
+  function isOutsideBounds(
+    map,
+    foot
+  ) {
+
+    if (
+      !map ||
+      !map.bounds
+    ) {
+
+      return false;
+
+    }
+
+
+    const {
+      left,
+      right,
+      top,
+      bottom
+    } = map.bounds;
+
+
+    if (
+      foot.centerX < left ||
+      foot.centerX > right ||
+      foot.centerY < top ||
+      foot.centerY > bottom
+    ) {
+
+      return true;
+
+    }
+
+
+    return false;
 
   }
 
@@ -336,35 +603,116 @@ window.FieldModule = (() => {
     y
   ) {
 
-    const obstacles =
-      COLLISION_MAPS[area] || [];
+    const map =
+      MAPS[area];
 
 
-    // ==================================================
-    // 主人公は32×32なので、
-    // 画像全体ではなく「足元」で判定する
-    //
-    // x,y は主人公画像の位置。
-    // 少し下側を実際の足として扱う。
-    // ==================================================
+    if (!map) {
 
-    const footX =
-      x;
+      return true;
 
-    const footY =
-      y + 3;
+    }
+
+
+    const foot =
+      getPlayerFootBox(
+        x,
+        y
+      );
+
+
+    // ----------------------------------------------
+    // 出口部分は外周より優先
+    // ----------------------------------------------
+
+    if (
+      Array.isArray(
+        map.exits
+      )
+    ) {
+
+      for (
+        const exit
+        of map.exits
+      ) {
+
+        if (
+          isInsideExit(
+            foot,
+            exit
+          )
+        ) {
+
+          return false;
+
+        }
+
+      }
+
+    }
+
+
+    // ----------------------------------------------
+    // マップ外周
+    // ----------------------------------------------
+
+    if (
+      isOutsideBounds(
+        map,
+        foot
+      )
+    ) {
+
+      return true;
+
+    }
+
+
+    // ----------------------------------------------
+    // 足元5点でチェック
+    // ----------------------------------------------
+
+    const points = [
+
+      [
+        foot.left,
+        foot.top
+      ],
+
+      [
+        foot.right,
+        foot.top
+      ],
+
+      [
+        foot.left,
+        foot.bottom
+      ],
+
+      [
+        foot.right,
+        foot.bottom
+      ],
+
+      [
+        foot.centerX,
+        foot.centerY
+      ]
+
+    ];
 
 
     for (
-      const obstacle
-      of obstacles
+      const point
+      of points
     ) {
 
       if (
-        footX >= obstacle.x1 &&
-        footX <= obstacle.x2 &&
-        footY >= obstacle.y1 &&
-        footY <= obstacle.y2
+        pointBlocked(
+          map,
+          point[0],
+          point[1]
+        )
       ) {
 
         return true;
@@ -375,6 +723,237 @@ window.FieldModule = (() => {
 
 
     return false;
+
+  }
+
+
+  // ==================================================
+  // マップ移動
+  // ==================================================
+
+  function changeMap(exit) {
+
+    const {
+      game
+    } = settings;
+
+
+    const targetMap =
+      MAPS[
+        exit.targetMap
+      ];
+
+
+    if (!targetMap) {
+
+      console.error(
+        "移動先マップが見つかりません:",
+        exit.targetMap
+      );
+
+      return;
+
+    }
+
+
+    game.area =
+      exit.targetMap;
+
+
+    game.stepsSinceBattle =
+      0;
+
+
+    game.player.x =
+      exit.targetX;
+
+
+    game.player.y =
+      exit.targetY;
+
+
+    game.player.direction =
+      exit.targetDirection ||
+      "down";
+
+
+    updateField();
+
+
+    if (
+      exit.message
+    ) {
+
+      setFieldMessage(
+        exit.message
+      );
+
+    }
+
+  }
+
+
+  // ==================================================
+  // 少しずつ移動
+  //
+  // 4%を一気に移動せず、
+  // 1%ずつ当たり判定する
+  // ==================================================
+
+  function tryMove(
+    direction,
+    distance
+  ) {
+
+    const {
+      game
+    } = settings;
+
+
+    let remaining =
+      distance;
+
+
+    let moved =
+      false;
+
+
+    const subStep =
+      1;
+
+
+    while (
+      remaining > 0
+    ) {
+
+      const amount =
+        Math.min(
+          subStep,
+          remaining
+        );
+
+
+      let nextX =
+        game.player.x;
+
+
+      let nextY =
+        game.player.y;
+
+
+      if (
+        direction ===
+        "up"
+      ) {
+
+        nextY -=
+          amount;
+
+      }
+
+
+      if (
+        direction ===
+        "down"
+      ) {
+
+        nextY +=
+          amount;
+
+      }
+
+
+      if (
+        direction ===
+        "left"
+      ) {
+
+        nextX -=
+          amount;
+
+      }
+
+
+      if (
+        direction ===
+        "right"
+      ) {
+
+        nextX +=
+          amount;
+
+      }
+
+
+      // ----------------------------------------------
+      // 出口判定
+      // ----------------------------------------------
+
+      const exit =
+        findExit(
+          direction,
+          nextX,
+          nextY
+        );
+
+
+      if (exit) {
+
+        changeMap(
+          exit
+        );
+
+        return {
+          moved: true,
+          changedMap: true
+        };
+
+      }
+
+
+      // ----------------------------------------------
+      // 障害物判定
+      // ----------------------------------------------
+
+      if (
+        isBlocked(
+          game.area,
+          nextX,
+          nextY
+        )
+      ) {
+
+        break;
+
+      }
+
+
+      // ----------------------------------------------
+      // 移動
+      // ----------------------------------------------
+
+      game.player.x =
+        nextX;
+
+
+      game.player.y =
+        nextY;
+
+
+      moved =
+        true;
+
+
+      remaining -=
+        amount;
+
+    }
+
+
+    return {
+      moved,
+      changedMap: false
+    };
 
   }
 
@@ -394,195 +973,68 @@ window.FieldModule = (() => {
       4;
 
 
-    // 向きだけは必ず変える
+    // ----------------------------------------------
+    // 向き変更
+    // ----------------------------------------------
+
     game.player.direction =
       direction;
 
 
-    // ==================================================
-    // 現在位置を保存
-    // ==================================================
+    // ----------------------------------------------
+    // 移動
+    // ----------------------------------------------
 
-    const oldX =
-      game.player.x;
-
-    const oldY =
-      game.player.y;
-
-
-    // ==================================================
-    // 移動予定位置を作る
-    // ==================================================
-
-    let nextX =
-      oldX;
-
-    let nextY =
-      oldY;
-
-
-    if (
-      direction ===
-      "up"
-    ) {
-
-      nextY -=
-        speed;
-
-    }
-
-
-    if (
-      direction ===
-      "down"
-    ) {
-
-      nextY +=
-        speed;
-
-    }
-
-
-    if (
-      direction ===
-      "left"
-    ) {
-
-      nextX -=
-        speed;
-
-    }
-
-
-    if (
-      direction ===
-      "right"
-    ) {
-
-      nextX +=
-        speed;
-
-    }
-
-
-    // ==================================================
-    // 左右の画面外へ出ない
-    // ==================================================
-
-    nextX =
-      Math.max(
-        8,
-        Math.min(
-          92,
-          nextX
-        )
+    const result =
+      tryMove(
+        direction,
+        speed
       );
-
-
-    // ==================================================
-    // 王国 → 読みの森
-    //
-    // 王国の下端だけは、
-    // 障害物判定より先に出口として扱う
-    // ==================================================
-
-    if (
-      game.area ===
-        "kingdom" &&
-      nextY >=
-        90
-    ) {
-
-      enterForest();
-
-      return;
-
-    }
-
-
-    // ==================================================
-    // 読みの森 → 王国
-    //
-    // 森の上端だけ出口
-    // ==================================================
-
-    if (
-      game.area ===
-        "forest" &&
-      nextY <=
-        8
-    ) {
-
-      returnToKingdom();
-
-      return;
-
-    }
-
-
-    // ==================================================
-    // 上下の画面外へ出ない
-    // ==================================================
-
-    nextY =
-      Math.max(
-        8,
-        Math.min(
-          90,
-          nextY
-        )
-      );
-
-
-    // ==================================================
-    // 障害物チェック
-    // ==================================================
-
-    if (
-      isBlocked(
-        game.area,
-        nextX,
-        nextY
-      )
-    ) {
-
-      // 移動しない。
-      // 向きだけ変更して表示する。
-
-      updateField();
-
-      return;
-
-    }
-
-
-    // ==================================================
-    // 移動OK
-    // ==================================================
-
-    game.player.x =
-      nextX;
-
-    game.player.y =
-      nextY;
-
-
-    game.player.step++;
 
 
     updateField();
 
 
-    // ==================================================
-    // 読みの森だけエンカウント
-    //
-    // 障害物にぶつかっただけでは
-    // 歩数に数えない。
-    // ==================================================
+    // ----------------------------------------------
+    // マップ移動した場合
+    // ----------------------------------------------
 
     if (
-      game.area ===
-      "forest"
+      result.changedMap
+    ) {
+
+      return;
+
+    }
+
+
+    // ----------------------------------------------
+    // 動けなかった場合
+    // ----------------------------------------------
+
+    if (
+      !result.moved
+    ) {
+
+      return;
+
+    }
+
+
+    game.player.step++;
+
+
+    // ----------------------------------------------
+    // エンカウント
+    // ----------------------------------------------
+
+    const map =
+      getCurrentMap();
+
+
+    if (
+      map &&
+      map.encounter
     ) {
 
       game.stepsSinceBattle++;
@@ -596,82 +1048,70 @@ window.FieldModule = (() => {
 
 
   // ==================================================
-  // 王国 → 読みの森
+  // 王国 → 森
+  //
+  // 旧コードとの互換用
   // ==================================================
 
   function enterForest() {
 
-    const {
-      game
-    } = settings;
+    const exit = {
+
+      targetMap:
+        "forest",
+
+      targetX:
+        61,
+
+      targetY:
+        8,
+
+      targetDirection:
+        "down",
+
+      message:
+        "読みの森に入った！ ことばの気配がする……"
+
+    };
 
 
-    game.area =
-      "forest";
-
-
-    game.stepsSinceBattle =
-      0;
-
-
-    game.player.x =
-      50;
-
-
-    game.player.y =
-      16;
-
-
-    game.player.direction =
-      "down";
-
-
-    updateField();
-
-
-    setFieldMessage(
-      "読みの森に入った！ ことばの気配がする……"
+    changeMap(
+      exit
     );
 
   }
 
 
   // ==================================================
-  // 読みの森 → 王国
+  // 森 → 王国
+  //
+  // 旧コードとの互換用
   // ==================================================
 
   function returnToKingdom() {
 
-    const {
-      game
-    } = settings;
+    const exit = {
+
+      targetMap:
+        "kingdom",
+
+      targetX:
+        48,
+
+      targetY:
+        78,
+
+      targetDirection:
+        "up",
+
+      message:
+        "はじまりの王国に戻ってきた。"
+
+    };
 
 
-    game.area =
-      "kingdom";
-
-
-    game.stepsSinceBattle =
-      0;
-
-
-    game.player.x =
-      50;
-
-
-    game.player.y =
-      82;
-
-
-    game.player.direction =
-      "up";
-
-
-    updateField();
-
-
-    setFieldMessage(
-      "はじまりの王国に戻ってきた。"
+    changeMap(
+      exit
     );
 
   }
@@ -689,7 +1129,10 @@ window.FieldModule = (() => {
     } = settings;
 
 
+    // ----------------------------------------------
     // 最低12歩は安全
+    // ----------------------------------------------
+
     const safeSteps =
       12;
 
@@ -704,7 +1147,10 @@ window.FieldModule = (() => {
     }
 
 
+    // ----------------------------------------------
     // その後は1歩ごとに10%
+    // ----------------------------------------------
+
     const encounterChance =
       0.10;
 
@@ -718,7 +1164,9 @@ window.FieldModule = (() => {
         0;
 
 
-      if (startBattle) {
+      if (
+        startBattle
+      ) {
 
         startBattle();
 
@@ -806,7 +1254,9 @@ window.FieldModule = (() => {
 
     handleKeydown,
 
-    isBlocked
+    isBlocked,
+
+    getCurrentMap
 
   };
 
