@@ -38,9 +38,9 @@ document.addEventListener("DOMContentLoaded", () => {
     );
 
     alert(
-  "見つからないJS：\n" +
-  missingModules.join("\n")
-);
+      "見つからないJS：\n" +
+      missingModules.join("\n")
+    );
 
     return;
   }
@@ -145,14 +145,40 @@ document.addEventListener("DOMContentLoaded", () => {
 
       step: 0,
 
+
+      // --------------------------
+      // レベル
+      // --------------------------
+
       level:
         saveData?.player?.level || 1,
+
+
+      // --------------------------
+      // HP
+      // --------------------------
 
       hp:
         saveData?.player?.hp ?? 10,
 
       maxHp:
         saveData?.player?.maxHp || 10,
+
+
+      // --------------------------
+      // RP
+      // --------------------------
+
+      rp:
+        saveData?.player?.rp ?? 10,
+
+      maxRp:
+        saveData?.player?.maxRp || 10,
+
+
+      // --------------------------
+      // EXP・ゴールド
+      // --------------------------
 
       exp:
         saveData?.player?.exp || 0,
@@ -278,7 +304,6 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
 
-  // save.jsからgameを参照できるようにする
   window.game = game;
 
 
