@@ -1,15 +1,25 @@
 // ==================================================
 // battle.js
-// 戦闘・ダメージ・EXP・ゴールド・レベル担当
+// 戦闘処理
 // ==================================================
 
 window.BattleModule = (() => {
 
-  let settings = null;
+  let game = null;
+
+  let enemyName = null;
+  let enemySprite = null;
+  let battleMessage = null;
+  let enemyHP = null;
+
+  let showScreen = null;
+  let showNetwork = null;
+  let updateField = null;
+  let setFieldMessage = null;
 
 
   // ==================================================
-  // 武器の攻撃力
+  // 武器ダメージ
   // ==================================================
 
   const weaponDamage = {
@@ -29,30 +39,180 @@ window.BattleModule = (() => {
   // 初期化
   // ==================================================
 
-  function init(options) {
+  function init(settings) {
 
-    settings = options;
+    game =
+      settings.game;
+
+    enemyName =
+      settings.enemyName;
+
+    enemySprite =
+      settings.enemySprite;
+
+    battleMessage =
+      settings.battleMessage;
+
+    enemyHP =
+      settings.enemyHP;
+
+    showScreen =
+      settings.showScreen;
+
+    showNetwork =
+      settings.showNetwork;
+
+    updateField =
+      settings.updateField;
+
+    setFieldMessage =
+      settings.setFieldMessage;
+
+
+    updatePlayerStatus();
 
   }
 
 
   // ==================================================
-  // バトル開始
+  // プレイヤーHP / RP表示
+  // ==================================================
+
+  function updatePlayerStatus() {
+
+    if (!game) {
+      return;
+    }
+
+
+    const hpBar =
+      document.getElementById(
+        "player-hp-bar"
+      );
+
+    const hpText =
+      document.getElementById(
+        "player-hp-text"
+      );
+
+    const rpBar =
+      document.getElementById(
+        "player-rp-bar"
+      );
+
+    const rpText =
+      document.getElementById(
+        "player-rp-text"
+      );
+
+
+    // --------------------------
+    // HP
+    // --------------------------
+
+    const hpPercent =
+      Math.max(
+        0,
+        Math.min(
+          100,
+          (
+            game.player.hp /
+            game.player.maxHp
+          ) * 100
+        )
+      );
+
+
+    if (hpBar) {
+
+      hpBar.style.width =
+        `${hpPercent}%`;
+
+    }
+
+
+    if (hpText) {
+
+      hpText.textContent =
+        `${game.player.hp} / ${game.player.maxHp}`;
+
+    }
+
+
+    // --------------------------
+    // RP
+    // --------------------------
+
+    const rpPercent =
+      Math.max(
+        0,
+        Math.min(
+          100,
+          (
+            game.player.rp /
+            game.player.maxRp
+          ) * 100
+        )
+      );
+
+
+    if (rpBar) {
+
+      rpBar.style.width =
+        `${rpPercent}%`;
+
+    }
+
+
+    if (rpText) {
+
+      rpText.textContent =
+        `${game.player.rp} / ${game.player.maxRp}`;
+
+    }
+
+  }
+
+
+  // ==================================================
+  // 敵HP表示
+  // ==================================================
+
+  function updateEnemyHP() {
+
+    if (
+      !game.currentEnemy ||
+      !enemyHP
+    ) {
+
+      return;
+
+    }
+
+
+    const percent =
+      Math.max(
+        0,
+        (
+          game.currentEnemy.hp /
+          game.currentEnemy.maxHp
+        ) * 100
+      );
+
+
+    enemyHP.style.width =
+      `${percent}%`;
+
+  }
+
+
+  // ==================================================
+  // 戦闘開始
   // ==================================================
 
   function startBattle() {
 
-    const {
-      game,
-      enemyName,
-      enemySprite,
-      battleMessage,
-      enemyHP,
-      showScreen
-    } = settings;
-
-
-    const enemyTemplate =
+    const enemyBase =
       game.enemies[
         game.enemyIndex %
         game.enemies.length
@@ -61,70 +221,59 @@ window.BattleModule = (() => {
 
     game.currentEnemy = {
 
-      ...enemyTemplate,
+      ...enemyBase,
 
       hp:
-        enemyTemplate.maxHp
+        enemyBase.maxHp
 
     };
 
 
-    const enemy =
-      game.currentEnemy;
+    game.combo = 0;
+
+    game.maxComboThisBattle = 0;
+
+    game.battleBonusExp = 0;
+
+    game.selectedWeapon = null;
 
 
-    game.combo =
-      0;
+    if (enemyName) {
 
-
-    game.maxComboThisBattle =
-      0;
-
-
-    game.battleBonusExp =
-      0;
-
-
-    enemyName.textContent =
-      `${enemy.name} HP ${enemy.hp}/${enemy.maxHp}`;
-
-
-    // ==================================================
-    // 敵画像を初期状態に戻す
-    // ==================================================
-
-    enemySprite.style.backgroundImage =
-      `url("${enemy.image}")`;
-
-
-    enemySprite.style.backgroundPosition =
-      "0px 0px";
-
-
-    enemySprite.style.opacity =
-      "1";
-
-
-    enemySprite.style.transform =
-      "none";
-
-
-    enemySprite.classList.remove(
-      "enemy-hit",
-      "enemy-defeated"
-    );
-
-
-    if (enemyHP) {
-
-      enemyHP.style.width =
-        "100%";
+      enemyName.textContent =
+        game.currentEnemy.name;
 
     }
 
 
-    battleMessage.textContent =
-      `${enemy.name}が あらわれた！`;
+    if (enemySprite) {
+
+      enemySprite.style.backgroundImage =
+        `url("${game.currentEnemy.image}")`;
+
+      enemySprite.style.backgroundPosition =
+        "0px 0px";
+
+      enemySprite.style.opacity =
+        "1";
+
+      enemySprite.style.transform =
+        "none";
+
+    }
+
+
+    updateEnemyHP();
+
+    updatePlayerStatus();
+
+
+    if (battleMessage) {
+
+      battleMessage.textContent =
+        `${game.currentEnemy.name} があらわれた！`;
+
+    }
 
 
     showScreen(
@@ -135,86 +284,14 @@ window.BattleModule = (() => {
 
 
   // ==================================================
-  // 敵HP表示
-  // ==================================================
-
-  function updateEnemyHp() {
-
-    const {
-      game,
-      enemyName,
-      enemyHP
-    } = settings;
-
-
-    if (
-      !game.currentEnemy
-    ) {
-
-      return;
-
-    }
-
-
-    const enemy =
-      game.currentEnemy;
-
-
-    const percent =
-      (
-        enemy.hp /
-        enemy.maxHp
-      ) * 100;
-
-
-    if (enemyHP) {
-
-      enemyHP.style.width =
-        Math.max(
-          0,
-          percent
-        ) + "%";
-
-    }
-
-
-    enemyName.textContent =
-      `${enemy.name} HP ${enemy.hp}/${enemy.maxHp}`;
-
-  }
-
-
-  // ==================================================
-  // 武器ダメージ取得
-  // ==================================================
-
-  function getWeaponDamage(
-    weapon
-  ) {
-
-    return (
-      weaponDamage[weapon] ||
-      1
-    );
-
-  }
-
-
-  // ==================================================
-  // 正解 → 主人公の攻撃
+  // プレイヤー攻撃
   // ==================================================
 
   function playerAttack() {
 
-    const {
-      game,
-      battleMessage,
-      showScreen
-    } = settings;
-
-
     if (
-      !game.currentEnemy
+      !game.currentEnemy ||
+      !game.selectedWeapon
     ) {
 
       return;
@@ -223,14 +300,14 @@ window.BattleModule = (() => {
 
 
     const damage =
-      getWeaponDamage(
+      weaponDamage[
         game.selectedWeapon
-      );
+      ] || 1;
 
 
-    // ==================================================
+    // --------------------------
     // コンボ
-    // ==================================================
+    // --------------------------
 
     game.combo++;
 
@@ -246,96 +323,85 @@ window.BattleModule = (() => {
     }
 
 
-    // ==================================================
-    // 敵HPを減らす
-    // ==================================================
+    // 3コンボごとにボーナスEXP
+    if (
+      game.combo > 0 &&
+      game.combo % 3 === 0
+    ) {
+
+      game.battleBonusExp++;
+
+    }
+
+
+    // --------------------------
+    // 敵にダメージ
+    // --------------------------
 
     game.currentEnemy.hp -=
       damage;
 
 
     if (
-      game.currentEnemy.hp <
-      0
+      game.currentEnemy.hp < 0
     ) {
 
-      game.currentEnemy.hp =
-        0;
+      game.currentEnemy.hp = 0;
 
     }
 
 
-    updateEnemyHp();
+    updateEnemyHP();
 
 
-    showScreen(
-      "battle"
-    );
+    playEnemyHitEffect();
 
-
-    // ==================================================
-    // 被弾リアクション
-    // ==================================================
-
-    playEnemyHitEffect(
+    showDamageNumber(
       damage
     );
 
 
+    // --------------------------
+    // メッセージ
+    // --------------------------
+
     let message =
-      `${damage}ダメージ！`;
+      `${damage} ダメージ！`;
 
 
-    if (
-      game.combo >= 2
-    ) {
+    if (game.combo >= 2) {
 
       message +=
-        `\n${game.combo} COMBO!`;
+        ` ${game.combo} COMBO！`;
 
     }
 
-
-    // ==================================================
-    // 3コンボごとにEXP +1
-    // ==================================================
 
     if (
       game.combo > 0 &&
       game.combo % 3 === 0
     ) {
 
-      if (
-        typeof game.battleBonusExp !==
-        "number"
-      ) {
-
-        game.battleBonusExp =
-          0;
-
-      }
-
-
-      game.battleBonusExp++;
-
-
       message +=
-        "\nBONUS EXP +1!";
+        " ボーナスEXP +1！";
 
     }
 
 
-    battleMessage.textContent =
-      message;
+    if (battleMessage) {
+
+      battleMessage.textContent =
+        message;
+
+    }
 
 
-    // ==================================================
+    // --------------------------
     // 敵を倒した
-    // ==================================================
+    // --------------------------
 
     if (
-      game.currentEnemy.hp <=
-      0
+      game.currentEnemy.hp <= 0
     ) {
 
       setTimeout(
@@ -347,68 +413,28 @@ window.BattleModule = (() => {
         500
       );
 
-
-      return;
-
     }
-
-
-    // ==================================================
-    // 次のターン
-    // ==================================================
-
-    setTimeout(
-      () => {
-
-        if (
-          !game.currentEnemy
-        ) {
-
-          return;
-
-        }
-
-
-        battleMessage.textContent =
-          "次の武器を選ぼう！";
-
-      },
-      800
-    );
 
   }
 
 
   // ==================================================
-  // 不正解 → 敵の攻撃
+  // 敵の攻撃
   // ==================================================
 
   function enemyAttack() {
 
-    const {
-      game,
-      battleMessage,
-      showScreen
-    } = settings;
-
-
-    if (
-      !game.currentEnemy
-    ) {
-
+    if (!game.currentEnemy) {
       return;
-
     }
 
 
+    // 間違えるとコンボ終了
+    game.combo = 0;
+
+
     const damage =
-      game.currentEnemy.attack ||
-      1;
-
-
-    // コンボ終了
-    game.combo =
-      0;
+      game.currentEnemy.attack || 1;
 
 
     game.player.hp -=
@@ -416,101 +442,50 @@ window.BattleModule = (() => {
 
 
     if (
-      game.player.hp <
-      0
+      game.player.hp < 0
     ) {
 
-      game.player.hp =
-        0;
+      game.player.hp = 0;
 
     }
 
+
+    updatePlayerStatus();
+
+    saveGame();
+
+
+    if (battleMessage) {
+
+      battleMessage.textContent =
+        `${game.currentEnemy.name} の攻撃！ ${damage} ダメージ！`;
+
+    }
+
+
+    // --------------------------
+    // プレイヤーHP0
+    // --------------------------
 
     if (
-      typeof saveGame ===
-      "function"
+      game.player.hp <= 0
     ) {
 
-      saveGame();
+      defeatPlayer();
 
     }
-
-
-    showScreen(
-      "battle"
-    );
-
-
-    battleMessage.textContent =
-      `${game.currentEnemy.name}の攻撃！\n${damage}ダメージ！\nHP ${game.player.hp}/${game.player.maxHp}`;
-
-
-    // ==================================================
-    // 主人公が倒れた
-    // ==================================================
-
-    if (
-      game.player.hp <=
-      0
-    ) {
-
-      setTimeout(
-        () => {
-
-          defeatPlayer();
-
-        },
-        900
-      );
-
-
-      return;
-
-    }
-
-
-    setTimeout(
-      () => {
-
-        if (
-          !game.currentEnemy
-        ) {
-
-          return;
-
-        }
-
-
-        battleMessage.textContent =
-          `HP ${game.player.hp}/${game.player.maxHp}\n次の武器を選ぼう！`;
-
-      },
-      1000
-    );
 
   }
 
 
   // ==================================================
-  // 敵ダメージリアクション
-  // 揺れ＋白フラッシュ
+  // 敵ヒット演出
   // ==================================================
 
-  function playEnemyHitEffect(
-    damage
-  ) {
+  function playEnemyHitEffect() {
 
-    const {
-      enemySprite
-    } = settings;
-
-
-    if (
-      !enemySprite
-    ) {
-
+    if (!enemySprite) {
       return;
-
     }
 
 
@@ -519,18 +494,11 @@ window.BattleModule = (() => {
     );
 
 
-    // 同じアニメーションを
-    // 連続で再生するため
     void enemySprite.offsetWidth;
 
 
     enemySprite.classList.add(
       "enemy-hit"
-    );
-
-
-    showDamageNumber(
-      damage
     );
 
 
@@ -542,7 +510,7 @@ window.BattleModule = (() => {
         );
 
       },
-      450
+      350
     );
 
   }
@@ -556,45 +524,43 @@ window.BattleModule = (() => {
     damage
   ) {
 
-    const {
-      enemySprite
-    } = settings;
-
-
-    if (
-      !enemySprite ||
-      !enemySprite.parentElement
-    ) {
-
+    if (!enemySprite) {
       return;
-
     }
 
 
-    const number =
+    const parent =
+      enemySprite.parentElement;
+
+
+    if (!parent) {
+      return;
+    }
+
+
+    const damageElement =
       document.createElement(
         "div"
       );
 
 
-    number.className =
+    damageElement.className =
       "damage-number";
 
 
-    number.textContent =
+    damageElement.textContent =
       `-${damage}`;
 
 
-    enemySprite.parentElement
-      .appendChild(
-        number
-      );
+    parent.appendChild(
+      damageElement
+    );
 
 
     setTimeout(
       () => {
 
-        number.remove();
+        damageElement.remove();
 
       },
       800
@@ -604,33 +570,27 @@ window.BattleModule = (() => {
 
 
   // ==================================================
-  // 敵撃破アニメーション
-  //
-  // 敵画像は
-  // 256px × 64px
-  //
-  // 64px × 64px が4コマ
-  //
-  // CSSで2倍表示しているため
-  // background-position は
-  // 128pxずつ動かす
+  // 敵の消滅アニメーション
   // ==================================================
 
-  function playEnemyDefeatAnimation() {
+  function playEnemyDefeatAnimation(
+    callback
+  ) {
 
-    const {
-      enemySprite
-    } = settings;
+    if (!enemySprite) {
 
-
-    if (
-      !enemySprite
-    ) {
+      callback();
 
       return;
 
     }
 
+
+    // 通常敵の元画像は
+    // 64px × 64px が4コマ。
+    //
+    // CSSで2倍表示しているので
+    // 画面上では1コマ128px。
 
     const frameWidth =
       128;
@@ -644,24 +604,13 @@ window.BattleModule = (() => {
       0;
 
 
-    enemySprite.style.opacity =
-      "1";
-
-
-    enemySprite.style.transform =
-      "none";
-
-
-    enemySprite.style.backgroundPosition =
-      "0px 0px";
-
-
-    const timer =
+    const interval =
       setInterval(
         () => {
 
-          enemySprite.style.backgroundPosition =
-            `${-frameWidth * frame}px 0px`;
+          enemySprite.style
+            .backgroundPosition =
+              `-${frame * frameWidth}px 0px`;
 
 
           frame++;
@@ -673,16 +622,18 @@ window.BattleModule = (() => {
           ) {
 
             clearInterval(
-              timer
+              interval
             );
 
 
-            // 最後のコマを少し見せてから消す
             setTimeout(
               () => {
 
                 enemySprite.style.opacity =
                   "0";
+
+
+                callback();
 
               },
               180
@@ -703,218 +654,137 @@ window.BattleModule = (() => {
 
   function defeatEnemy() {
 
-    const {
-      game,
-      enemySprite,
-      battleMessage
-    } = settings;
-
-
-    if (
-      !game.currentEnemy
-    ) {
-
+    if (!game.currentEnemy) {
       return;
-
     }
 
 
-    const enemy =
+    const defeatedEnemy =
       game.currentEnemy;
 
 
-    const bonusExp =
-      game.battleBonusExp ||
-      0;
-
-
-    const gainedExp =
-      enemy.exp +
-      bonusExp;
-
-
-    // ==================================================
-    // 被弾アニメーションを終了
-    // ==================================================
-
-    if (
-      enemySprite
-    ) {
-
-      enemySprite.classList.remove(
-        "enemy-hit"
-      );
-
-    }
-
-
-    // ==================================================
-    // 元画像の撃破4コマを再生
-    // ==================================================
-
-    playEnemyDefeatAnimation();
-
-
-    // ==================================================
-    // EXP・ゴールド
-    // ==================================================
-
-    game.player.exp +=
-      gainedExp;
-
-
-    game.player.gold +=
-      enemy.gold;
-
-
-    // ==================================================
-    // レベルアップ
-    // ==================================================
-
-    const levelUps =
-      checkLevelUp();
-
-
-    // ==================================================
-    // 撃破メッセージ
-    // ==================================================
-
-    let message =
-      `${enemy.name}を たおした！`;
-
-
-    message +=
-      `\nEXP +${gainedExp}`;
-
-
-    message +=
-      `\n💰 ${enemy.gold}G`;
-
-
-    if (
-      bonusExp > 0
-    ) {
-
-      message +=
-        `\nコンボボーナス EXP +${bonusExp}`;
-
-    }
-
-
-    if (
-      levelUps > 0
-    ) {
-
-      message +=
-        `\n\n✨ LEVEL UP! ✨`;
-
-
-      message +=
-        `\nLv.${game.player.level}`;
-
-
-      message +=
-        `\n最大HP ${game.player.maxHp}`;
-
-    }
-
-
-    battleMessage.textContent =
-      message;
-
-
-    // ==================================================
-    // 次の敵へ
-    // ==================================================
-
-    game.enemyIndex++;
-
-
-    game.stepsSinceBattle =
-      0;
-
-
-    game.battleBonusExp =
-      0;
-
-
-    // ==================================================
-    // セーブ
-    // ==================================================
-
-    if (
-      typeof saveGame ===
-      "function"
-    ) {
-
-      saveGame();
-
-    }
-
-
-    // ==================================================
-    // 撃破メッセージと
-    // 消滅アニメーションを見せてから
-    // ネットワーク画面へ
-    // ==================================================
-
-    setTimeout(
+    playEnemyDefeatAnimation(
       () => {
+
+        const gainedExp =
+          defeatedEnemy.exp +
+          game.battleBonusExp;
+
+
+        const gainedGold =
+          defeatedEnemy.gold;
+
+
+        game.player.exp +=
+          gainedExp;
+
+
+        game.player.gold +=
+          gainedGold;
+
+
+        const levelUpCount =
+          checkLevelUp();
+
+
+        updatePlayerStatus();
+
+
+        let message =
+          `${defeatedEnemy.name} をたおした！ ` +
+          `EXP +${gainedExp} / ${gainedGold}G`;
+
+
+        if (levelUpCount > 0) {
+
+          message +=
+            `　レベルアップ！ Lv.${game.player.level}`;
+
+        }
+
+
+        if (battleMessage) {
+
+          battleMessage.textContent =
+            message;
+
+        }
+
+
+        game.enemyIndex++;
+
+        game.stepsSinceBattle =
+          0;
+
 
         game.currentEnemy =
           null;
 
 
-        if (
-          typeof settings.showNetwork ===
-          "function"
-        ) {
+        game.selectedWeapon =
+          null;
 
-          settings.showNetwork();
 
-        }
+        game.combo =
+          0;
 
-      },
-      1800
+
+        game.battleBonusExp =
+          0;
+
+
+        saveGame();
+
+
+        setTimeout(
+          () => {
+
+            showNetwork();
+
+          },
+          1800
+        );
+
+      }
     );
 
   }
 
 
   // ==================================================
-  // レベルアップ判定
+  // レベルアップ
   // ==================================================
 
   function checkLevelUp() {
 
-    const {
-      game
-    } = settings;
-
-
-    let levelUps =
+    let levelUpCount =
       0;
-
-
-    let requiredExp =
-      game.player.level *
-      10;
 
 
     while (
       game.player.exp >=
-      requiredExp
+      game.player.level * 10
     ) {
 
+      const neededExp =
+        game.player.level * 10;
+
+
       game.player.exp -=
-        requiredExp;
+        neededExp;
 
 
       game.player.level++;
 
 
+      // HP最大値 +2
       game.player.maxHp +=
         2;
+
+
+      // RP最大値 +1
+      game.player.maxRp +=
+        1;
 
 
       // レベルアップ時は全回復
@@ -922,56 +792,39 @@ window.BattleModule = (() => {
         game.player.maxHp;
 
 
-      levelUps++;
+      game.player.rp =
+        game.player.maxRp;
 
 
-      requiredExp =
-        game.player.level *
-        10;
+      levelUpCount++;
 
     }
 
 
-    return levelUps;
+    return levelUpCount;
 
   }
 
 
   // ==================================================
-  // 主人公敗北
+  // プレイヤー敗北
   // ==================================================
 
   function defeatPlayer() {
 
-    const {
-      game,
-      battleMessage,
-      showScreen
-    } = settings;
+    if (battleMessage) {
 
+      battleMessage.textContent =
+        "力尽きた…… はじまりの王国へ戻ろう。";
 
-    battleMessage.textContent =
-      "力尽きた……";
-
-
-    game.combo =
-      0;
-
-
-    game.battleBonusExp =
-      0;
+    }
 
 
     setTimeout(
       () => {
 
-        // 王国へ戻る
         game.area =
           "kingdom";
-
-
-        game.stepsSinceBattle =
-          0;
 
 
         game.player.x =
@@ -979,30 +832,45 @@ window.BattleModule = (() => {
 
 
         game.player.y =
-          82;
+          58;
 
 
         game.player.direction =
-          "up";
+          "down";
 
 
-        // HP全回復
+        // 王国で全回復
         game.player.hp =
           game.player.maxHp;
+
+
+        game.player.rp =
+          game.player.maxRp;
+
+
+        game.stepsSinceBattle =
+          0;
 
 
         game.currentEnemy =
           null;
 
 
-        if (
-          typeof saveGame ===
-          "function"
-        ) {
+        game.selectedWeapon =
+          null;
 
-          saveGame();
 
-        }
+        game.combo =
+          0;
+
+
+        game.battleBonusExp =
+          0;
+
+
+        updatePlayerStatus();
+
+        saveGame();
 
 
         showScreen(
@@ -1010,24 +878,12 @@ window.BattleModule = (() => {
         );
 
 
-        if (
-          settings.updateField
-        ) {
-
-          settings.updateField();
-
-        }
+        updateField();
 
 
-        if (
-          settings.setFieldMessage
-        ) {
-
-          settings.setFieldMessage(
-            "王国で休んでHPが全回復した！"
-          );
-
-        }
+        setFieldMessage(
+          "王国で休んで、HPとRPが全回復した！"
+        );
 
       },
       1300
@@ -1037,7 +893,7 @@ window.BattleModule = (() => {
 
 
   // ==================================================
-  // 外から使える機能
+  // 外から使うもの
   // ==================================================
 
   return {
@@ -1046,19 +902,11 @@ window.BattleModule = (() => {
 
     startBattle,
 
-    updateEnemyHp,
-
-    getWeaponDamage,
-
     playerAttack,
 
     enemyAttack,
 
-    defeatEnemy,
-
-    defeatPlayer,
-
-    checkLevelUp
+    updatePlayerStatus
 
   };
 
