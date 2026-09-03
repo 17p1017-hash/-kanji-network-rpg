@@ -100,8 +100,6 @@
       </div>
 
 
-      <!-- 方向ボタン -->
-
       <div class="direction-controls">
 
         <button
@@ -155,11 +153,6 @@
 
       <div class="battle-panel">
 
-
-        <!-- ==================================================
-             敵
-        ================================================== -->
-
         <h2 id="enemy-name">
           ワードスライム
         </h2>
@@ -195,25 +188,14 @@
         </div>
 
 
-        <!-- ==================================================
-             武器
-        ================================================== -->
-
         <div class="weapon-grid">
 
           <button
             class="weapon-button"
             data-weapon="sword"
           >
-
-            <span class="weapon-icon">
-              ⚔️
-            </span>
-
-            <span class="weapon-name">
-              剣
-            </span>
-
+            <span class="weapon-icon">⚔️</span>
+            <span class="weapon-name">剣</span>
           </button>
 
 
@@ -221,15 +203,8 @@
             class="weapon-button"
             data-weapon="bow"
           >
-
-            <span class="weapon-icon">
-              🏹
-            </span>
-
-            <span class="weapon-name">
-              弓
-            </span>
-
+            <span class="weapon-icon">🏹</span>
+            <span class="weapon-name">弓</span>
           </button>
 
 
@@ -237,15 +212,8 @@
             class="weapon-button"
             data-weapon="staff"
           >
-
-            <span class="weapon-icon">
-              🪄
-            </span>
-
-            <span class="weapon-name">
-              杖
-            </span>
-
+            <span class="weapon-icon">🪄</span>
+            <span class="weapon-name">杖</span>
           </button>
 
 
@@ -253,15 +221,8 @@
             class="weapon-button"
             data-weapon="hammer"
           >
-
-            <span class="weapon-icon">
-              🔨
-            </span>
-
-            <span class="weapon-name">
-              ハンマー
-            </span>
-
+            <span class="weapon-icon">🔨</span>
+            <span class="weapon-name">ハンマー</span>
           </button>
 
         </div>
@@ -274,10 +235,6 @@
           ✨ スキル
         </button>
 
-
-        <!-- ==================================================
-             主人公ステータス
-        ================================================== -->
 
         <div
           id="player-battle-status"
@@ -344,9 +301,9 @@
     </section>
 
 
-    <!-- ==========================================
+    <!-- ==================================================
          バトル用スキル画面
-    =========================================== -->
+    ================================================== -->
 
     <section
       id="skill-screen"
@@ -481,7 +438,6 @@
 
       <div class="network-map">
 
-
         <div
           id="node-yomu"
           class="network-node node-top"
@@ -522,11 +478,8 @@
 
 
         <div class="network-line line-top"></div>
-
         <div class="network-line line-left"></div>
-
         <div class="network-line line-right"></div>
-
         <div class="network-line line-bottom"></div>
 
       </div>
@@ -579,8 +532,6 @@
 
       </div>
 
-
-      <!-- 読スキル -->
 
       <div
         id="skill-card-yomu"
@@ -654,46 +605,23 @@
       </div>
 
 
-      <!-- 今後の漢字 -->
-
       <div class="locked-skills">
 
         <div class="locked-skill-card">
-
-          <span class="locked-kanji">
-            書
-          </span>
-
-          <span>
-            🔒 まだ使えない
-          </span>
-
+          <span class="locked-kanji">書</span>
+          <span>🔒 まだ使えない</span>
         </div>
 
 
         <div class="locked-skill-card">
-
-          <span class="locked-kanji">
-            聞
-          </span>
-
-          <span>
-            🔒 まだ使えない
-          </span>
-
+          <span class="locked-kanji">聞</span>
+          <span>🔒 まだ使えない</span>
         </div>
 
 
         <div class="locked-skill-card">
-
-          <span class="locked-kanji">
-            話
-          </span>
-
-          <span>
-            🔒 まだ使えない
-          </span>
-
+          <span class="locked-kanji">話</span>
+          <span>🔒 まだ使えない</span>
         </div>
 
       </div>
@@ -767,7 +695,6 @@
 
   <!-- ==================================================
        JavaScript
-       問題データ → ゲーム本体の順番
   ================================================== -->
 
 
@@ -776,9 +703,7 @@
   <script src="data/yomu.js"></script>
 
 
-  <!-- ==================================================
-       第1章 小学1年生漢字 40字
-  ================================================== -->
+  <!-- 第1章 小学1年生漢字 40字 -->
 
   <script src="data/chapter1_01.js"></script>
   <script src="data/chapter1_02.js"></script>
@@ -789,15 +714,39 @@
   <script src="data/chapter1_07.js"></script>
   <script src="data/chapter1_08.js"></script>
 
-<script src="data/handwriting_grade1.js"></script>
-  <!-- ゲームシステム -->
+
+  <!-- 手書き判定データ -->
+
+  <script src="data/handwriting_grade1.js"></script>
+
+
+  <!-- ==================================================
+       マップデータ
+       ★ 今回ここを追加
+  ================================================== -->
+
+  <script src="maps/kingdom.js"></script>
+  <script src="maps/reading_forest.js"></script>
+
+
+  <!-- ==================================================
+       ゲームシステム
+  ================================================== -->
 
   <script src="js/save.js"></script>
+
   <script src="js/field.js"></script>
+
   <script src="js/battle.js"></script>
+
   <script src="js/challenge.js"></script>
+
   <script src="js/writing.js"></script>
+
   <script src="js/mastery.js"></script>
+
+
+  <!-- ゲーム本体 -->
 
   <script src="game.js"></script>
 
