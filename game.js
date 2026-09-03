@@ -51,26 +51,27 @@ document.addEventListener("DOMContentLoaded", () => {
   // ==================================================
 
   const screens = {
-    title:
-      document.getElementById("title-screen"),
+  title:
+    document.getElementById("title-screen"),
 
-    field:
-      document.getElementById("field-screen"),
+  field:
+    document.getElementById("field-screen"),
 
-    battle:
-      document.getElementById("battle-screen"),
+  battle:
+    document.getElementById("battle-screen"),
 
-    challenge:
-      document.getElementById("challenge-screen"),
+  skill:
+    document.getElementById("skill-screen"),
 
-    network:
-      document.getElementById("network-screen"),
+  challenge:
+    document.getElementById("challenge-screen"),
 
-    clear:
-      document.getElementById("clear-screen")
-  };
+  network:
+    document.getElementById("network-screen"),
 
-
+  clear:
+    document.getElementById("clear-screen")
+};
   function showScreen(name) {
 
     Object.values(screens)
@@ -701,7 +702,58 @@ document.addEventListener("DOMContentLoaded", () => {
       );
 
   }
+// ==================================================
+// スキル画面を開く
+// ==================================================
 
+const skillMenuButton =
+  document.getElementById(
+    "skill-menu-button"
+  );
+
+if (skillMenuButton) {
+
+  skillMenuButton.addEventListener(
+    "click",
+    () => {
+
+      if (!game.currentEnemy) {
+        return;
+      }
+
+      showScreen(
+        "skill"
+      );
+
+    }
+  );
+
+}
+
+
+// ==================================================
+// スキル画面から戻る
+// ==================================================
+
+const skillBackButton =
+  document.getElementById(
+    "skill-back-button"
+  );
+
+if (skillBackButton) {
+
+  skillBackButton.addEventListener(
+    "click",
+    () => {
+
+      showScreen(
+        "battle"
+      );
+
+    }
+  );
+
+}
 
   // ==================================================
   // ネットワークを閉じる
