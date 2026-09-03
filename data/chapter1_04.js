@@ -38,12 +38,13 @@ const CHAPTER1_04 = {
 
       words: [
         "一",
-        "一つ",
-        "一日"
+        "一日",
+        "一本"
       ],
 
       questions: {
 
+        // ⚔️ 見て選ぶ
         sword: [
 
           {
@@ -72,37 +73,27 @@ const CHAPTER1_04 = {
 
         ],
 
+        // 🏹 組み立てる
         bow: [
 
           {
             type: "build",
-            question: "「一つ」を作ろう。",
+            question: "「いっぽん」と読むことばを、パーツを順番にえらんで作ろう。",
             parts: [
               "一",
-              "つ"
+              "本"
             ],
-            correct: "一つ"
+            correct: "一本"
           }
 
         ],
 
+        // 🪄 意味・場面から考える
         staff: [
 
           {
             type: "meaning",
-            question: "りんごが1こあります。「1」を漢字で表すとどれ？",
-            answers: [
-              "一",
-              "二",
-              "三",
-              "四"
-            ],
-            correct: "一"
-          },
-
-          {
-            type: "meaning",
-            question: "一番はじめの数を漢字で表すと？",
+            question: "りんごが1こあります。いくつある？",
             answers: [
               "一",
               "二",
@@ -110,10 +101,23 @@ const CHAPTER1_04 = {
               "五"
             ],
             correct: "一"
+          },
+
+          {
+            type: "meaning",
+            question: "えんぴつを1本だけ持っています。数を表す漢字は？",
+            answers: [
+              "一",
+              "二",
+              "四",
+              "五"
+            ],
+            correct: "一"
           }
 
         ],
 
+        // 🔨 書く
         hammer: [
 
           {
@@ -150,7 +154,7 @@ const CHAPTER1_04 = {
 
       words: [
         "二",
-        "二つ",
+        "二日",
         "二人"
       ],
 
@@ -175,7 +179,7 @@ const CHAPTER1_04 = {
             question: "数の「2」を表す漢字はどれ？",
             answers: [
               "二",
-              "三",
+              "一",
               "四",
               "五"
             ],
@@ -188,12 +192,12 @@ const CHAPTER1_04 = {
 
           {
             type: "build",
-            question: "「二つ」を作ろう。",
+            question: "「ふたり」と読むことばを、パーツを順番にえらんで作ろう。",
             parts: [
               "二",
-              "つ"
+              "人"
             ],
-            correct: "二つ"
+            correct: "二人"
           }
 
         ],
@@ -202,7 +206,7 @@ const CHAPTER1_04 = {
 
           {
             type: "meaning",
-            question: "えんぴつが2本あります。「2」を漢字で表すとどれ？",
+            question: "ねこが2ひきいます。いくついる？",
             answers: [
               "二",
               "一",
@@ -214,10 +218,10 @@ const CHAPTER1_04 = {
 
           {
             type: "meaning",
-            question: "一の次にくる数を漢字で表すと？",
+            question: "ふたりでいっしょに遊びます。人数を表す漢字は？",
             answers: [
               "二",
-              "三",
+              "一",
               "四",
               "五"
             ],
@@ -253,7 +257,7 @@ const CHAPTER1_04 = {
 
       readings: [
         "さん",
-        "みっ"
+        "み"
       ],
 
       meaning: "数の3",
@@ -262,8 +266,8 @@ const CHAPTER1_04 = {
 
       words: [
         "三",
-        "三つ",
-        "三人"
+        "三人",
+        "三日"
       ],
 
       questions: {
@@ -275,8 +279,8 @@ const CHAPTER1_04 = {
             question: "「さん」と読む漢字はどれ？",
             answers: [
               "三",
+              "一",
               "二",
-              "四",
               "五"
             ],
             correct: "三"
@@ -288,7 +292,7 @@ const CHAPTER1_04 = {
             answers: [
               "三",
               "一",
-              "二",
+              "四",
               "五"
             ],
             correct: "三"
@@ -300,12 +304,12 @@ const CHAPTER1_04 = {
 
           {
             type: "build",
-            question: "「三つ」を作ろう。",
+            question: "「さんにん」と読むことばを、パーツを順番にえらんで作ろう。",
             parts: [
               "三",
-              "つ"
+              "人"
             ],
-            correct: "三つ"
+            correct: "三人"
           }
 
         ],
@@ -314,24 +318,24 @@ const CHAPTER1_04 = {
 
           {
             type: "meaning",
-            question: "ボールが3こあります。「3」を漢字で表すとどれ？",
+            question: "ボールが3こあります。いくつある？",
             answers: [
               "三",
               "一",
               "二",
-              "四"
+              "五"
             ],
             correct: "三"
           },
 
           {
             type: "meaning",
-            question: "一、二、その次の数を漢字で表すと？",
+            question: "三人でならんでいます。人数を表す漢字は？",
             answers: [
               "三",
+              "二",
               "四",
-              "五",
-              "二"
+              "五"
             ],
             correct: "三"
           }
@@ -366,7 +370,7 @@ const CHAPTER1_04 = {
       readings: [
         "し",
         "よん",
-        "よっ"
+        "よ"
       ],
 
       meaning: "数の4",
@@ -375,8 +379,8 @@ const CHAPTER1_04 = {
 
       words: [
         "四",
-        "四つ",
-        "四人"
+        "四人",
+        "四日"
       ],
 
       questions: {
@@ -388,9 +392,9 @@ const CHAPTER1_04 = {
             question: "「よん」と読む漢字はどれ？",
             answers: [
               "四",
+              "一",
               "三",
-              "五",
-              "二"
+              "五"
             ],
             correct: "四"
           },
@@ -400,7 +404,7 @@ const CHAPTER1_04 = {
             question: "数の「4」を表す漢字はどれ？",
             answers: [
               "四",
-              "一",
+              "二",
               "三",
               "五"
             ],
@@ -413,12 +417,12 @@ const CHAPTER1_04 = {
 
           {
             type: "build",
-            question: "「四つ」を作ろう。",
+            question: "「よにん」と読むことばを、パーツを順番にえらんで作ろう。",
             parts: [
               "四",
-              "つ"
+              "人"
             ],
-            correct: "四つ"
+            correct: "四人"
           }
 
         ],
@@ -427,11 +431,11 @@ const CHAPTER1_04 = {
 
           {
             type: "meaning",
-            question: "いすが4きゃくあります。「4」を漢字で表すとどれ？",
+            question: "いすが4こならんでいます。いくつある？",
             answers: [
               "四",
+              "一",
               "三",
-              "二",
               "五"
             ],
             correct: "四"
@@ -439,11 +443,11 @@ const CHAPTER1_04 = {
 
           {
             type: "meaning",
-            question: "三の次、五の前にある数は？",
+            question: "4人でチームを作りました。人数を表す漢字は？",
             answers: [
               "四",
               "二",
-              "一",
+              "三",
               "五"
             ],
             correct: "四"
@@ -487,8 +491,8 @@ const CHAPTER1_04 = {
 
       words: [
         "五",
-        "五つ",
-        "五人"
+        "五人",
+        "五月"
       ],
 
       questions: {
@@ -500,9 +504,9 @@ const CHAPTER1_04 = {
             question: "「ご」と読む漢字はどれ？",
             answers: [
               "五",
-              "四",
-              "三",
-              "二"
+              "一",
+              "二",
+              "四"
             ],
             correct: "五"
           },
@@ -512,8 +516,8 @@ const CHAPTER1_04 = {
             question: "数の「5」を表す漢字はどれ？",
             answers: [
               "五",
-              "一",
               "二",
+              "三",
               "四"
             ],
             correct: "五"
@@ -525,12 +529,12 @@ const CHAPTER1_04 = {
 
           {
             type: "build",
-            question: "「五つ」を作ろう。",
+            question: "「ごにん」と読むことばを、パーツを順番にえらんで作ろう。",
             parts: [
               "五",
-              "つ"
+              "人"
             ],
-            correct: "五つ"
+            correct: "五人"
           }
 
         ],
@@ -539,10 +543,10 @@ const CHAPTER1_04 = {
 
           {
             type: "meaning",
-            question: "星が5こあります。「5」を漢字で表すとどれ？",
+            question: "星が5こ見えます。いくつある？",
             answers: [
               "五",
-              "二",
+              "一",
               "三",
               "四"
             ],
@@ -551,11 +555,11 @@ const CHAPTER1_04 = {
 
           {
             type: "meaning",
-            question: "一、二、三、四、その次の数は？",
+            question: "5人でいっしょに歩いています。人数を表す漢字は？",
             answers: [
               "五",
-              "三",
               "二",
+              "三",
               "四"
             ],
             correct: "五"
