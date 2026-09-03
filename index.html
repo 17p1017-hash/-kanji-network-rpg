@@ -148,121 +148,192 @@
          バトル画面
     ================================================== -->
 
-    <section
-      id="battle-screen"
-      class="screen"
+ <section
+  id="battle-screen"
+  class="screen"
+>
+
+  <div class="battle-panel">
+
+    <!-- ==================================================
+         敵
+    ================================================== -->
+
+    <h2
+      id="enemy-name"
+    >
+      ワードスライム
+    </h2>
+
+
+    <div
+      class="hp-bar enemy-hp-bar"
     >
 
-      <div class="battle-header">
+      <div
+        id="enemy-hp"
+      ></div>
 
-        <h2 id="enemy-name">
-          ワードスライム
-        </h2>
+    </div>
 
-        <div class="hp-bar">
+
+    <div
+      id="enemy-sprite"
+    ></div>
+
+
+    <div
+      id="battle-message"
+    >
+      敵があらわれた！
+    </div>
+
+
+    <!-- ==================================================
+         武器
+    ================================================== -->
+
+    <div
+      class="weapon-grid"
+    >
+
+      <button
+        class="weapon-button"
+        data-weapon="sword"
+      >
+        <span class="weapon-icon">
+          ⚔️
+        </span>
+
+        <span class="weapon-name">
+          剣
+        </span>
+      </button>
+
+
+      <button
+        class="weapon-button"
+        data-weapon="bow"
+      >
+        <span class="weapon-icon">
+          🏹
+        </span>
+
+        <span class="weapon-name">
+          弓
+        </span>
+      </button>
+
+
+      <button
+        class="weapon-button"
+        data-weapon="staff"
+      >
+        <span class="weapon-icon">
+          🪄
+        </span>
+
+        <span class="weapon-name">
+          杖
+        </span>
+      </button>
+
+
+      <button
+        class="weapon-button"
+        data-weapon="hammer"
+      >
+        <span class="weapon-icon">
+          🔨
+        </span>
+
+        <span class="weapon-name">
+          ハンマー
+        </span>
+      </button>
+
+    </div>
+
+
+    <!-- ==================================================
+         主人公ステータス
+    ================================================== -->
+
+    <div
+      id="player-battle-status"
+      class="player-battle-status"
+    >
+
+      <div
+        class="player-status-row"
+      >
+
+        <span
+          class="status-label"
+        >
+          HP
+        </span>
+
+
+        <div
+          class="player-status-bar"
+        >
 
           <div
-            id="enemy-hp"
-            class="hp-fill"
+            id="player-hp-bar"
+            class="player-hp-fill"
           ></div>
 
         </div>
 
-      </div>
 
-
-      <div class="battle-field">
-
-        <div id="enemy-sprite"></div>
+        <span
+          id="player-hp-text"
+          class="status-value"
+        >
+          10 / 10
+        </span>
 
       </div>
 
 
       <div
-        id="battle-message"
-        class="message-box"
+        class="player-status-row"
       >
-        モンスターが あらわれた！
-      </div>
 
-
-      <div class="weapon-grid">
-
-        <button
-          class="weapon-button"
-          data-weapon="sword"
+        <span
+          class="status-label"
         >
-          <span class="weapon-icon">
-            ⚔️
-          </span>
-
-          <span class="weapon-name">
-            剣
-          </span>
-
-          <span class="weapon-description">
-            見て選ぶ
-          </span>
-        </button>
+          RP
+        </span>
 
 
-        <button
-          class="weapon-button"
-          data-weapon="bow"
+        <div
+          class="player-status-bar"
         >
-          <span class="weapon-icon">
-            🏹
-          </span>
 
-          <span class="weapon-name">
-            弓
-          </span>
+          <div
+            id="player-rp-bar"
+            class="player-rp-fill"
+          ></div>
 
-          <span class="weapon-description">
-            組み立てる
-          </span>
-        </button>
+        </div>
 
 
-        <button
-          class="weapon-button"
-          data-weapon="staff"
+        <span
+          id="player-rp-text"
+          class="status-value"
         >
-          <span class="weapon-icon">
-            🪄
-          </span>
-
-          <span class="weapon-name">
-            杖
-          </span>
-
-          <span class="weapon-description">
-            意味からつなぐ
-          </span>
-        </button>
-
-
-        <button
-          class="weapon-button"
-          data-weapon="hammer"
-        >
-          <span class="weapon-icon">
-            🔨
-          </span>
-
-          <span class="weapon-name">
-            ハンマー
-          </span>
-
-          <span class="weapon-description">
-            書いてみる
-          </span>
-        </button>
+          10 / 10
+        </span>
 
       </div>
 
-    </section>
+    </div>
 
+  </div>
+
+</section>
 
     <!-- ==================================================
          問題画面
