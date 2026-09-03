@@ -1208,3 +1208,41 @@ button {
   margin-left: auto;
   margin-right: auto;
 }
+
+/* ==================================================
+   戦闘画面：スキルボタン
+================================================== */
+
+.battle-skill-menu-button {
+  display: block;
+
+  width: 100%;
+  max-width: 520px;
+  min-height: 64px;
+
+  margin: 12px auto;
+
+  padding: 12px 18px;
+
+  font-size: 20px;
+  font-weight: 900;
+
+  text-align: center;
+
+  border: 3px solid #4a3722;
+  border-radius: 14px;
+
+  cursor: pointer;
+}
+
+
+/* スマホ */
+@media (max-width: 480px) {
+
+  .battle-skill-menu-button {
+    min-height: 60px;
+    font-size: 18px;
+    margin: 10px auto;
+  }
+
+}
