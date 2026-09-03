@@ -1153,3 +1153,49 @@ button {
   }
 
 }
+/* ==================================================
+   敵HP：バー + 数字
+================================================== */
+
+.enemy-hp-status {
+  width: 100%;
+  max-width: 420px;
+
+  margin: 8px auto 12px;
+
+  display: grid;
+  grid-template-columns: 1fr 58px;
+
+  align-items: center;
+  gap: 8px;
+}
+
+
+.enemy-hp-status .enemy-hp-bar {
+  width: 100%;
+  margin: 0;
+}
+
+
+.enemy-hp-text {
+  font-size: 15px;
+  font-weight: 900;
+
+  text-align: right;
+  white-space: nowrap;
+}
+
+
+/* スマホ */
+@media (max-width: 480px) {
+
+  .enemy-hp-status {
+    grid-template-columns: 1fr 52px;
+    gap: 6px;
+  }
+
+  .enemy-hp-text {
+    font-size: 14px;
+  }
+
+}
