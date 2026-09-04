@@ -532,20 +532,21 @@ const game = {
     x:
       saveData?.player?.x ??
       window.MAP_KINGDOM?.spawn?.x ??
-      627,
+      610,
 
     y:
       saveData?.player?.y ??
       window.MAP_KINGDOM?.spawn?.y ??
-      1030,
+      1060,
 
     direction:
       saveData?.player?.direction ??
       window.MAP_KINGDOM?.spawn?.direction ??
       "up",
 
-    step:
-      0,
+   step:
+  saveData?.player?.step ??
+  0,
 
       // --------------------------
       // レベル
