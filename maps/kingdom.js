@@ -136,7 +136,7 @@ const MAP_KINGDOM = {
 
     x: 610,
 
-    y: 1080,
+    y: 1060,
 
     direction: "up"
 
@@ -186,9 +186,9 @@ const MAP_KINGDOM = {
 
       targetMap: "forest",
 
-      targetX: 61,
+      targetX: 63,
 
-      targetY: 8,
+      targetY: 13,
 
       targetDirection: "down",
 
