@@ -2,13 +2,20 @@
 // field.js
 // 共通フィールドシステム
 //
-// 対応:
-// ・通常1枚マップ（％座標）
-// ・大型タイルマップ（px座標）
+// 担当:
+// ・マップ登録
+// ・通常1枚マップ
+// ・大型タイルマップ
+// ・px / % 座標
 // ・カメラ追従
+// ・前景レイヤー
+// ・状態オーバーレイ
 // ・当たり判定
 // ・出口
 // ・エンカウント
+//
+// 各マップ固有の設定は
+// maps/*.js 側に持たせる
 // ==================================================
 
 window.FieldModule = (() => {
@@ -24,10 +31,16 @@ window.FieldModule = (() => {
 
 
   // ==================================================
-  // 大型マップ用
+  // 大型マップ表示用レイヤー
   // ==================================================
 
   let worldLayer = null;
+
+  let backgroundLayer = null;
+
+  let overlayLayer = null;
+
+  let foregroundLayer = null;
 
   let renderedMapId = null;
 
@@ -42,30 +55,16 @@ window.FieldModule = (() => {
 
 
     // ----------------------------------------------
-    // マップ登録
+    // window.MAP_～ を自動登録
+    //
+    // MAP_KINGDOM
+    // MAP_READING_FOREST
+    // MAP_WORD_HILL
+    // など、今後増えてもfield.jsを変更しない
     // ----------------------------------------------
 
-    if (window.MAP_KINGDOM) {
+    registerGlobalMaps();
 
-      MAPS[
-        window.MAP_KINGDOM.id
-      ] = window.MAP_KINGDOM;
-
-    }
-
-
-    if (window.MAP_READING_FOREST) {
-
-      MAPS[
-        window.MAP_READING_FOREST.id
-      ] = window.MAP_READING_FOREST;
-
-    }
-
-
-    // ----------------------------------------------
-    // フィールド基本設定
-    // ----------------------------------------------
 
     const {
       field
@@ -84,18 +83,7 @@ window.FieldModule = (() => {
 
 
     // ----------------------------------------------
-    // 旧セーブデータ対策
-    //
-    // 以前の王国は％座標だったため
-    // x:50 y:58 などが保存されている可能性がある
-    // ----------------------------------------------
-
-    migrateOldKingdomPosition();
-
-
-    // ----------------------------------------------
     // 画面サイズ変更時
-    // カメラ位置を再計算
     // ----------------------------------------------
 
     window.addEventListener(
@@ -111,61 +99,77 @@ window.FieldModule = (() => {
 
 
   // ==================================================
-  // 旧王国座標を新王国へ移行
+  // グローバルマップを自動登録
   // ==================================================
 
-  function migrateOldKingdomPosition() {
+  function registerGlobalMaps() {
 
-    const {
-      game
-    } = settings;
+    Object.keys(
+      window
+    ).forEach(
+      key => {
+
+        if (
+          !key.startsWith(
+            "MAP_"
+          )
+        ) {
+
+          return;
+
+        }
 
 
-    if (
-      game.area !==
-      "kingdom"
-    ) {
-
-      return;
-
-    }
+        const map =
+          window[key];
 
 
-    const map =
-      MAPS.kingdom;
+        if (
+          !map ||
+          typeof map !==
+            "object" ||
+          !map.id
+        ) {
 
+          return;
+
+        }
+
+
+        MAPS[
+          map.id
+        ] = map;
+
+      }
+    );
+
+  }
+
+
+  // ==================================================
+  // マップを手動登録
+  //
+  // 今後動的マップを追加したい場合にも使える
+  // ==================================================
+
+  function registerMap(map) {
 
     if (
       !map ||
-      map.coordinateUnit !==
-      "pixel"
+      !map.id
     ) {
 
-      return;
+      return false;
 
     }
 
 
-    // ----------------------------------------------
-    // 旧％座標と判断
-    // ----------------------------------------------
+    MAPS[
+      map.id
+    ] = map;
 
-    if (
-      game.player.x <= 100 &&
-      game.player.y <= 100
-    ) {
 
-      game.player.x =
-        map.spawn.x;
-
-      game.player.y =
-        map.spawn.y;
-
-      game.player.direction =
-        map.spawn.direction ||
-        "up";
-
-    }
+    return true;
 
   }
 
@@ -175,6 +179,13 @@ window.FieldModule = (() => {
   // ==================================================
 
   function getCurrentMap() {
+
+    if (!settings) {
+
+      return null;
+
+    }
+
 
     const {
       game
@@ -189,7 +200,7 @@ window.FieldModule = (() => {
 
 
   // ==================================================
-  // pxマップか
+  // pxマップ判定
   // ==================================================
 
   function isPixelMap(map) {
@@ -197,7 +208,7 @@ window.FieldModule = (() => {
     return (
       map &&
       map.coordinateUnit ===
-      "pixel"
+        "pixel"
     );
 
   }
@@ -209,12 +220,21 @@ window.FieldModule = (() => {
 
   function setFieldMessage(text) {
 
+    if (!settings) {
+
+      return;
+
+    }
+
+
     const {
       fieldMessage
     } = settings;
 
 
-    if (fieldMessage) {
+    if (
+      fieldMessage
+    ) {
 
       fieldMessage.textContent =
         text;
@@ -225,7 +245,7 @@ window.FieldModule = (() => {
 
 
   // ==================================================
-  // 大型マップ用レイヤー作成
+  // 大型マップ用レイヤー生成
   // ==================================================
 
   function createWorldLayer() {
@@ -237,13 +257,18 @@ window.FieldModule = (() => {
 
     if (
       worldLayer &&
-      worldLayer.parentElement === field
+      worldLayer.parentElement ===
+        field
     ) {
 
       return worldLayer;
 
     }
 
+
+    // ==================================================
+    // 世界全体
+    // ==================================================
 
     worldLayer =
       document.createElement(
@@ -271,6 +296,115 @@ window.FieldModule = (() => {
       "transform";
 
 
+    // ==================================================
+    // 背景
+    // ==================================================
+
+    backgroundLayer =
+      document.createElement(
+        "div"
+      );
+
+
+    backgroundLayer.className =
+      "field-background-layer";
+
+
+    backgroundLayer.style.position =
+      "absolute";
+
+    backgroundLayer.style.left =
+      "0";
+
+    backgroundLayer.style.top =
+      "0";
+
+    backgroundLayer.style.zIndex =
+      "1";
+
+    backgroundLayer.style.pointerEvents =
+      "none";
+
+
+    // ==================================================
+    // 状態オーバーレイ
+    //
+    // 主人公より下
+    // ==================================================
+
+    overlayLayer =
+      document.createElement(
+        "div"
+      );
+
+
+    overlayLayer.className =
+      "field-overlay-layer";
+
+
+    overlayLayer.style.position =
+      "absolute";
+
+    overlayLayer.style.left =
+      "0";
+
+    overlayLayer.style.top =
+      "0";
+
+    overlayLayer.style.zIndex =
+      "10";
+
+    overlayLayer.style.pointerEvents =
+      "none";
+
+
+    // ==================================================
+    // 前景
+    //
+    // 主人公より上
+    // ==================================================
+
+    foregroundLayer =
+      document.createElement(
+        "div"
+      );
+
+
+    foregroundLayer.className =
+      "field-foreground-layer";
+
+
+    foregroundLayer.style.position =
+      "absolute";
+
+    foregroundLayer.style.left =
+      "0";
+
+    foregroundLayer.style.top =
+      "0";
+
+    foregroundLayer.style.zIndex =
+      "30";
+
+    foregroundLayer.style.pointerEvents =
+      "none";
+
+
+    worldLayer.appendChild(
+      backgroundLayer
+    );
+
+
+    worldLayer.appendChild(
+      overlayLayer
+    );
+
+
+    worldLayer.appendChild(
+      foregroundLayer
+    );
+
+
     field.appendChild(
       worldLayer
     );
@@ -282,76 +416,137 @@ window.FieldModule = (() => {
 
 
   // ==================================================
-  // 9枚マップを作る
+  // タイルと領域が重なるか
   // ==================================================
 
-  function renderTiledMap(map) {
+  function tileIntersectsRegion(
+    map,
+    tile,
+    region
+  ) {
 
-    const {
-      field,
-      playerElement
-    } = settings;
+    const tileLeft =
+      tile.x;
+
+    const tileTop =
+      tile.y;
+
+    const tileRight =
+      tile.x +
+      map.tileWidth;
+
+    const tileBottom =
+      tile.y +
+      map.tileHeight;
 
 
-    const layer =
-      createWorldLayer();
+    const regionLeft =
+      region.x;
+
+    const regionTop =
+      region.y;
+
+    const regionRight =
+      region.x +
+      region.width;
+
+    const regionBottom =
+      region.y +
+      region.height;
 
 
-    // ----------------------------------------------
-    // 同じマップなら作り直さない
-    // ----------------------------------------------
+    return !(
+      tileRight <=
+        regionLeft ||
+      tileLeft >=
+        regionRight ||
+      tileBottom <=
+        regionTop ||
+      tileTop >=
+        regionBottom
+    );
+
+  }
+
+
+  // ==================================================
+  // マップの一部分を複製
+  //
+  // 前景やオーバーレイに使用
+  //
+  // 元PNGそのものを使い、
+  // 必要な範囲だけCSSで切り抜く
+  // ==================================================
+
+  function createClippedMapRegion(
+    map,
+    region,
+    parent
+  ) {
+
+    const clip =
+      document.createElement(
+        "div"
+      );
+
+
+    clip.style.position =
+      "absolute";
+
+
+    clip.style.left =
+      region.x + "px";
+
+
+    clip.style.top =
+      region.y + "px";
+
+
+    clip.style.width =
+      region.width + "px";
+
+
+    clip.style.height =
+      region.height + "px";
+
+
+    clip.style.overflow =
+      "hidden";
+
+
+    clip.style.pointerEvents =
+      "none";
+
 
     if (
-      renderedMapId ===
-      map.id
+      region.filter
     ) {
 
-      layer.style.display =
-        "block";
-
-
-      if (
-        playerElement.parentElement !==
-        layer
-      ) {
-
-        layer.appendChild(
-          playerElement
-        );
-
-      }
-
-
-      return;
+      clip.style.filter =
+        region.filter;
 
     }
 
 
-    renderedMapId =
-      map.id;
-
-
-    layer.innerHTML =
-      "";
-
-
-    layer.style.display =
-      "block";
-
-
-    layer.style.width =
-      map.width + "px";
-
-    layer.style.height =
-      map.height + "px";
-
-
     // ----------------------------------------------
-    // 9枚配置
+    // この領域と重なる画像だけ複製
     // ----------------------------------------------
 
     map.tiles.forEach(
       tile => {
+
+        if (
+          !tileIntersectsRegion(
+            map,
+            tile,
+            region
+          )
+        ) {
+
+          return;
+
+        }
+
 
         const image =
           document.createElement(
@@ -374,29 +569,44 @@ window.FieldModule = (() => {
         image.style.position =
           "absolute";
 
+
         image.style.left =
-          tile.x + "px";
+          (
+            tile.x -
+            region.x
+          ) + "px";
+
 
         image.style.top =
-          tile.y + "px";
+          (
+            tile.y -
+            region.y
+          ) + "px";
+
 
         image.style.width =
-          map.tileWidth + "px";
+          map.tileWidth +
+          "px";
+
 
         image.style.height =
-          map.tileHeight + "px";
+          map.tileHeight +
+          "px";
+
 
         image.style.display =
           "block";
 
+
         image.style.userSelect =
           "none";
+
 
         image.style.pointerEvents =
           "none";
 
 
-        layer.appendChild(
+        clip.appendChild(
           image
         );
 
@@ -404,9 +614,385 @@ window.FieldModule = (() => {
     );
 
 
+    parent.appendChild(
+      clip
+    );
+
+
+    return clip;
+
+  }
+
+
+  // ==================================================
+  // visibleWhen 判定
+  //
+  // マップ側:
+  //
+  // visibleWhen: {
+  //   flag: "xxxxx",
+  //   equals: false
+  // }
+  //
+  // または
+  //
+  // visibleWhen: game => true
+  // ==================================================
+
+  function isOverlayVisible(
+    overlay
+  ) {
+
+    const {
+      game
+    } = settings;
+
+
+    const rule =
+      overlay.visibleWhen;
+
+
     // ----------------------------------------------
-    // 主人公を画像より前へ
+    // 条件なし
     // ----------------------------------------------
+
+    if (
+      rule ===
+      undefined ||
+      rule ===
+      null
+    ) {
+
+      return true;
+
+    }
+
+
+    // ----------------------------------------------
+    // 関数
+    // ----------------------------------------------
+
+    if (
+      typeof rule ===
+      "function"
+    ) {
+
+      return !!rule(
+        game
+      );
+
+    }
+
+
+    // ----------------------------------------------
+    // flag条件
+    // ----------------------------------------------
+
+    if (
+      typeof rule ===
+        "object" &&
+      rule.flag
+    ) {
+
+      const currentValue =
+        game.flags?.[
+          rule.flag
+        ];
+
+
+      return (
+        currentValue ===
+        rule.equals
+      );
+
+    }
+
+
+    return true;
+
+  }
+
+
+  // ==================================================
+  // オーバーレイ表示更新
+  // ==================================================
+
+  function updateOverlays(map) {
+
+    if (
+      !overlayLayer ||
+      !map
+    ) {
+
+      return;
+
+    }
+
+
+    overlayLayer
+      .querySelectorAll(
+        "[data-overlay-index]"
+      )
+      .forEach(
+        element => {
+
+          const index =
+            Number(
+              element.dataset
+                .overlayIndex
+            );
+
+
+          const overlay =
+            map.overlays?.[
+              index
+            ];
+
+
+          if (!overlay) {
+
+            element.style.display =
+              "none";
+
+            return;
+
+          }
+
+
+          element.style.display =
+            isOverlayVisible(
+              overlay
+            )
+              ? "block"
+              : "none";
+
+        }
+      );
+
+  }
+
+
+  // ==================================================
+  // 大型タイルマップ描画
+  // ==================================================
+
+  function renderTiledMap(map) {
+
+    const {
+      field,
+      playerElement
+    } = settings;
+
+
+    const layer =
+      createWorldLayer();
+
+
+    // ==================================================
+    // 既に作成済み
+    // ==================================================
+
+    if (
+      renderedMapId ===
+      map.id
+    ) {
+
+      layer.style.display =
+        "block";
+
+
+      if (
+        playerElement.parentElement !==
+        layer
+      ) {
+
+        layer.appendChild(
+          playerElement
+        );
+
+      }
+
+
+      playerElement.style.zIndex =
+        "20";
+
+
+      updateOverlays(
+        map
+      );
+
+
+      return;
+
+    }
+
+
+    // ==================================================
+    // 新しいマップを描画
+    // ==================================================
+
+    renderedMapId =
+      map.id;
+
+
+    backgroundLayer.innerHTML =
+      "";
+
+    overlayLayer.innerHTML =
+      "";
+
+    foregroundLayer.innerHTML =
+      "";
+
+
+    layer.style.display =
+      "block";
+
+
+    layer.style.width =
+      map.width + "px";
+
+
+    layer.style.height =
+      map.height + "px";
+
+
+    backgroundLayer.style.width =
+      map.width + "px";
+
+
+    backgroundLayer.style.height =
+      map.height + "px";
+
+
+    overlayLayer.style.width =
+      map.width + "px";
+
+
+    overlayLayer.style.height =
+      map.height + "px";
+
+
+    foregroundLayer.style.width =
+      map.width + "px";
+
+
+    foregroundLayer.style.height =
+      map.height + "px";
+
+
+    // ==================================================
+    // 背景画像
+    // ==================================================
+
+    if (
+      Array.isArray(
+        map.tiles
+      )
+    ) {
+
+      map.tiles.forEach(
+        tile => {
+
+          const image =
+            document.createElement(
+              "img"
+            );
+
+
+          image.src =
+            tile.image;
+
+
+          image.alt =
+            "";
+
+
+          image.draggable =
+            false;
+
+
+          image.style.position =
+            "absolute";
+
+
+          image.style.left =
+            tile.x + "px";
+
+
+          image.style.top =
+            tile.y + "px";
+
+
+          image.style.width =
+            map.tileWidth +
+            "px";
+
+
+          image.style.height =
+            map.tileHeight +
+            "px";
+
+
+          image.style.display =
+            "block";
+
+
+          image.style.userSelect =
+            "none";
+
+
+          image.style.pointerEvents =
+            "none";
+
+
+          backgroundLayer.appendChild(
+            image
+          );
+
+        }
+      );
+
+    }
+
+
+    // ==================================================
+    // 状態オーバーレイ
+    // ==================================================
+
+    if (
+      Array.isArray(
+        map.overlays
+      )
+    ) {
+
+      map.overlays.forEach(
+        (
+          overlay,
+          index
+        ) => {
+
+          const element =
+            createClippedMapRegion(
+              map,
+              overlay,
+              overlayLayer
+            );
+
+
+          element.dataset
+            .overlayIndex =
+              String(index);
+
+        }
+      );
+
+    }
+
+
+    // ==================================================
+    // 主人公
+    // ==================================================
 
     layer.appendChild(
       playerElement
@@ -416,13 +1002,40 @@ window.FieldModule = (() => {
     playerElement.style.position =
       "absolute";
 
+
     playerElement.style.zIndex =
       "20";
 
 
-    // ----------------------------------------------
-    // 旧背景を消す
-    // ----------------------------------------------
+    // ==================================================
+    // 前景
+    // ==================================================
+
+    if (
+      Array.isArray(
+        map.foregrounds
+      )
+    ) {
+
+      map.foregrounds.forEach(
+        region => {
+
+          createClippedMapRegion(
+            map,
+            region,
+            foregroundLayer
+          );
+
+        }
+      );
+
+    }
+
+
+    updateOverlays(
+      map
+    );
+
 
     field.style.backgroundImage =
       "none";
@@ -431,7 +1044,7 @@ window.FieldModule = (() => {
 
 
   // ==================================================
-  // 通常1枚マップ表示
+  // 通常1枚マップ描画
   // ==================================================
 
   function renderNormalMap(map) {
@@ -446,21 +1059,15 @@ window.FieldModule = (() => {
       null;
 
 
-    // ----------------------------------------------
-    // 大型マップを隠す
-    // ----------------------------------------------
-
-    if (worldLayer) {
+    if (
+      worldLayer
+    ) {
 
       worldLayer.style.display =
         "none";
 
     }
 
-
-    // ----------------------------------------------
-    // 主人公をfieldへ戻す
-    // ----------------------------------------------
 
     if (
       playerElement.parentElement !==
@@ -474,18 +1081,25 @@ window.FieldModule = (() => {
     }
 
 
-    // ----------------------------------------------
-    // 背景
-    // ----------------------------------------------
+    playerElement.style.position =
+      "absolute";
+
+
+    playerElement.style.zIndex =
+      "20";
+
 
     field.style.backgroundImage =
       `url("${map.image}")`;
 
+
     field.style.backgroundSize =
       "100% 100%";
 
+
     field.style.backgroundPosition =
       "center";
+
 
     field.style.backgroundRepeat =
       "no-repeat";
@@ -494,22 +1108,23 @@ window.FieldModule = (() => {
 
 
   // ==================================================
-  // カメラ更新
+  // カメラ
   // ==================================================
 
-  function updateCamera(
-    map
-  ) {
+  function updateCamera(map) {
 
     const {
       game,
-      field
+      field,
+      playerElement
     } = settings;
 
 
     if (
       !worldLayer ||
-      !isPixelMap(map)
+      !isPixelMap(
+        map
+      )
     ) {
 
       return;
@@ -535,23 +1150,35 @@ window.FieldModule = (() => {
     }
 
 
-    // ----------------------------------------------
-    // 主人公を中央へ
-    // ----------------------------------------------
+    const playerWidth =
+      playerElement.offsetWidth ||
+      32;
+
+
+    const playerHeight =
+      playerElement.offsetHeight ||
+      32;
+
+
+    const centerX =
+      game.player.x +
+      playerWidth / 2;
+
+
+    const centerY =
+      game.player.y +
+      playerHeight / 2;
+
 
     let cameraX =
-      game.player.x -
+      centerX -
       viewportWidth / 2;
 
 
     let cameraY =
-      game.player.y -
+      centerY -
       viewportHeight / 2;
 
-
-    // ----------------------------------------------
-    // マップ端ではカメラを止める
-    // ----------------------------------------------
 
     const maxCameraX =
       Math.max(
@@ -596,14 +1223,13 @@ window.FieldModule = (() => {
 
 
   // ==================================================
-  // フィールド表示更新
+  // フィールド更新
   // ==================================================
 
   function updateField() {
 
     const {
       game,
-      field,
       playerElement,
       areaName
     } = settings;
@@ -625,11 +1251,9 @@ window.FieldModule = (() => {
     }
 
 
-    // ----------------------------------------------
-    // マップ名
-    // ----------------------------------------------
-
-    if (areaName) {
+    if (
+      areaName
+    ) {
 
       areaName.textContent =
         map.name;
@@ -638,11 +1262,13 @@ window.FieldModule = (() => {
 
 
     // ==================================================
-    // 大型pxマップ
+    // pxマップ
     // ==================================================
 
     if (
-      isPixelMap(map)
+      isPixelMap(
+        map
+      )
     ) {
 
       renderTiledMap(
@@ -651,11 +1277,13 @@ window.FieldModule = (() => {
 
 
       playerElement.style.left =
-        game.player.x + "px";
+        game.player.x +
+        "px";
 
 
       playerElement.style.top =
-        game.player.y + "px";
+        game.player.y +
+        "px";
 
 
       updateCamera(
@@ -666,7 +1294,7 @@ window.FieldModule = (() => {
 
 
     // ==================================================
-    // 通常％マップ
+    // %マップ
     // ==================================================
 
     else {
@@ -677,17 +1305,19 @@ window.FieldModule = (() => {
 
 
       playerElement.style.left =
-        game.player.x + "%";
+        game.player.x +
+        "%";
 
 
       playerElement.style.top =
-        game.player.y + "%";
+        game.player.y +
+        "%";
 
     }
 
 
     // ==================================================
-    // 主人公アニメ
+    // 主人公アニメーション
     // ==================================================
 
     const rowMap = {
@@ -710,7 +1340,8 @@ window.FieldModule = (() => {
 
 
     const column =
-      game.player.step % 3;
+      game.player.step %
+      3;
 
 
     playerElement.style.backgroundPosition =
@@ -720,7 +1351,7 @@ window.FieldModule = (() => {
 
 
   // ==================================================
-  // 点が多角形の中にあるか
+  // 点が多角形内か
   // ==================================================
 
   function pointInPolygon(
@@ -743,11 +1374,14 @@ window.FieldModule = (() => {
       const xi =
         points[i][0];
 
+
       const yi =
         points[i][1];
 
+
       const xj =
         points[j][0];
+
 
       const yj =
         points[j][1];
@@ -769,7 +1403,9 @@ window.FieldModule = (() => {
         );
 
 
-      if (intersects) {
+      if (
+        intersects
+      ) {
 
         inside =
           !inside;
@@ -822,10 +1458,14 @@ window.FieldModule = (() => {
       ) {
 
         if (
-          x >= item.x1 &&
-          x <= item.x2 &&
-          y >= item.y1 &&
-          y <= item.y2
+          x >=
+            item.x1 &&
+          x <=
+            item.x2 &&
+          y >=
+            item.y1 &&
+          y <=
+            item.y2
         ) {
 
           return true;
@@ -845,16 +1485,20 @@ window.FieldModule = (() => {
       ) {
 
         const dx =
-          x - item.x;
+          x -
+          item.x;
+
 
         const dy =
-          y - item.y;
+          y -
+          item.y;
 
 
         if (
           dx * dx +
           dy * dy <=
-          item.r * item.r
+          item.r *
+          item.r
         ) {
 
           return true;
@@ -896,7 +1540,7 @@ window.FieldModule = (() => {
 
 
   // ==================================================
-  // 主人公の足元判定
+  // 主人公足元判定
   // ==================================================
 
   function getPlayerFootBox(
@@ -917,7 +1561,7 @@ window.FieldModule = (() => {
 
 
     // ==================================================
-    // pxマップ
+    // px
     // ==================================================
 
     if (
@@ -936,31 +1580,51 @@ window.FieldModule = (() => {
         32;
 
 
+      const left =
+        x +
+        width *
+        0.28;
+
+
+      const right =
+        x +
+        width *
+        0.72;
+
+
+      const top =
+        y +
+        height *
+        0.70;
+
+
+      const bottom =
+        y +
+        height *
+        0.92;
+
+
       return {
 
-        left:
-          x +
-          width * 0.28,
+        left,
 
-        right:
-          x +
-          width * 0.72,
+        right,
 
-        top:
-          y +
-          height * 0.70,
+        top,
 
-        bottom:
-          y +
-          height * 0.92,
+        bottom,
 
         centerX:
-          x +
-          width * 0.50,
+          (
+            left +
+            right
+          ) / 2,
 
         centerY:
-          y +
-          height * 0.82
+          (
+            top +
+            bottom
+          ) / 2
 
       };
 
@@ -968,14 +1632,14 @@ window.FieldModule = (() => {
 
 
     // ==================================================
-    // ％マップ
+    // %
     // ==================================================
 
-    let playerWidthPercent =
+    let widthPercent =
       5;
 
 
-    let playerHeightPercent =
+    let heightPercent =
       7;
 
 
@@ -986,14 +1650,14 @@ window.FieldModule = (() => {
       field.clientHeight > 0
     ) {
 
-      playerWidthPercent =
+      widthPercent =
         (
           playerElement.offsetWidth /
           field.clientWidth
         ) * 100;
 
 
-      playerHeightPercent =
+      heightPercent =
         (
           playerElement.offsetHeight /
           field.clientHeight
@@ -1004,25 +1668,25 @@ window.FieldModule = (() => {
 
     const left =
       x +
-      playerWidthPercent *
+      widthPercent *
       0.28;
 
 
     const right =
       x +
-      playerWidthPercent *
+      widthPercent *
       0.72;
 
 
     const top =
       y +
-      playerHeightPercent *
+      heightPercent *
       0.70;
 
 
     const bottom =
       y +
-      playerHeightPercent *
+      heightPercent *
       0.92;
 
 
@@ -1063,10 +1727,14 @@ window.FieldModule = (() => {
   ) {
 
     return (
-      foot.centerX >= exit.x1 &&
-      foot.centerX <= exit.x2 &&
-      foot.centerY >= exit.y1 &&
-      foot.centerY <= exit.y2
+      foot.centerX >=
+        exit.x1 &&
+      foot.centerX <=
+        exit.x2 &&
+      foot.centerY >=
+        exit.y1 &&
+      foot.centerY <=
+        exit.y2
     );
 
   }
@@ -1142,7 +1810,7 @@ window.FieldModule = (() => {
 
 
   // ==================================================
-  // 外周判定
+  // 外周
   // ==================================================
 
   function isOutsideBounds(
@@ -1160,26 +1828,22 @@ window.FieldModule = (() => {
     }
 
 
-    const {
-      left,
-      right,
-      top,
-      bottom
-    } = map.bounds;
-
-
     return (
-      foot.centerX < left ||
-      foot.centerX > right ||
-      foot.centerY < top ||
-      foot.centerY > bottom
+      foot.centerX <
+        map.bounds.left ||
+      foot.centerX >
+        map.bounds.right ||
+      foot.centerY <
+        map.bounds.top ||
+      foot.centerY >
+        map.bounds.bottom
     );
 
   }
 
 
   // ==================================================
-  // 障害物判定
+  // 障害物
   // ==================================================
 
   function isBlocked(
@@ -1210,7 +1874,7 @@ window.FieldModule = (() => {
 
 
     // ----------------------------------------------
-    // 出口を優先
+    // 出口部分は通過可能
     // ----------------------------------------------
 
     if (
@@ -1240,10 +1904,6 @@ window.FieldModule = (() => {
     }
 
 
-    // ----------------------------------------------
-    // 外周
-    // ----------------------------------------------
-
     if (
       isOutsideBounds(
         map,
@@ -1255,10 +1915,6 @@ window.FieldModule = (() => {
 
     }
 
-
-    // ----------------------------------------------
-    // 足元5点
-    // ----------------------------------------------
 
     const points = [
 
@@ -1291,15 +1947,18 @@ window.FieldModule = (() => {
 
 
     for (
-      const point
+      const [
+        pointX,
+        pointY
+      ]
       of points
     ) {
 
       if (
         pointBlocked(
           map,
-          point[0],
-          point[1]
+          pointX,
+          pointY
         )
       ) {
 
@@ -1316,7 +1975,7 @@ window.FieldModule = (() => {
 
 
   // ==================================================
-  // マップ移動
+  // マップ変更
   // ==================================================
 
   function changeMap(exit) {
@@ -1332,65 +1991,48 @@ window.FieldModule = (() => {
       ];
 
 
-    if (!targetMap) {
+    if (
+      !targetMap
+    ) {
 
       console.error(
         "移動先マップが見つかりません:",
         exit.targetMap
       );
 
-      return;
+      return false;
 
     }
 
 
     game.area =
-      exit.targetMap;
+      targetMap.id;
 
 
     game.stepsSinceBattle =
       0;
 
 
-    // ==================================================
-    // 移動先がpxマップ
-    //
-    // 旧forest.jsから
-    // x:50 y:82 等で戻ってきても対応
-    // ==================================================
+    // ----------------------------------------------
+    // 出口側で指定されていれば使用
+    // 指定なしなら移動先spawn
+    // ----------------------------------------------
 
-    if (
-      isPixelMap(
-        targetMap
-      ) &&
-      (
-        exit.targetX <= 100 &&
-        exit.targetY <= 100
-      )
-    ) {
+    game.player.x =
+      exit.targetX ??
+      targetMap.spawn?.x ??
+      0;
 
-      game.player.x =
-        targetMap.spawn.x;
 
-      game.player.y =
-        targetMap.spawn.y;
-
-    }
-
-    else {
-
-      game.player.x =
-        exit.targetX;
-
-      game.player.y =
-        exit.targetY;
-
-    }
+    game.player.y =
+      exit.targetY ??
+      targetMap.spawn?.y ??
+      0;
 
 
     game.player.direction =
-      exit.targetDirection ||
-      targetMap.spawn?.direction ||
+      exit.targetDirection ??
+      targetMap.spawn?.direction ??
       "down";
 
 
@@ -1406,6 +2048,65 @@ window.FieldModule = (() => {
       );
 
     }
+
+
+    return true;
+
+  }
+
+
+  // ==================================================
+  // 指定マップへ直接移動
+  //
+  // ファストトラベル等でも使える
+  // ==================================================
+
+  function goToMap(
+    mapId,
+    options = {}
+  ) {
+
+    const targetMap =
+      MAPS[
+        mapId
+      ];
+
+
+    if (
+      !targetMap
+    ) {
+
+      console.error(
+        "マップが見つかりません:",
+        mapId
+      );
+
+      return false;
+
+    }
+
+
+    return changeMap({
+
+      targetMap:
+        mapId,
+
+      targetX:
+        options.x ??
+        targetMap.spawn?.x,
+
+      targetY:
+        options.y ??
+        targetMap.spawn?.y,
+
+      targetDirection:
+        options.direction ??
+        targetMap.spawn?.direction,
+
+      message:
+        options.message
+
+    });
 
   }
 
@@ -1436,13 +2137,10 @@ window.FieldModule = (() => {
       false;
 
 
-    // ----------------------------------------------
-    // pxなら2pxずつ
-    // ％なら1％ずつ
-    // ----------------------------------------------
-
     const subStep =
-      isPixelMap(map)
+      isPixelMap(
+        map
+      )
         ? 2
         : 1;
 
@@ -1522,7 +2220,9 @@ window.FieldModule = (() => {
         );
 
 
-      if (exit) {
+      if (
+        exit
+      ) {
 
         changeMap(
           exit
@@ -1531,9 +2231,11 @@ window.FieldModule = (() => {
 
         return {
 
-          moved: true,
+          moved:
+            true,
 
-          changedMap: true
+          changedMap:
+            true
 
         };
 
@@ -1579,7 +2281,8 @@ window.FieldModule = (() => {
 
       moved,
 
-      changedMap: false
+      changedMap:
+        false
 
     };
 
@@ -1603,15 +2306,30 @@ window.FieldModule = (() => {
       getCurrentMap();
 
 
+    if (
+      !map
+    ) {
+
+      return;
+
+    }
+
+
     // ----------------------------------------------
-    // 大型王国はpx
-    // 森は今まで通り％
+    // マップ側で速度指定可能
+    //
+    // movementSpeed: 12
     // ----------------------------------------------
 
     const speed =
-      isPixelMap(map)
-        ? 12
-        : 4;
+      map.movementSpeed ??
+      (
+        isPixelMap(
+          map
+        )
+          ? 12
+          : 4
+      );
 
 
     game.player.direction =
@@ -1629,15 +2347,7 @@ window.FieldModule = (() => {
 
 
     if (
-      result.changedMap
-    ) {
-
-      return;
-
-    }
-
-
-    if (
+      result.changedMap ||
       !result.moved
     ) {
 
@@ -1654,79 +2364,17 @@ window.FieldModule = (() => {
     // ----------------------------------------------
 
     if (
-      map &&
       map.encounter
     ) {
 
       game.stepsSinceBattle++;
 
 
-      checkEncounter();
+      checkEncounter(
+        map
+      );
 
     }
-
-  }
-
-
-  // ==================================================
-  // 王国 → 森
-  // 旧コード互換
-  // ==================================================
-
-  function enterForest() {
-
-    changeMap({
-
-      targetMap:
-        "forest",
-
-      targetX:
-        61,
-
-      targetY:
-        8,
-
-      targetDirection:
-        "down",
-
-      message:
-        "読みの森に入った！ ことばの気配がする……"
-
-    });
-
-  }
-
-
-  // ==================================================
-  // 森 → 王国
-  // ==================================================
-
-  function returnToKingdom() {
-
-    const kingdom =
-      MAPS.kingdom;
-
-
-    changeMap({
-
-      targetMap:
-        "kingdom",
-
-      targetX:
-        kingdom?.spawn?.x ??
-        627,
-
-      targetY:
-        kingdom?.spawn?.y ??
-        1030,
-
-      targetDirection:
-        "up",
-
-      message:
-        "はじまりの王国に戻ってきた。"
-
-    });
 
   }
 
@@ -1735,7 +2383,10 @@ window.FieldModule = (() => {
   // エンカウント
   // ==================================================
 
-  function checkEncounter() {
+  function checkEncounter(
+    map =
+      getCurrentMap()
+  ) {
 
     const {
       game,
@@ -1743,8 +2394,28 @@ window.FieldModule = (() => {
     } = settings;
 
 
+    if (
+      !map ||
+      !map.encounter
+    ) {
+
+      return;
+
+    }
+
+
+    // ----------------------------------------------
+    // マップ側で設定可能
+    // ----------------------------------------------
+
     const safeSteps =
+      map.safeSteps ??
       12;
+
+
+    const encounterChance =
+      map.encounterChance ??
+      0.10;
 
 
     if (
@@ -1755,10 +2426,6 @@ window.FieldModule = (() => {
       return;
 
     }
-
-
-    const encounterChance =
-      0.10;
 
 
     if (
@@ -1826,22 +2493,27 @@ window.FieldModule = (() => {
     };
 
 
-    if (
+    const direction =
       keys[
         event.key
-      ]
+      ];
+
+
+    if (
+      !direction
     ) {
 
-      event.preventDefault();
-
-
-      movePlayer(
-        keys[
-          event.key
-        ]
-      );
+      return;
 
     }
+
+
+    event.preventDefault();
+
+
+    movePlayer(
+      direction
+    );
 
   }
 
@@ -1854,13 +2526,15 @@ window.FieldModule = (() => {
 
     init,
 
+    registerMap,
+
     updateField,
 
     movePlayer,
 
-    enterForest,
+    goToMap,
 
-    returnToKingdom,
+    changeMap,
 
     checkEncounter,
 
