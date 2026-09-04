@@ -19,11 +19,13 @@ document.addEventListener("DOMContentLoaded", () => {
   const missingChapterFiles =
     chapterFiles
       .map((data, index) => {
+
         if (data) {
           return null;
         }
 
         return `chapter1_0${index + 1}.js`;
+
       })
       .filter(Boolean);
 
@@ -41,6 +43,7 @@ document.addEventListener("DOMContentLoaded", () => {
     );
 
     return;
+
   }
 
 
@@ -89,6 +92,7 @@ document.addEventListener("DOMContentLoaded", () => {
     );
 
     return;
+
   }
 
 
@@ -180,9 +184,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // ==================================================
   // ChallengeModule用データ
-  //
-  // 今までの「words」と同じように扱えるよう
-  // 40字を変換して渡す
   // ==================================================
 
   let activeKanji =
@@ -205,6 +206,7 @@ document.addEventListener("DOMContentLoaded", () => {
       );
 
       return;
+
     }
 
 
@@ -293,9 +295,11 @@ document.addEventListener("DOMContentLoaded", () => {
       .forEach(screen => {
 
         if (screen) {
+
           screen.classList.remove(
             "active"
           );
+
         }
 
       });
@@ -323,8 +327,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // ==================================================
   // 第1章専用セーブ
-  //
-  // 間違えた漢字の復習状態も保存する
   // ==================================================
 
   const CHAPTER_SAVE_KEY =
@@ -342,7 +344,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
       if (!raw) {
+
         return {};
+
       }
 
 
@@ -488,9 +492,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // ==================================================
   // game.words
-  //
-  // 既存モジュールとの互換性のため
-  // 「読」のデータと第1章データを両方保持
   // ==================================================
 
   function createGameWords() {
@@ -520,40 +521,62 @@ document.addEventListener("DOMContentLoaded", () => {
   // ゲーム本体データ
   // ==================================================
 
-const game = {
+  const game = {
 
-  area:
-    saveData?.area ??
-    "kingdom",
+    // ==================================================
+    // 現在マップ
+    //
+    // セーブあり
+    // → 保存していたマップ
+    //
+    // セーブなし
+    // → 王国
+    // ==================================================
+
+    area:
+      saveData?.area ??
+      "kingdom",
 
 
-  player: {
+    player: {
 
-    x:
-      saveData?.player?.x ??
-      window.MAP_KINGDOM?.spawn?.x ??
-      610,
+      // ==================================================
+      // 現在位置
+      //
+      // セーブあり
+      // → 保存位置
+      //
+      // セーブなし
+      // → 王国spawn
+      // ==================================================
 
-    y:
-      saveData?.player?.y ??
-      window.MAP_KINGDOM?.spawn?.y ??
-      1060,
+      x:
+        saveData?.player?.x ??
+        window.MAP_KINGDOM?.spawn?.x ??
+        610,
 
-    direction:
-      saveData?.player?.direction ??
-      window.MAP_KINGDOM?.spawn?.direction ??
-      "up",
+      y:
+        saveData?.player?.y ??
+        window.MAP_KINGDOM?.spawn?.y ??
+        1060,
 
-   step:
-  saveData?.player?.step ??
-  0,
+      direction:
+        saveData?.player?.direction ??
+        window.MAP_KINGDOM?.spawn?.direction ??
+        "up",
+
+      step:
+        saveData?.player?.step ??
+        0,
+
 
       // --------------------------
       // レベル
       // --------------------------
 
       level:
-        saveData?.player?.level || 1,
+        saveData?.player?.level ||
+        1,
 
 
       // --------------------------
@@ -561,10 +584,12 @@ const game = {
       // --------------------------
 
       hp:
-        saveData?.player?.hp ?? 10,
+        saveData?.player?.hp ??
+        10,
 
       maxHp:
-        saveData?.player?.maxHp || 10,
+        saveData?.player?.maxHp ||
+        10,
 
 
       // --------------------------
@@ -572,10 +597,12 @@ const game = {
       // --------------------------
 
       rp:
-        saveData?.player?.rp ?? 10,
+        saveData?.player?.rp ??
+        10,
 
       maxRp:
-        saveData?.player?.maxRp || 10,
+        saveData?.player?.maxRp ||
+        10,
 
 
       // --------------------------
@@ -583,13 +610,19 @@ const game = {
       // --------------------------
 
       exp:
-        saveData?.player?.exp || 0,
+        saveData?.player?.exp ||
+        0,
 
       gold:
-        saveData?.player?.gold || 0
+        saveData?.player?.gold ||
+        0
 
     },
 
+
+    // ==================================================
+    // 移動・戦闘
+    // ==================================================
 
     stepsSinceBattle:
       0,
@@ -602,6 +635,7 @@ const game = {
     enemies: [
 
       {
+
         name:
           "ワードスライム",
 
@@ -619,9 +653,11 @@ const game = {
 
         attack:
           1
+
       },
 
       {
+
         name:
           "コトガラス",
 
@@ -639,9 +675,11 @@ const game = {
 
         attack:
           1
+
       },
 
       {
+
         name:
           "カミキレ",
 
@@ -659,6 +697,7 @@ const game = {
 
         attack:
           1
+
       }
 
     ],
@@ -696,7 +735,10 @@ const game = {
       0,
 
 
-    // 「読」の古いシステムとの互換性
+    // ==================================================
+    // 旧「読」システムとの互換
+    // ==================================================
+
     masteryGoal:
       typeof KANJI_YOMU !== "undefined"
         ? KANJI_YOMU.masteryGoal || 3
@@ -711,7 +753,21 @@ const game = {
       saveData?.skills || [],
 
 
-    // 第1章用
+    // ==================================================
+    // ストーリー進行フラグ
+    //
+    // 例:
+    // kotobaGateRepaired
+    // ==================================================
+
+    flags:
+      saveData?.flags || {},
+
+
+    // ==================================================
+    // 第1章
+    // ==================================================
+
     chapter1: {
 
       order:
@@ -842,12 +898,6 @@ const game = {
 
   // ==================================================
   // 習熟判定
-  //
-  // 1度も間違えていない
-  // → 1回正解で習熟
-  //
-  // 1度でも間違えた
-  // → 2回正解で習熟
   // ==================================================
 
   function isKanjiMastered(
@@ -859,11 +909,15 @@ const game = {
 
 
     if (!progress) {
+
       return false;
+
     }
 
 
-    if (progress.mistakes > 0) {
+    if (
+      progress.mistakes > 0
+    ) {
 
       return (
         progress.successes >= 2
@@ -888,7 +942,9 @@ const game = {
 
 
     if (!progress) {
+
       return;
+
     }
 
 
@@ -898,7 +954,9 @@ const game = {
       );
 
 
-    if (game.words[kanji]) {
+    if (
+      game.words[kanji]
+    ) {
 
       game.words[kanji].successes =
         progress.successes;
@@ -921,7 +979,9 @@ const game = {
 
     return kanjiOrder.filter(
       kanji =>
-        isKanjiMastered(kanji)
+        isKanjiMastered(
+          kanji
+        )
     ).length;
 
   }
@@ -938,7 +998,7 @@ const game = {
 
 
     // ----------------------------------------------
-    // まず「復習する時期になった漢字」
+    // 復習対象
     // ----------------------------------------------
 
     const dueReview =
@@ -949,7 +1009,9 @@ const game = {
 
 
         if (!progress) {
+
           return false;
+
         }
 
 
@@ -981,7 +1043,9 @@ const game = {
       });
 
 
-    if (dueReview) {
+    if (
+      dueReview
+    ) {
 
       return dueReview;
 
@@ -989,8 +1053,7 @@ const game = {
 
 
     // ----------------------------------------------
-    // 次の新しい漢字
-    // 日 → 月 → 火 → ...
+    // 新しい漢字
     // ----------------------------------------------
 
     const newKanji =
@@ -1001,7 +1064,9 @@ const game = {
 
 
         return (
-          !isKanjiMastered(kanji) &&
+          !isKanjiMastered(
+            kanji
+          ) &&
           progress.successes === 0 &&
           progress.mistakes === 0
         );
@@ -1010,10 +1075,7 @@ const game = {
 
 
     // ----------------------------------------------
-    // 習熟済み漢字をたまに復習
-    //
-    // 5字以上習熟後、
-    // 約10%の確率
+    // 習熟済み漢字のランダム復習
     // ----------------------------------------------
 
     if (
@@ -1046,7 +1108,9 @@ const game = {
     }
 
 
-    if (newKanji) {
+    if (
+      newKanji
+    ) {
 
       return newKanji;
 
@@ -1054,7 +1118,7 @@ const game = {
 
 
     // ----------------------------------------------
-    // 正解確認待ちの漢字
+    // 習熟待ち
     // ----------------------------------------------
 
     const waitingKanji =
@@ -1066,7 +1130,9 @@ const game = {
       );
 
 
-    if (waitingKanji) {
+    if (
+      waitingKanji
+    ) {
 
       return waitingKanji;
 
@@ -1074,7 +1140,7 @@ const game = {
 
 
     // ----------------------------------------------
-    // 40字全部習熟後はランダム復習
+    // 全習熟後
     // ----------------------------------------------
 
     return kanjiOrder[
@@ -1089,9 +1155,6 @@ const game = {
 
   // ==================================================
   // 戦闘開始前に漢字を決定
-  //
-  // ここで決めた漢字は
-  // 敵を倒すまで固定
   // ==================================================
 
   function prepareKanjiForBattle() {
@@ -1121,7 +1184,9 @@ const game = {
       ];
 
 
-    if (progress) {
+    if (
+      progress
+    ) {
 
       progress.lastBattle =
         chapterBattleCount;
@@ -1135,14 +1200,10 @@ const game = {
 
 
   // ==================================================
-  // 学習成功を記録
+  // 学習成功
   // ==================================================
 
   function registerSuccess(word) {
-
-    // ----------------------------------------------
-    // 第1章漢字
-    // ----------------------------------------------
 
     if (
       kanjiProgress[word]
@@ -1152,13 +1213,14 @@ const game = {
         kanjiProgress[word];
 
 
-      // すでに習熟済みなら
-      // 復習として扱い、成功数を増やし続けない
       if (
-        isKanjiMastered(word)
+        isKanjiMastered(
+          word
+        )
       ) {
 
         saveChapterProgress();
+
         saveGame();
 
         return;
@@ -1169,11 +1231,6 @@ const game = {
       progress.successes++;
 
 
-      // 一度間違えた漢字で
-      // 最初の正解だった場合、
-      // すぐには習熟にしない
-      //
-      // 2戦ほどあとで確認
       if (
         progress.mistakes > 0 &&
         progress.successes === 1
@@ -1195,16 +1252,16 @@ const game = {
     }
 
 
-    // ----------------------------------------------
-    // 以前の「読」システム
-    // ----------------------------------------------
-
     const data =
       game.words[word];
 
 
-    if (!data) {
+    if (
+      !data
+    ) {
+
       return;
+
     }
 
 
@@ -1224,7 +1281,7 @@ const game = {
 
 
   // ==================================================
-  // 間違いを記録
+  // 間違い記録
   // ==================================================
 
   function registerMistake(
@@ -1235,13 +1292,15 @@ const game = {
       kanjiProgress[kanji];
 
 
-    if (!progress) {
+    if (
+      !progress
+    ) {
+
       return;
+
     }
 
 
-    // 習熟済みの復習問題で間違えても
-    // 習熟そのものは取り消さない
     if (
       isKanjiMastered(
         kanji
@@ -1251,14 +1310,13 @@ const game = {
       saveChapterProgress();
 
       return;
+
     }
 
 
     progress.mistakes++;
 
 
-    // すぐ同じ問題だけを繰り返さず、
-    // 次の戦闘以降で戻す
     progress.reviewAfter =
       chapterBattleCount + 1;
 
@@ -1297,9 +1355,6 @@ const game = {
       BattleModule.startBattle();
 
 
-      // BattleModule側で
-      // currentWordを変更していた場合でも
-      // 今回の漢字に戻す
       game.currentWord =
         activeKanji;
 
@@ -1308,7 +1363,9 @@ const game = {
         activeKanji;
 
 
-      if (kanjiBadge) {
+      if (
+        kanjiBadge
+      ) {
 
         kanjiBadge.textContent =
           activeKanji;
@@ -1322,12 +1379,11 @@ const game = {
 
   // ==================================================
   // MasteryModule
-  //
-  // 以前の「読」画面を壊さないため残す
   // ==================================================
 
   if (
-    typeof KANJI_YOMU !== "undefined"
+    typeof KANJI_YOMU !==
+    "undefined"
   ) {
 
     MasteryModule.init({
@@ -1380,11 +1436,6 @@ const game = {
 
     showScreen,
 
-
-    // ----------------------------------------------
-    // 今は「読」のネットワークへ飛ばさず
-    // 第1章を続ける
-    // ----------------------------------------------
 
     showNetwork: () => {
 
@@ -1451,10 +1502,7 @@ const game = {
 
 
   // ==================================================
-  // BattleModule.enemyAttack を包む
-  //
-  // 問題を間違えた時に
-  // 漢字の復習状態を記録
+  // BattleModule.enemyAttack ラップ
   // ==================================================
 
   const originalEnemyAttack =
@@ -1543,7 +1591,9 @@ const game = {
   // タイトル → ゲーム開始
   // ==================================================
 
-  if (startButton) {
+  if (
+    startButton
+  ) {
 
     startButton.addEventListener(
       "click",
@@ -1640,19 +1690,18 @@ const game = {
         "click",
         () => {
 
-          if (!game.currentEnemy) {
+          if (
+            !game.currentEnemy
+          ) {
+
             return;
+
           }
 
 
           game.selectedWeapon =
             button.dataset.weapon;
 
-
-          // ------------------------------------------
-          // 同じ敵との戦闘中は
-          // 同じ漢字を固定
-          // ------------------------------------------
 
           game.currentWord =
             activeKanji;
@@ -1662,7 +1711,9 @@ const game = {
             activeKanji;
 
 
-          if (kanjiBadge) {
+          if (
+            kanjiBadge
+          ) {
 
             kanjiBadge.textContent =
               activeKanji;
@@ -1690,15 +1741,21 @@ const game = {
     );
 
 
-  if (changeWeaponButton) {
+  if (
+    changeWeaponButton
+  ) {
 
     changeWeaponButton
       .addEventListener(
         "click",
         () => {
 
-          if (!game.currentEnemy) {
+          if (
+            !game.currentEnemy
+          ) {
+
             return;
+
           }
 
 
@@ -1717,7 +1774,7 @@ const game = {
 
 
   // ==================================================
-  // バトル用スキル画面を開く
+  // バトル用スキル
   // ==================================================
 
   const skillMenuButton =
@@ -1726,14 +1783,20 @@ const game = {
     );
 
 
-  if (skillMenuButton) {
+  if (
+    skillMenuButton
+  ) {
 
     skillMenuButton.addEventListener(
       "click",
       () => {
 
-        if (!game.currentEnemy) {
+        if (
+          !game.currentEnemy
+        ) {
+
           return;
+
         }
 
 
@@ -1748,7 +1811,7 @@ const game = {
 
 
   // ==================================================
-  // バトル用スキル画面から戻る
+  // バトル用スキルから戻る
   // ==================================================
 
   const skillBackButton =
@@ -1757,7 +1820,9 @@ const game = {
     );
 
 
-  if (skillBackButton) {
+  if (
+    skillBackButton
+  ) {
 
     skillBackButton.addEventListener(
       "click",
@@ -1783,7 +1848,9 @@ const game = {
     );
 
 
-  if (networkCloseButton) {
+  if (
+    networkCloseButton
+  ) {
 
     networkCloseButton.addEventListener(
       "click",
@@ -1810,8 +1877,6 @@ const game = {
 
   // ==================================================
   // 漢字スキルボタン
-  //
-  // 現在は旧「読」の画面を残す
   // ==================================================
 
   const mapButton =
@@ -1820,7 +1885,9 @@ const game = {
     );
 
 
-  if (mapButton) {
+  if (
+    mapButton
+  ) {
 
     mapButton.addEventListener(
       "click",
@@ -1835,6 +1902,7 @@ const game = {
           );
 
           return;
+
         }
 
 
@@ -1863,7 +1931,9 @@ const game = {
     );
 
 
-  if (skillCloseButton) {
+  if (
+    skillCloseButton
+  ) {
 
     skillCloseButton.addEventListener(
       "click",
@@ -1894,7 +1964,9 @@ const game = {
     );
 
 
-  if (yomuNetworkButton) {
+  if (
+    yomuNetworkButton
+  ) {
 
     yomuNetworkButton.addEventListener(
       "click",
@@ -1925,7 +1997,9 @@ const game = {
     );
 
 
-  if (continueButton) {
+  if (
+    continueButton
+  ) {
 
     continueButton.addEventListener(
       "click",
@@ -1951,7 +2025,7 @@ const game = {
 
 
   // ==================================================
-  // キーボード操作
+  // キーボード
   // ==================================================
 
   document.addEventListener(
