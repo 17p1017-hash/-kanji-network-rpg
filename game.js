@@ -520,26 +520,32 @@ document.addEventListener("DOMContentLoaded", () => {
   // ゲーム本体データ
   // ==================================================
 
-  const game = {
+const game = {
 
-    area:
-      "kingdom",
+  area:
+    saveData?.area ??
+    "kingdom",
 
 
-    player: {
+  player: {
 
-      x:
-        50,
+    x:
+      saveData?.player?.x ??
+      window.MAP_KINGDOM?.spawn?.x ??
+      627,
 
-      y:
-        58,
+    y:
+      saveData?.player?.y ??
+      window.MAP_KINGDOM?.spawn?.y ??
+      1030,
 
-      direction:
-        "down",
+    direction:
+      saveData?.player?.direction ??
+      window.MAP_KINGDOM?.spawn?.direction ??
+      "up",
 
-      step:
-        0,
-
+    step:
+      0,
 
       // --------------------------
       // レベル
