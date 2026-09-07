@@ -1386,8 +1386,9 @@ window.FieldModule = (() => {
 
 
     const column =
-      game.player.step %
-      3;
+  game.player.step === 0
+    ? 0
+    : ((game.player.step - 1) % 2) + 1;
 
 
     playerElement.style.backgroundPosition =
