@@ -185,17 +185,57 @@ button {
 
 #player {
   position: absolute;
+
   width: 32px;
   height: 32px;
+
   left: 50%;
   top: 58%;
-  transform: translate(-50%, -50%) scale(1.6);
+
+  transform:
+    translate(-50%, -50%)
+    scale(1.6);
+
   transform-origin: center;
+
+  /*
+   * 新しい主人公スプライト
+   *
+   * 3列 × 4行
+   *
+   * 1行目：正面
+   * 2行目：左
+   * 3行目：右
+   * 4行目：背面
+   *
+   * 各行：
+   * 待機 / 歩きA / 歩きB
+   */
   background-image:
-    url("images/hero_sprite_32x32.png");
+    url("images/characters/hero/hero_sprite_3x4_game_ready.png");
+
   background-repeat: no-repeat;
-  background-position: 0 0;
-  image-rendering: pixelated;
+
+  /*
+   * ゲーム上では1フレームを
+   * 32 × 32px として表示。
+   *
+   * 3列 × 32px = 96px
+   * 4行 × 32px = 128px
+   */
+  background-size:
+    96px 128px;
+
+  /*
+   * 初期状態：
+   * 正面・待機
+   */
+  background-position:
+    0 0;
+
+  image-rendering:
+    pixelated;
+
   z-index: 5;
 }
 
