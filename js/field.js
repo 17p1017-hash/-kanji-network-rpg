@@ -946,6 +946,16 @@ window.FieldModule = (() => {
   //
   // object.sheet
   // → A / B / Cシート
+  //
+  // スプライトシート:
+  //
+  // size:
+  // → 1セルを size × size として
+  //   縦横同倍率で表示する
+  //
+  // width / height:
+  // → 従来方式
+  //   既存コード互換用
   // ==================================================
 
   function createMapObject(
@@ -992,16 +1002,6 @@ window.FieldModule = (() => {
       "px";
 
 
-    element.style.width =
-      (object.width ?? 0) +
-      "px";
-
-
-    element.style.height =
-      (object.height ?? 0) +
-      "px";
-
-
     element.style.backgroundRepeat =
       "no-repeat";
 
@@ -1028,11 +1028,32 @@ window.FieldModule = (() => {
     // 単独PNG
     //
     // 王城など
+    //
+    // 現時点では従来の
+    // width / height方式を維持
     // ==================================================
 
     if (
       object.image
     ) {
+
+      const width =
+        object.width ??
+        0;
+
+
+      const height =
+        object.height ??
+        0;
+
+
+      element.style.width =
+        width + "px";
+
+
+      element.style.height =
+        height + "px";
+
 
       element.style.backgroundImage =
         `url("${object.image}")`;
@@ -1100,28 +1121,117 @@ window.FieldModule = (() => {
         0;
 
 
-      element.style.backgroundImage =
-        `url("${sheet.image}")`;
+      // ==================================================
+      // 新方式
+      //
+      // size が指定されている場合
+      //
+      // 例:
+      //
+      // size: 320
+      //
+      // → 1セルを
+      //   320 × 320px
+      //   として表示する。
+      //
+      // 元セルが正方形なら
+      // 縦横同じ倍率で縮小・拡大されるため
+      // 中の素材の縦横比が崩れない。
+      // ==================================================
+
+      if (
+        typeof object.size ===
+          "number" &&
+        Number.isFinite(
+          object.size
+        ) &&
+        object.size > 0
+      ) {
+
+        const size =
+          object.size;
 
 
-      /*
-       * 1セルを
-       * object.width × object.height
-       * として表示。
-       *
-       * A素材4×4なら
-       * 背景全体を
-       * width×4 / height×4
-       * として縮尺表示する。
-       */
-      element.style.backgroundSize =
-        `${object.width * columns}px ` +
-        `${object.height * rows}px`;
+        element.style.width =
+          size + "px";
 
 
-      element.style.backgroundPosition =
-        `${-object.width * col}px ` +
-        `${-object.height * row}px`;
+        element.style.height =
+          size + "px";
+
+
+        element.style.backgroundImage =
+          `url("${sheet.image}")`;
+
+
+        element.style.backgroundSize =
+          `${size * columns}px ` +
+          `${size * rows}px`;
+
+
+        element.style.backgroundPosition =
+          `${-size * col}px ` +
+          `${-size * row}px`;
+
+      }
+
+
+      // ==================================================
+      // 従来方式
+      //
+      // size が無い場合は
+      // width / height をそのまま使用。
+      //
+      // 既存マップを壊さないため
+      // 当面はこちらも残す。
+      // ==================================================
+
+      else {
+
+        const width =
+          object.width ??
+          0;
+
+
+        const height =
+          object.height ??
+          0;
+
+
+        element.style.width =
+          width + "px";
+
+
+        element.style.height =
+          height + "px";
+
+
+        element.style.backgroundImage =
+          `url("${sheet.image}")`;
+
+
+        /*
+         * 1セルを
+         * object.width × object.height
+         * として表示。
+         *
+         * A素材4×4なら
+         * 背景全体を
+         * width×4 / height×4
+         * として縮尺表示する。
+         *
+         * 旧データ互換のため残す。
+         */
+        element.style.backgroundSize =
+          `${width * columns}px ` +
+          `${height * rows}px`;
+
+
+        element.style.backgroundPosition =
+          `${-width * col}px ` +
+          `${-height * row}px`;
+
+      }
 
     }
 
@@ -1346,6 +1456,7 @@ window.FieldModule = (() => {
 
     layer.style.display =
       "block";
+
     layer.style.width =
       map.width + "px";
 
