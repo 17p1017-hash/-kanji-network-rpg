@@ -211,9 +211,8 @@ button {
    * 各行：
    * 待機 / 歩きA / 歩きB
    */
-  background-image:
-    url("images/characters/hero/hero_sprite_3x4_game_ready.png");
-
+background-image:
+  url("images/characters/hero/hero_sprite_32x32.png");
   background-repeat: no-repeat;
 
   /*
