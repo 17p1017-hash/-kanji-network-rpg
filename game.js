@@ -1649,29 +1649,32 @@ document.addEventListener("DOMContentLoaded", () => {
   // 移動ボタン
   // ==================================================
 
-  const directionButtons =
-    document.querySelectorAll(
-      ".direction-button"
-    );
+  // ==================================================
+// 移動ボタン
+// ==================================================
 
-
-  directionButtons.forEach(
-    button => {
-
-      button.addEventListener(
-        "click",
-        () => {
-
-          FieldModule.movePlayer(
-            button.dataset.direction
-          );
-
-        }
-      );
-
-    }
+const directionButtons =
+  document.querySelectorAll(
+    ".direction-button"
   );
 
+
+directionButtons.forEach(
+  button => {
+
+    button.addEventListener(
+      "click",
+      () => {
+
+        FieldModule.movePlayer(
+          button.dataset.direction
+        );
+
+      }
+    );
+
+  }
+);
 
   // ==================================================
   // 武器ボタン
