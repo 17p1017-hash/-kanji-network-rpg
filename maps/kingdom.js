@@ -67,72 +67,63 @@ const MAP_KINGDOM = {
 
     {
       id: "kingdom_base_01",
-      image:
-        "images/maps/kingdom/base/kingdom_base_01.png",
+      image: "images/maps/kingdom/base/kingdom_base_01.png",
       x: 0,
       y: 0
     },
 
     {
       id: "kingdom_base_02",
-      image:
-        "images/maps/kingdom/base/kingdom_base_02.png",
+      image: "images/maps/kingdom/base/kingdom_base_02.png",
       x: 418,
       y: 0
     },
 
     {
       id: "kingdom_base_03",
-      image:
-        "images/maps/kingdom/base/kingdom_base_03.png",
+      image: "images/maps/kingdom/base/kingdom_base_03.png",
       x: 836,
       y: 0
     },
 
     {
       id: "kingdom_base_04",
-      image:
-        "images/maps/kingdom/base/kingdom_base_04.png",
+      image: "images/maps/kingdom/base/kingdom_base_04.png",
       x: 0,
       y: 418
     },
 
     {
       id: "kingdom_base_05",
-      image:
-        "images/maps/kingdom/base/kingdom_base_05.png",
+      image: "images/maps/kingdom/base/kingdom_base_05.png",
       x: 418,
       y: 418
     },
 
     {
       id: "kingdom_base_06",
-      image:
-        "images/maps/kingdom/base/kingdom_base_06.png",
+      image: "images/maps/kingdom/base/kingdom_base_06.png",
       x: 836,
       y: 418
     },
 
     {
       id: "kingdom_base_07",
-      image:
-        "images/maps/kingdom/base/kingdom_base_07.png",
+      image: "images/maps/kingdom/base/kingdom_base_07.png",
       x: 0,
       y: 836
     },
 
     {
       id: "kingdom_base_08",
-      image:
-        "images/maps/kingdom/base/kingdom_base_08.png",
+      image: "images/maps/kingdom/base/kingdom_base_08.png",
       x: 418,
       y: 836
     },
 
     {
       id: "kingdom_base_09",
-      image:
-        "images/maps/kingdom/base/kingdom_base_09.png",
+      image: "images/maps/kingdom/base/kingdom_base_09.png",
       x: 836,
       y: 836
     }
@@ -142,11 +133,6 @@ const MAP_KINGDOM = {
 
   // ==================================================
   // 初期位置
-  //
-  // 南側から王国へ入った位置。
-  //
-  // 現在はベースマップ歩行確認用。
-  // 必要なら実際の南門配置後に微調整する。
   // ==================================================
 
   spawn: {
@@ -161,11 +147,7 @@ const MAP_KINGDOM = {
 
 
   // ==================================================
-  // マップ外周
-  //
-  // 主人公が画像外へ出ないための基本範囲。
-  //
-  // 建物や城壁の当たり判定とは別。
+  // 外周
   // ==================================================
 
   bounds: {
@@ -182,85 +164,18 @@ const MAP_KINGDOM = {
 
 
   // ==================================================
-  // 出口
-  //
-  // 現在はベースマップ表示確認を優先するため無効。
-  //
-  // 南門オブジェクトを配置した後、
-  // 実際の門を通過する位置へ設定し直す。
+  // 現段階ではベース表示・歩行確認のみ
   // ==================================================
 
   exits: [],
 
-
-  // ==================================================
-  // 独立オブジェクト
-  //
-  // A素材:
-  // images/maps/kingdom/objects/houses/
-  //
-  // B素材:
-  // images/maps/kingdom/objects/main/
-  //
-  // C素材:
-  // images/maps/kingdom/objects/decorations/
-  //
-  // 後の工程でここへ配置情報を追加する。
-  // ==================================================
-
   objects: [],
-
-
-  // ==================================================
-  // 前景
-  //
-  // 建物の屋根や門のアーチなど、
-  // 主人公より手前へ表示する部分を後から設定する。
-  //
-  // 現在はベースマップのみなので空。
-  // ==================================================
 
   foregrounds: [],
 
-
-  // ==================================================
-  // 状態によって表示するオーバーレイ
-  //
-  // ことばの門の消灯・点灯などは、
-  // B素材の独立PNG方式へ移行する予定。
-  //
-  // 現在は空。
-  // ==================================================
-
   overlays: [],
 
-
-  // ==================================================
-  // 王国固有イベント
-  //
-  // 王城入口
-  // ことばの門
-  // 南門
-  // 店舗
-  //
-  // などを独立オブジェクト配置後に追加する。
-  // ==================================================
-
   events: [],
-
-
-  // ==================================================
-  // 当たり判定
-  //
-  // 新方式では、
-  // 背景ベースそのものには原則として
-  // 建造物の当たり判定を持たせない。
-  //
-  // 各独立オブジェクトごとに
-  // collision を設定していく。
-  //
-  // 現段階では自由歩行確認のため空。
-  // ==================================================
 
   collisions: []
 
