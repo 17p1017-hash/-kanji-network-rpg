@@ -2434,7 +2434,7 @@ window.FieldModule = (() => {
       );
 
 
-    updateField();
+    
 
 
     if (
@@ -2456,7 +2456,7 @@ window.FieldModule = (() => {
 
 
     game.player.step++;
-
+updateField();
 
     // ----------------------------------------------
     // 現在地を自動保存
