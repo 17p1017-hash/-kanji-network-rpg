@@ -2455,8 +2455,9 @@ window.FieldModule = (() => {
     }
 
 
-    game.player.step++;
+ game.player.step++;
 updateField();
+resetPlayerToIdle();
 
     // ----------------------------------------------
     // 現在地を自動保存
@@ -2484,7 +2485,18 @@ updateField();
 
   }
 
+// ==============================
+// 主人公・移動終了後に待機へ戻す
+// ==============================
 
+function resetPlayerToIdle() {
+  clearTimeout(playerIdleTimer);
+
+  playerIdleTimer = setTimeout(() => {
+    game.player.step = 0;
+    updateField();
+  }, 120);
+}
   // ==================================================
   // エンカウント
   // ==================================================
