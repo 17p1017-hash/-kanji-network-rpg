@@ -573,17 +573,12 @@ const MAP_KINGDOM = {
 
         type: "alpha",
 
-        area: {
-
-          left: 0.28,
-
-          right: 1,
-
-          top: 0.48,
-
-          bottom: 0.82
-
-        },
+       area: {
+  left: 0.30,
+  right: 0.72,
+  top: 0.48,
+  bottom: 0.78
+},
 
         alphaThreshold: 16
 
