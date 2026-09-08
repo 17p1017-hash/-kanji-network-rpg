@@ -555,7 +555,7 @@ const MAP_KINGDOM = {
 
       x: 505,
 
-      y: 434,
+      y: 414,
 
       size: 245,
 
