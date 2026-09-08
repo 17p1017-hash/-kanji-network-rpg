@@ -555,7 +555,7 @@ const MAP_KINGDOM = {
 
       x: 505,
 
-      y: 408,
+      y: 414,
 
       size: 245,
 
@@ -1352,7 +1352,7 @@ const MAP_KINGDOM = {
       type: "circle",
       name: "central_fountain",
       x: 627,
-      y: 556,
+      y: 536,
       r: 62
     },
 
