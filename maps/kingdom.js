@@ -574,9 +574,9 @@ const MAP_KINGDOM = {
         type: "alpha",
 
        area: {
-  left: 0.40,
+  left: 0.44,
   right: 0.72,
-  top: 0.58,
+  top: 0.62,
   bottom: 0.78
 },
 
