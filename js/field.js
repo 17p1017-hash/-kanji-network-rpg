@@ -1004,6 +1004,127 @@ window.FieldModule = (() => {
   }
  
  
+  // ==================================================
+  // depthSplit 共通処理
+  //
+  // map.objects 側:
+  // depthSplit: { splitY: 0.50 }
+  //
+  // ・splitY より下側は objectLayer（主人公より奥）
+  // ・splitY より上側は foregroundLayer（主人公より手前）
+  // ・単独PNG / スプライトシート両対応
+  // ==================================================
+ 
+  function getDepthSplit(
+    object
+  ) {
+ 
+    const rule =
+      object?.depthSplit;
+ 
+    if (
+      !rule ||
+      rule.enabled === false
+    ) {
+      return null;
+    }
+ 
+    const splitY =
+      rule.splitY === undefined
+        ? 0.5
+        : clamp01(rule.splitY);
+ 
+    if (
+      splitY <= 0 ||
+      splitY >= 1
+    ) {
+      return null;
+    }
+ 
+    const baseZ =
+      Number.isFinite(Number(object.z))
+        ? Number(object.z)
+        : 1;
+ 
+    const lowerZ =
+      Number.isFinite(Number(rule.lowerZ))
+        ? Number(rule.lowerZ)
+        : baseZ;
+ 
+    const upperZ =
+      Number.isFinite(Number(rule.upperZ))
+        ? Number(rule.upperZ)
+        : baseZ;
+ 
+    return {
+      splitY,
+      lowerZ,
+      upperZ
+    };
+  }
+ 
+ 
+  function appendMapObjectWithDepthSplit(
+    object,
+    element
+  ) {
+ 
+    const depthSplit =
+      getDepthSplit(object);
+ 
+    if (
+      !depthSplit ||
+      !foregroundLayer
+    ) {
+      objectLayer.appendChild(element);
+      return element;
+    }
+ 
+    const splitPercent =
+      depthSplit.splitY * 100;
+ 
+    // 下側：主人公より奥
+    element.dataset.depthPart =
+      "lower";
+ 
+    element.style.zIndex =
+      String(depthSplit.lowerZ);
+ 
+    element.style.clipPath =
+      `inset(${splitPercent}% 0 0 0)`;
+ 
+    element.style.webkitClipPath =
+      `inset(${splitPercent}% 0 0 0)`;
+ 
+    objectLayer.appendChild(element);
+ 
+    // 上側：主人公より手前
+    const upperElement =
+      element.cloneNode(true);
+ 
+    upperElement.dataset.depthPart =
+      "upper";
+ 
+    upperElement.style.zIndex =
+      String(depthSplit.upperZ);
+ 
+    const lowerClipPercent =
+      100 - splitPercent;
+ 
+    upperElement.style.clipPath =
+      `inset(0 0 ${lowerClipPercent}% 0)`;
+ 
+    upperElement.style.webkitClipPath =
+      `inset(0 0 ${lowerClipPercent}% 0)`;
+ 
+    foregroundLayer.appendChild(
+      upperElement
+    );
+ 
+    return element;
+  }
+ 
+ 
   function getObjectDisplaySize(
     object
   ) {
@@ -2046,7 +2167,8 @@ window.FieldModule = (() => {
     );
  
  
-    objectLayer.appendChild(
+    appendMapObjectWithDepthSplit(
+      object,
       element
     );
  
@@ -2146,9 +2268,18 @@ window.FieldModule = (() => {
     }
  
  
-    objectLayer
-      .querySelectorAll(
-        ".field-map-object"
+    [
+      objectLayer,
+      foregroundLayer
+    ]
+      .filter(Boolean)
+      .flatMap(
+        layer =>
+          Array.from(
+            layer.querySelectorAll(
+              ".field-map-object"
+            )
+          )
       )
       .forEach(
         element => {
