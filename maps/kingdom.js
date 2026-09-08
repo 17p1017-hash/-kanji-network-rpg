@@ -576,7 +576,7 @@ const MAP_KINGDOM = {
        area: {
   left: 0.44,
   right: 0.72,
-  top: 0.59,
+  top: 0.55,
   bottom: 0.78
 },
 
