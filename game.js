@@ -123,56 +123,48 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const kanjiOrder = [
 
-    // 01
     "日",
     "月",
     "火",
     "水",
     "木",
 
-    // 02
     "山",
     "川",
     "田",
     "土",
     "石",
 
-    // 03
     "上",
     "下",
     "左",
     "右",
     "中",
 
-    // 04
     "一",
     "二",
     "三",
     "四",
     "五",
 
-    // 05
     "人",
     "子",
     "女",
     "男",
     "友",
 
-    // 06
     "目",
     "口",
     "耳",
     "手",
     "足",
 
-    // 07
     "大",
     "小",
     "白",
     "赤",
     "青",
 
-    // 08
     "学",
     "校",
     "本",
@@ -523,32 +515,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const game = {
 
-    // ==================================================
-    // 現在マップ
-    //
-    // セーブあり
-    // → 保存していたマップ
-    //
-    // セーブなし
-    // → 王国
-    // ==================================================
-
     area:
       saveData?.area ??
       "kingdom",
 
 
     player: {
-
-      // ==================================================
-      // 現在位置
-      //
-      // セーブあり
-      // → 保存位置
-      //
-      // セーブなし
-      // → 王国spawn
-      // ==================================================
 
       x:
         saveData?.player?.x ??
@@ -569,19 +541,9 @@ document.addEventListener("DOMContentLoaded", () => {
         saveData?.player?.step ??
         0,
 
-
-      // --------------------------
-      // レベル
-      // --------------------------
-
       level:
         saveData?.player?.level ||
         1,
-
-
-      // --------------------------
-      // HP
-      // --------------------------
 
       hp:
         saveData?.player?.hp ??
@@ -591,11 +553,6 @@ document.addEventListener("DOMContentLoaded", () => {
         saveData?.player?.maxHp ||
         10,
 
-
-      // --------------------------
-      // RP
-      // --------------------------
-
       rp:
         saveData?.player?.rp ??
         10,
@@ -603,11 +560,6 @@ document.addEventListener("DOMContentLoaded", () => {
       maxRp:
         saveData?.player?.maxRp ||
         10,
-
-
-      // --------------------------
-      // EXP・ゴールド
-      // --------------------------
 
       exp:
         saveData?.player?.exp ||
@@ -619,10 +571,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     },
 
-
-    // ==================================================
-    // 移動・戦闘
-    // ==================================================
 
     stepsSinceBattle:
       0,
@@ -735,10 +683,6 @@ document.addEventListener("DOMContentLoaded", () => {
       0,
 
 
-    // ==================================================
-    // 旧「読」システムとの互換
-    // ==================================================
-
     masteryGoal:
       typeof KANJI_YOMU !== "undefined"
         ? KANJI_YOMU.masteryGoal || 3
@@ -753,20 +697,9 @@ document.addEventListener("DOMContentLoaded", () => {
       saveData?.skills || [],
 
 
-    // ==================================================
-    // ストーリー進行フラグ
-    //
-    // 例:
-    // kotobaGateRepaired
-    // ==================================================
-
     flags:
       saveData?.flags || {},
 
-
-    // ==================================================
-    // 第1章
-    // ==================================================
 
     chapter1: {
 
@@ -997,10 +930,6 @@ document.addEventListener("DOMContentLoaded", () => {
       getMasteredCount();
 
 
-    // ----------------------------------------------
-    // 復習対象
-    // ----------------------------------------------
-
     const dueReview =
       kanjiOrder.find(kanji => {
 
@@ -1052,10 +981,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 
-    // ----------------------------------------------
-    // 新しい漢字
-    // ----------------------------------------------
-
     const newKanji =
       kanjiOrder.find(kanji => {
 
@@ -1073,10 +998,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
       });
 
-
-    // ----------------------------------------------
-    // 習熟済み漢字のランダム復習
-    // ----------------------------------------------
 
     if (
       masteredCount >= 5 &&
@@ -1117,10 +1038,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 
-    // ----------------------------------------------
-    // 習熟待ち
-    // ----------------------------------------------
-
     const waitingKanji =
       kanjiOrder.find(
         kanji =>
@@ -1138,10 +1055,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     }
 
-
-    // ----------------------------------------------
-    // 全習熟後
-    // ----------------------------------------------
 
     return kanjiOrder[
       Math.floor(
@@ -1647,34 +1560,209 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // ==================================================
   // 移動ボタン
+  //
+  // ・短いタップ → 1回移動
+  // ・長押し → 連続移動
+  // ・指を離す → 即停止
   // ==================================================
 
-  // ==================================================
-// 移動ボタン
-// ==================================================
+  const directionButtons =
+    document.querySelectorAll(
+      ".direction-button"
+    );
 
-const directionButtons =
-  document.querySelectorAll(
-    ".direction-button"
+
+  let directionHoldTimeout =
+    null;
+
+
+  let directionHoldInterval =
+    null;
+
+
+  let heldDirection =
+    null;
+
+
+  // ==================================================
+  // 長押し停止
+  // ==================================================
+
+  function stopDirectionHold() {
+
+    heldDirection =
+      null;
+
+
+    if (
+      directionHoldTimeout
+    ) {
+
+      clearTimeout(
+        directionHoldTimeout
+      );
+
+
+      directionHoldTimeout =
+        null;
+
+    }
+
+
+    if (
+      directionHoldInterval
+    ) {
+
+      clearInterval(
+        directionHoldInterval
+      );
+
+
+      directionHoldInterval =
+        null;
+
+    }
+
+  }
+
+
+  // ==================================================
+  // 十字キー
+  // ==================================================
+
+  directionButtons.forEach(
+    button => {
+
+      button.addEventListener(
+        "pointerdown",
+        event => {
+
+          event.preventDefault();
+
+
+          stopDirectionHold();
+
+
+          const direction =
+            button.dataset.direction;
+
+
+          heldDirection =
+            direction;
+
+
+          // ------------------------------------------
+          // タップした瞬間に1回移動
+          // ------------------------------------------
+
+          FieldModule.movePlayer(
+            direction
+          );
+
+
+          // ------------------------------------------
+          // 180ms以上押したら連続移動
+          // ------------------------------------------
+
+          directionHoldTimeout =
+            setTimeout(
+              () => {
+
+                directionHoldTimeout =
+                  null;
+
+
+                directionHoldInterval =
+                  setInterval(
+                    () => {
+
+                      if (
+                        !heldDirection
+                      ) {
+
+                        return;
+
+                      }
+
+
+                      FieldModule.movePlayer(
+                        heldDirection
+                      );
+
+                    },
+                    80
+                  );
+
+              },
+              180
+            );
+
+        }
+      );
+
+
+      button.addEventListener(
+        "pointerup",
+        event => {
+
+          event.preventDefault();
+
+          stopDirectionHold();
+
+        }
+      );
+
+
+      button.addEventListener(
+        "pointercancel",
+        stopDirectionHold
+      );
+
+
+      button.addEventListener(
+        "pointerleave",
+        stopDirectionHold
+      );
+
+
+      // ------------------------------------------
+      // スマホ長押しメニュー抑制
+      // ------------------------------------------
+
+      button.addEventListener(
+        "contextmenu",
+        event => {
+
+          event.preventDefault();
+
+        }
+      );
+
+    }
   );
 
 
-directionButtons.forEach(
-  button => {
+  // ==================================================
+  // ボタン外で指を離した場合も停止
+  // ==================================================
 
-    button.addEventListener(
-      "click",
-      () => {
+  document.addEventListener(
+    "pointerup",
+    stopDirectionHold
+  );
 
-        FieldModule.movePlayer(
-          button.dataset.direction
-        );
 
-      }
-    );
+  document.addEventListener(
+    "pointercancel",
+    stopDirectionHold
+  );
 
-  }
-);
+
+  window.addEventListener(
+    "blur",
+    stopDirectionHold
+  );
+
 
   // ==================================================
   // 武器ボタン
