@@ -861,6 +861,8 @@ const MAP_KINGDOM = {
       collision: {
 
         type: "alpha",
+        offsetX: 12,
+offsetY: 0,
 
         area: {
 
@@ -914,6 +916,8 @@ const MAP_KINGDOM = {
       collision: {
 
         type: "alpha",
+        offsetX: 12,
+offsetY: 0,
 
         area: {
 
