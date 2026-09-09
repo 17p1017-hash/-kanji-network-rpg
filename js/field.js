@@ -1732,12 +1732,13 @@ window.FieldModule = (() => {
             .set(
               key,
               {
-                x:
-                  object.x ??
-                  0,
-                y:
-                  object.y ??
-                  0,
+               x:
+  (object.x ?? 0) +
+  (collision.offsetX ?? 0),
+
+y:
+  (object.y ?? 0) +
+  (collision.offsetY ?? 0),
                 width:
                   maskWidth,
                 height:
