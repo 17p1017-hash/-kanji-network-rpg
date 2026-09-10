@@ -333,10 +333,10 @@ const MAP_KINGDOM = {
   sheet: "houses",
   col: 2,
   row: 1,
-  x: 85,
-  y: 590,
-  width: 165,
-  height: 176
+  x: 55,
+  y: 695,
+  width: 198,
+  height: 211
 },
 
 {
@@ -344,10 +344,10 @@ const MAP_KINGDOM = {
   sheet: "houses",
   col: 0,
   row: 2,
-  x: 285,
-  y: 590,
-  width: 160,
-  height: 176
+  x: 265,
+  y: 695,
+  width: 192,
+  height: 211
 },
 
     // --------------------------------------------------
