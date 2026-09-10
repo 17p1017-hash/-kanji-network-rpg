@@ -313,7 +313,7 @@ const MAP_KINGDOM = {
       col: 1,
       row: 1,
 
-      x: 245,
+      x: 225,
       y: 445,
 
       width: 242,
