@@ -333,7 +333,7 @@ const MAP_KINGDOM = {
   col: 2,
   row: 1,
   x: 65,
-  y: 595,
+  y: 593,
   width: 198,
   height: 211
 },
@@ -344,7 +344,7 @@ const MAP_KINGDOM = {
   col: 0,
   row: 2,
   x: 255,
-  y: 595,
+  y: 593,
   width: 192,
   height: 211
 },
