@@ -360,7 +360,7 @@ const MAP_KINGDOM = {
   row: 2,
 
   x: 60,
-  y: 770,
+  y: 790,
 
   width: 258,
   height: 205
@@ -373,7 +373,7 @@ const MAP_KINGDOM = {
   row: 2,
 
   x: 200,
-  y: 770,
+  y: 790,
 
   width: 258,
   height: 205
