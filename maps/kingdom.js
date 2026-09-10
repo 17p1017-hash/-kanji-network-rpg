@@ -332,8 +332,8 @@ const MAP_KINGDOM = {
   sheet: "houses",
   col: 2,
   row: 1,
-  x: 60,
-  y: 680,
+  x: 65,
+  y: 595,
   width: 198,
   height: 211
 },
@@ -343,8 +343,8 @@ const MAP_KINGDOM = {
   sheet: "houses",
   col: 0,
   row: 2,
-  x: 260,
-  y: 680,
+  x: 255,
+  y: 595,
   width: 192,
   height: 211
 },
