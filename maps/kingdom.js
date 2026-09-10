@@ -378,75 +378,64 @@ const MAP_KINGDOM = {
   width: 258,
   height: 205
 },
-    // ==================================================
-    // 東側・商業区
-    // ==================================================
+// ==================================================
+// 東側・商業区
+// 上段：3軒 → 2軒
+// ==================================================
 
-    {
-      id: "east_house_01",
-      sheet: "houses",
-      col: 3,
-      row: 2,
-      x: 748,
-      y: 300,
-      width: 242,
-      height: 193
-    },
+{
+  id: "east_house_01",
+  sheet: "houses",
+  col: 3,
+  row: 2,
+  x: 770,
+  y: 300,
+  width: 242,
+  height: 193
+},
 
-    {
-      id: "east_house_02",
-      sheet: "houses",
-      col: 0,
-      row: 3,
-      x: 880,
-      y: 300,
-      width: 237,
-      height: 193
-    },
+// east_house_02 は削除
 
-    {
-      id: "east_house_03",
-      sheet: "houses",
-      col: 1,
-      row: 3,
-      x: 1010,
-      y: 300,
-      width: 165,
-      height: 187
-    },
+{
+  id: "east_house_03",
+  sheet: "houses",
+  col: 1,
+  row: 3,
+  x: 990,
+  y: 300,
+  width: 165,
+  height: 187
+},
 
-    {
-      id: "east_house_04",
-      sheet: "houses",
-      col: 2,
-      row: 3,
-      x: 755,
-      y: 485,
-      width: 165,
-      height: 187
-    },
 
-    {
-      id: "east_house_05",
-      sheet: "houses",
-      col: 3,
-      row: 3,
-      x: 880,
-      y: 485,
-      width: 165,
-      height: 187
-    },
+// ==================================================
+// 東側・商業区
+// 下段：3軒 → 2軒
+// ==================================================
 
-    {
-      id: "east_house_06",
-      sheet: "houses",
-      col: 0,
-      row: 0,
-      x: 1005,
-      y: 485,
-      width: 165,
-      height: 176
-    },
+{
+  id: "east_house_04",
+  sheet: "houses",
+  col: 2,
+  row: 3,
+  x: 780,
+  y: 485,
+  width: 165,
+  height: 187
+},
+
+// east_house_05 は削除
+
+{
+  id: "east_house_06",
+  sheet: "houses",
+  col: 0,
+  row: 0,
+  x: 980,
+  y: 485,
+  width: 165,
+  height: 176
+},
 
     {
       id: "east_house_07",
