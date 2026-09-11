@@ -388,8 +388,10 @@ const MAP_KINGDOM = {
   sheet: "houses",
   col: 3,
   row: 2,
-  x: 770,
-  y: 300,
+
+  x: 800,
+  y: 315,
+
   width: 242,
   height: 193
 },
@@ -399,12 +401,13 @@ const MAP_KINGDOM = {
   sheet: "houses",
   col: 1,
   row: 3,
+
   x: 990,
-  y: 300,
+  y: 315,
+
   width: 165,
   height: 187
 },
-
 // ==================================================
 // 東側・商業区
 // 下段：3軒 → 2軒
