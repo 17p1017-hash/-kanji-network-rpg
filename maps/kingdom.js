@@ -394,8 +394,6 @@ const MAP_KINGDOM = {
   height: 193
 },
 
-// east_house_02 は削除
-
 {
   id: "east_house_03",
   sheet: "houses",
@@ -406,7 +404,6 @@ const MAP_KINGDOM = {
   width: 165,
   height: 187
 },
-
 
 // ==================================================
 // 東側・商業区
