@@ -437,72 +437,52 @@ const MAP_KINGDOM = {
   height: 176
 },
 
-    {
-      id: "east_house_07",
-      sheet: "houses",
-      col: 1,
-      row: 0,
-      x: 755,
-      y: 690,
-      width: 165,
-      height: 176
-    },
+    
+    
 
     {
-      id: "east_house_08",
-      sheet: "houses",
-      col: 2,
-      row: 0,
-      x: 880,
-      y: 690,
-      width: 165,
-      height: 176
-    },
+  id: "east_house_07",
+  sheet: "houses",
+  col: 1,
+  row: 0,
+  x: 780,
+  y: 690,
+  width: 165,
+  height: 176
+},
 
-    {
-      id: "east_house_09",
-      sheet: "houses",
-      col: 3,
-      row: 0,
-      x: 1005,
-      y: 690,
-      width: 165,
-      height: 187
-    },
+{
+  id: "east_house_09",
+  sheet: "houses",
+  col: 3,
+  row: 0,
+  x: 990,
+  y: 690,
+  width: 165,
+  height: 187
+},
 
-    {
-      id: "east_house_10",
-      sheet: "houses",
-      col: 0,
-      row: 1,
-      x: 755,
-      y: 880,
-      width: 165,
-      height: 187
-    },
+{
+  id: "east_house_10",
+  sheet: "houses",
+  col: 0,
+  row: 1,
+  x: 780,
+  y: 880,
+  width: 165,
+  height: 187
+},
 
-    {
-      id: "east_house_11",
-      sheet: "houses",
-      col: 1,
-      row: 1,
-      x: 880,
-      y: 880,
-      width: 165,
-      height: 187
-    },
-
-    {
-      id: "east_house_12",
-      sheet: "houses",
-      col: 2,
-      row: 1,
-      x: 1005,
-      y: 880,
-      width: 165,
-      height: 176
-    },
-
+{
+  id: "east_house_12",
+  sheet: "houses",
+  col: 2,
+  row: 1,
+  x: 990,
+  y: 880,
+  width: 165,
+  height: 176
+},
     {
       id: "east_house_13",
       sheet: "houses",
