@@ -1735,7 +1735,7 @@ window.FieldModule = (() => {
                x:
   (object.x ?? 0) +
   (collision.offsetX ?? 0),
-
+ 
 y:
   (object.y ?? 0) +
   (collision.offsetY ?? 0),
@@ -2785,6 +2785,9 @@ y:
       "20";
  
  
+    prepareWalkMask(map);
+ 
+ 
     field.style.backgroundImage =
       `url("${map.image}")`;
  
@@ -3118,6 +3121,196 @@ y:
  
  
   // ==================================================
+  // マップ全体の歩行マスク
+  //
+  // map.walkMask.image の画像を読み込み、
+  // 白 = 歩行可能 / 黒 = 通行不可 として扱う。
+  // 通常の％座標マップ・px座標マップの両方に対応。
+  // ==================================================
+ 
+  const walkMaskCache = {};
+ 
+ 
+  function prepareWalkMask(map) {
+ 
+    const config = map?.walkMask;
+ 
+    if (
+      !config ||
+      !config.image
+    ) {
+      return;
+    }
+ 
+    const src = config.image;
+ 
+    if (walkMaskCache[src]) {
+      return;
+    }
+ 
+    const entry = {
+      ready: false,
+      failed: false,
+      width: 0,
+      height: 0,
+      data: null
+    };
+ 
+    walkMaskCache[src] = entry;
+ 
+    const image = new Image();
+ 
+    image.onload = () => {
+      try {
+        const canvas = document.createElement("canvas");
+        canvas.width = image.naturalWidth;
+        canvas.height = image.naturalHeight;
+ 
+        const ctx = canvas.getContext(
+          "2d",
+          { willReadFrequently: true }
+        );
+ 
+        ctx.drawImage(image, 0, 0);
+ 
+        const imageData = ctx.getImageData(
+          0,
+          0,
+          canvas.width,
+          canvas.height
+        );
+ 
+        entry.width = canvas.width;
+        entry.height = canvas.height;
+        entry.data = imageData.data;
+        entry.ready = true;
+      } catch (error) {
+        entry.failed = true;
+        console.error(
+          "歩行マスクを読み取れません:",
+          src,
+          error
+        );
+      }
+    };
+ 
+    image.onerror = () => {
+      entry.failed = true;
+      console.error(
+        "歩行マスク画像を読み込めません:",
+        src
+      );
+    };
+ 
+    image.src = src;
+  }
+ 
+ 
+  function pointBlockedByWalkMask(
+    map,
+    x,
+    y
+  ) {
+ 
+    const config = map?.walkMask;
+ 
+    if (
+      !config ||
+      !config.image
+    ) {
+      return false;
+    }
+ 
+    prepareWalkMask(map);
+ 
+    const entry =
+      walkMaskCache[config.image];
+ 
+    // 読み込み完了前は既存処理を止めない。
+    if (
+      !entry ||
+      !entry.ready ||
+      !entry.data
+    ) {
+      return false;
+    }
+ 
+    let pixelX;
+    let pixelY;
+ 
+    if (isPixelMap(map)) {
+      const mapWidth =
+        map.mapWidth ??
+        map.width ??
+        entry.width;
+ 
+      const mapHeight =
+        map.mapHeight ??
+        map.height ??
+        entry.height;
+ 
+      pixelX =
+        Math.floor(
+          x / mapWidth * entry.width
+        );
+ 
+      pixelY =
+        Math.floor(
+          y / mapHeight * entry.height
+        );
+    } else {
+      pixelX =
+        Math.floor(
+          x / 100 * entry.width
+        );
+ 
+      pixelY =
+        Math.floor(
+          y / 100 * entry.height
+        );
+    }
+ 
+    if (
+      pixelX < 0 ||
+      pixelY < 0 ||
+      pixelX >= entry.width ||
+      pixelY >= entry.height
+    ) {
+      return true;
+    }
+ 
+    const index =
+      (
+        pixelY * entry.width +
+        pixelX
+      ) * 4;
+ 
+    const red = entry.data[index];
+    const green = entry.data[index + 1];
+    const blue = entry.data[index + 2];
+    const alpha = entry.data[index + 3];
+ 
+    const brightness =
+      (
+        red +
+        green +
+        blue
+      ) / 3;
+ 
+    const threshold =
+      config.threshold ?? 128;
+ 
+    // 透明部分も通行不可として扱う。
+    if (alpha < 16) {
+      return true;
+    }
+ 
+    // 今回は白が歩行可能。
+    return brightness < threshold;
+  }
+ 
+ 
+  // ==================================================
   // 点が障害物内か
   // ==================================================
  
@@ -3133,6 +3326,17 @@ y:
  
       return false;
  
+    }
+ 
+ 
+    if (
+      pointBlockedByWalkMask(
+        map,
+        x,
+        y
+      )
+    ) {
+      return true;
     }
  
  
