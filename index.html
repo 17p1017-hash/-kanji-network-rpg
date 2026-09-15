@@ -1,195 +1,195 @@
 <!DOCTYPE html>
 <html lang="ja">
-
+ 
 <head>
   <meta charset="UTF-8">
-
+ 
   <meta
     name="viewport"
     content="width=device-width, initial-scale=1.0"
   >
-
+ 
   <title>漢字ネットワーク RPG</title>
-
+ 
   <link
     rel="stylesheet"
     href="style.css"
   >
 </head>
-
-
+ 
+ 
 <body>
-
+ 
   <main id="game">
-
-
+ 
+ 
     <!-- ==================================================
          タイトル画面
     ================================================== -->
-
+ 
     <section
       id="title-screen"
       class="screen active"
     >
-
+ 
       <div class="title-box">
-
+ 
         <h1>
           漢字ネットワーク RPG
         </h1>
-
+ 
         <p class="title-story">
           ことばのつながりが失われた世界。<br>
           漢字の力を取り戻し、<br>
           切れてしまった「ことばの道」をつなごう！
         </p>
-
+ 
         <button
           id="start-button"
           class="main-button"
         >
           冒険をはじめる
         </button>
-
+ 
       </div>
-
+ 
     </section>
-
-
+ 
+ 
     <!-- ==================================================
          フィールド画面
     ================================================== -->
-
+ 
     <section
       id="field-screen"
       class="screen"
     >
-
+ 
       <div class="field-header">
-
+ 
         <div
           id="area-name"
           class="area-name"
         >
           はじまりの王国
         </div>
-
-
+ 
+ 
         <button
           id="map-button"
           class="small-button"
         >
           ✨ 漢字スキル
         </button>
-
+ 
       </div>
-
-
+ 
+ 
       <div id="field">
-
+ 
         <div id="player"></div>
-
+ 
       </div>
-
-
+ 
+ 
       <div
         id="field-message"
         class="message-box"
       >
         冒険をはじめよう！
       </div>
-
-
+ 
+ 
       <div class="direction-controls">
-
+ 
         <button
           class="direction-button up"
           data-direction="up"
         >
           ▲
         </button>
-
-
+ 
+ 
         <div class="direction-middle">
-
+ 
           <button
             class="direction-button"
             data-direction="left"
           >
             ◀
           </button>
-
-
+ 
+ 
           <button
             class="direction-button"
             data-direction="down"
           >
             ▼
           </button>
-
-
+ 
+ 
           <button
             class="direction-button"
             data-direction="right"
           >
             ▶
           </button>
-
+ 
         </div>
-
+ 
       </div>
-
+ 
     </section>
-
-
+ 
+ 
     <!-- ==================================================
          バトル画面
     ================================================== -->
-
+ 
     <section
       id="battle-screen"
       class="screen"
     >
-
+ 
       <div class="battle-panel">
-
+ 
         <h2 id="enemy-name">
           ワードスライム
         </h2>
-
-
+ 
+ 
         <div class="enemy-hp-status">
-
+ 
           <div class="hp-bar enemy-hp-bar">
-
+ 
             <div
               id="enemy-hp"
               class="hp-fill"
             ></div>
-
+ 
           </div>
-
-
+ 
+ 
           <span
             id="enemy-hp-text"
             class="enemy-hp-text"
           >
             2 / 2
           </span>
-
+ 
         </div>
-
-
+ 
+ 
         <div id="enemy-sprite"></div>
-
-
+ 
+ 
         <div id="battle-message">
           敵があらわれた！
         </div>
-
-
+ 
+ 
         <div class="weapon-grid">
-
+ 
           <button
             class="weapon-button"
             data-weapon="sword"
@@ -197,8 +197,8 @@
             <span class="weapon-icon">⚔️</span>
             <span class="weapon-name">剣</span>
           </button>
-
-
+ 
+ 
           <button
             class="weapon-button"
             data-weapon="bow"
@@ -206,8 +206,8 @@
             <span class="weapon-icon">🏹</span>
             <span class="weapon-name">弓</span>
           </button>
-
-
+ 
+ 
           <button
             class="weapon-button"
             data-weapon="staff"
@@ -215,8 +215,8 @@
             <span class="weapon-icon">🪄</span>
             <span class="weapon-name">杖</span>
           </button>
-
-
+ 
+ 
           <button
             class="weapon-button"
             data-weapon="hammer"
@@ -224,367 +224,367 @@
             <span class="weapon-icon">🔨</span>
             <span class="weapon-name">ハンマー</span>
           </button>
-
+ 
         </div>
-
-
+ 
+ 
         <button
           id="skill-menu-button"
           class="battle-skill-menu-button"
         >
           ✨ スキル
         </button>
-
-
+ 
+ 
         <div
           id="player-battle-status"
           class="player-battle-status"
         >
-
+ 
           <div class="player-status-row">
-
+ 
             <span class="status-label">
               HP
             </span>
-
-
+ 
+ 
             <div class="player-status-bar">
-
+ 
               <div
                 id="player-hp-bar"
                 class="player-hp-fill"
               ></div>
-
+ 
             </div>
-
-
+ 
+ 
             <span
               id="player-hp-text"
               class="status-value"
             >
               10 / 10
             </span>
-
+ 
           </div>
-
-
+ 
+ 
           <div class="player-status-row">
-
+ 
             <span class="status-label">
               RP
             </span>
-
-
+ 
+ 
             <div class="player-status-bar">
-
+ 
               <div
                 id="player-rp-bar"
                 class="player-rp-fill"
               ></div>
-
+ 
             </div>
-
-
+ 
+ 
             <span
               id="player-rp-text"
               class="status-value"
             >
               10 / 10
             </span>
-
+ 
           </div>
-
+ 
         </div>
-
+ 
       </div>
-
+ 
     </section>
-
-
+ 
+ 
     <!-- ==================================================
          バトル用スキル画面
     ================================================== -->
-
+ 
     <section
       id="skill-screen"
       class="screen"
     >
-
+ 
       <div class="skill-panel">
-
+ 
         <h2>
           ✨ スキル
         </h2>
-
-
+ 
+ 
         <div
           id="skill-list"
           class="skill-list"
         >
-
+ 
           <button
             id="reading-skill-button"
             class="skill-list-button"
             style="display: none;"
           >
-
+ 
             <span class="skill-list-icon">
               📖
             </span>
-
-
+ 
+ 
             <span class="skill-list-info">
-
+ 
               <strong>
                 ことばリーディング
               </strong>
-
+ 
               <small>
                 5 RP / 次の正解攻撃 ×2
               </small>
-
+ 
             </span>
-
+ 
           </button>
-
+ 
         </div>
-
-
+ 
+ 
         <button
           id="skill-back-button"
           class="skill-back-button"
         >
           もどる
         </button>
-
+ 
       </div>
-
+ 
     </section>
-
-
+ 
+ 
     <!-- ==================================================
          問題画面
     ================================================== -->
-
+ 
     <section
       id="challenge-screen"
       class="screen"
     >
-
+ 
       <div class="challenge-header">
-
+ 
         <div class="kanji-badge">
           読
         </div>
-
-
+ 
+ 
         <div>
-
+ 
           <div class="challenge-label">
             ことばチャレンジ
           </div>
-
+ 
           <h2 id="challenge-question">
             問題
           </h2>
-
+ 
         </div>
-
+ 
       </div>
-
-
+ 
+ 
       <div
         id="answer-area"
         class="answer-area"
       ></div>
-
-
+ 
+ 
       <button
         id="change-weapon-button"
         class="sub-button"
       >
         武器を変える
       </button>
-
+ 
     </section>
-
-
+ 
+ 
     <!-- ==================================================
          ことばのつながり画面
     ================================================== -->
-
+ 
     <section
       id="network-screen"
       class="screen"
     >
-
+ 
       <div class="network-header">
-
+ 
         <div class="network-title-small">
           「読」の
         </div>
-
+ 
         <h2>
           ことばのつながり
         </h2>
-
+ 
         <p>
           見つけたことばをつないで<br>
           「読」の力を育てよう！
         </p>
-
+ 
       </div>
-
-
+ 
+ 
       <div class="network-map">
-
+ 
         <div
           id="node-yomu"
           class="network-node node-top"
         >
           ❓
         </div>
-
-
+ 
+ 
         <div
           id="node-dokusho"
           class="network-node node-left"
         >
           ❓
         </div>
-
-
+ 
+ 
         <div
           class="network-node network-center"
         >
           読
         </div>
-
-
+ 
+ 
         <div
           id="node-dokusha"
           class="network-node node-right"
         >
           ❓
         </div>
-
-
+ 
+ 
         <div
           id="node-ondoku"
           class="network-node node-bottom"
         >
           ❓
         </div>
-
-
+ 
+ 
         <div class="network-line line-top"></div>
         <div class="network-line line-left"></div>
         <div class="network-line line-right"></div>
         <div class="network-line line-bottom"></div>
-
+ 
       </div>
-
-
+ 
+ 
       <div class="network-progress">
-
+ 
         発見したことば
-
+ 
         <strong id="network-count">
           0 / 4
         </strong>
-
+ 
       </div>
-
-
+ 
+ 
       <button
         id="network-close-button"
         class="main-button"
       >
         冒険に戻る
       </button>
-
+ 
     </section>
-
-
+ 
+ 
     <!-- ==================================================
          漢字スキル画面
     ================================================== -->
-
+ 
     <section
       id="kanji-skill-screen"
       class="screen"
     >
-
+ 
       <div class="skill-screen-header">
-
+ 
         <div class="skill-screen-icon">
           ✨
         </div>
-
+ 
         <h2>
           漢字スキル
         </h2>
-
+ 
         <p>
           漢字の力を身につけて<br>
           冒険で使えるスキルを増やそう！
         </p>
-
+ 
       </div>
-
-
+ 
+ 
       <div
         id="skill-card-yomu"
         class="kanji-skill-card"
       >
-
+ 
         <div class="kanji-skill-top">
-
+ 
           <div class="kanji-skill-kanji">
             読
           </div>
-
-
+ 
+ 
           <div class="kanji-skill-info">
-
+ 
             <div
               id="skill-yomu-status"
               class="kanji-skill-status"
             >
               修行中
             </div>
-
+ 
             <h3>
               📖 ことばリーディング
             </h3>
-
+ 
           </div>
-
+ 
         </div>
-
-
+ 
+ 
         <p class="kanji-skill-description">
           「読」のことばのつながりを育てて、
           漢字の力を身につけよう。
         </p>
-
-
+ 
+ 
         <div
           id="skill-yomu-progress"
           class="skill-progress-text"
         >
           ことばのつながり 0 / 4
         </div>
-
-
+ 
+ 
         <button
           id="skill-yomu-network-button"
           class="main-button"
         >
           ことばのつながりを見る
         </button>
-
-
+ 
+ 
         <button
           id="skill-yomu-test-button"
           class="sub-button"
@@ -592,8 +592,8 @@
         >
           習得テストに挑戦
         </button>
-
-
+ 
+ 
         <div
           id="skill-yomu-acquired"
           class="skill-acquired-message"
@@ -601,110 +601,110 @@
         >
           ★ 漢字スキル習得済み
         </div>
-
+ 
       </div>
-
-
+ 
+ 
       <div class="locked-skills">
-
+ 
         <div class="locked-skill-card">
           <span class="locked-kanji">書</span>
           <span>🔒 まだ使えない</span>
         </div>
-
-
+ 
+ 
         <div class="locked-skill-card">
           <span class="locked-kanji">聞</span>
           <span>🔒 まだ使えない</span>
         </div>
-
-
+ 
+ 
         <div class="locked-skill-card">
           <span class="locked-kanji">話</span>
           <span>🔒 まだ使えない</span>
         </div>
-
+ 
       </div>
-
-
+ 
+ 
       <button
         id="skill-close-button"
         class="main-button"
       >
         冒険に戻る
       </button>
-
+ 
     </section>
-
-
+ 
+ 
     <!-- ==================================================
          スキル獲得画面
     ================================================== -->
-
+ 
     <section
       id="clear-screen"
       class="screen"
     >
-
+ 
       <div class="clear-box">
-
+ 
         <div class="clear-effect">
           ✨
         </div>
-
-
+ 
+ 
         <div class="clear-small">
           漢字の力を身につけた！
         </div>
-
-
+ 
+ 
         <h2>
           漢字スキル獲得！
         </h2>
-
-
+ 
+ 
         <div class="skill-kanji">
           読
         </div>
-
-
+ 
+ 
         <div class="skill-name">
           📖 ことばリーディング
         </div>
-
-
+ 
+ 
         <p>
           「読」の力を使えるようになった！
         </p>
-
-
+ 
+ 
         <button
           id="continue-button"
           class="main-button"
         >
           冒険を続ける
         </button>
-
+ 
       </div>
-
+ 
     </section>
-
-
+ 
+ 
   </main>
-
-
+ 
+ 
   <!-- ==================================================
        JavaScript
   ================================================== -->
-
-
+ 
+ 
   <!-- 以前の「読」データ -->
-
+ 
   <script src="data/yomu.js"></script>
-
-
+ 
+ 
   <!-- 第1章 小学1年生漢字 40字 -->
-
+ 
   <script src="data/chapter1_01.js"></script>
   <script src="data/chapter1_02.js"></script>
   <script src="data/chapter1_03.js"></script>
@@ -713,44 +713,45 @@
   <script src="data/chapter1_06.js"></script>
   <script src="data/chapter1_07.js"></script>
   <script src="data/chapter1_08.js"></script>
-
-
+ 
+ 
   <!-- 手書き判定データ -->
-
+ 
   <script src="data/handwriting_grade1.js"></script>
-
-
+ 
+ 
   <!-- ==================================================
        マップデータ
        ★ 今回ここを追加
   ================================================== -->
-
+ 
   <script src="maps/kingdom.js"></script>
   <script src="maps/reading_forest.js"></script>
-
-
+  <script src="maps/word_hill.js"></script>
+ 
+ 
   <!-- ==================================================
        ゲームシステム
   ================================================== -->
-
+ 
   <script src="js/save.js"></script>
-
+ 
   <script src="js/field.js"></script>
-
+ 
   <script src="js/battle.js"></script>
-
+ 
   <script src="js/challenge.js"></script>
-
+ 
   <script src="js/writing.js"></script>
-
+ 
   <script src="js/mastery.js"></script>
-
-
+ 
+ 
   <!-- ゲーム本体 -->
-
+ 
   <script src="game.js"></script>
-
-
+ 
+ 
 </body>
-
+ 
 </html>
